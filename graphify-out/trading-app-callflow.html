@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>trading app — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 629 nodes, 1288 edges, 38 communities. Commit: b6f0d95</p>
+<p class="subtitle">Generated from graphify knowledge graph: 710 nodes, 1556 edges, 40 communities. Commit: 70dd9f6</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -68,16 +68,16 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
     <a href="#serve-api">Serving API</a>
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
+    <a href="#candle">Candle</a>
     <a href="#app-js">app.js</a>
+    <a href="#order-py">order.py</a>
     <a href="#position">Position</a>
-    <a href="#portfoliostate">PortfolioState</a>
+    <a href="#config-py">config.py</a>
     <a href="#ref-vitest-config">ref_vitest_config</a>
     <a href="#core-init-py">core/__init__.py</a>
     <a href="#trading-app-init-py">trading_app/__init__.py</a>
     <a href="#models-init-py">models/__init__.py</a>
     <a href="#services-init-py">services/__init__.py</a>
-    <a href="#strategies-init-py">strategies/__init__.py</a>
-    <a href="#rules-graphify-md">rules/graphify.md</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,20 +88,24 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>119 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>161 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>32 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>112 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>80 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>87 nodes</small>")
     class SERVE_API_35EC8E86 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>341 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>258 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
+    CANDLE_7AA020F7("Candle<br/><small>25 nodes</small>")
+    class CANDLE_7AA020F7 module;
     APP_JS_CC08AAF7("app.js<br/><small>14 nodes</small>")
     class APP_JS_CC08AAF7 module;
+    ORDER_PY_61F3E48B("order.py<br/><small>14 nodes</small>")
+    class ORDER_PY_61F3E48B module;
     POSITION_90BE1658("Position<br/><small>13 nodes</small>")
     class POSITION_90BE1658 module;
-    PORTFOLIOSTATE_605D6A06("PortfolioState<br/><small>10 nodes</small>")
-    class PORTFOLIOSTATE_605D6A06 module;
+    CONFIG_PY_D97AFD82("config.py<br/><small>6 nodes</small>")
+    class CONFIG_PY_D97AFD82 module;
     REF_VITEST_CONFIG_3EB429E8("ref_vitest_config<br/><small>2 nodes</small>")
     class REF_VITEST_CONFIG_3EB429E8 module;
     CORE_INIT_PY_BE6FB588("core/__init__.py<br/><small>2 nodes</small>")
@@ -112,22 +116,20 @@ flowchart LR
     class MODELS_INIT_PY_B8C6CB3C module;
     SERVICES_INIT_PY_FDB29039("services/__init__.py<br/><small>2 nodes</small>")
     class SERVICES_INIT_PY_FDB29039 module;
-    STRATEGIES_INIT_PY_693BE60F("strategies/__init__.py<br/><small>2 nodes</small>")
-    class STRATEGIES_INIT_PY_693BE60F module;
-    RULES_GRAPHIFY_MD_3459230E("rules/graphify.md<br/><small>2 nodes</small>")
-    class RULES_GRAPHIFY_MD_3459230E module;
-    OTHER_D0941E68("Other<br/><small>6 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>10 nodes</small>")
     class OTHER_D0941E68 module;
-    BUILD_GRAPH_321CBB04 -->|imports x40| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|imports x24| SERVE_API_35EC8E86
-    SERVE_API_35EC8E86 -->|imports x22| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|imports x22| BUILD_GRAPH_321CBB04
-    TESTS_FIXTURES_B84B1DCC -->|imports x5| PORTFOLIOSTATE_605D6A06
-    TESTS_FIXTURES_B84B1DCC -->|method x4| POSITION_90BE1658
-    SERVE_API_35EC8E86 -->|uses x2| PORTFOLIOSTATE_605D6A06
-    SERVE_API_35EC8E86 -->|contains x2| CLI_SKILLS_9964CBB8
-    CLI_SKILLS_9964CBB8 -->|contains x2| TESTS_FIXTURES_B84B1DCC
-    PORTFOLIOSTATE_605D6A06 -->|inherits| POSITION_90BE1658
+    BUILD_GRAPH_321CBB04 -->|imports x45| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|imports x27| BUILD_GRAPH_321CBB04
+    CLI_SKILLS_9964CBB8 -->|imports x24| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|imports x16| CANDLE_7AA020F7
+    BUILD_GRAPH_321CBB04 -->|imports x15| CLI_SKILLS_9964CBB8
+    SERVE_API_35EC8E86 -->|imports x12| ORDER_PY_61F3E48B
+    ORDER_PY_61F3E48B -->|imports x12| SERVE_API_35EC8E86
+    TESTS_FIXTURES_B84B1DCC -->|imports x11| CLI_SKILLS_9964CBB8
+    TESTS_FIXTURES_B84B1DCC -->|imports x11| SERVE_API_35EC8E86
+    SERVE_API_35EC8E86 -->|imports x9| CANDLE_7AA020F7
+    SERVE_API_35EC8E86 -->|contains x8| TESTS_FIXTURES_B84B1DCC
+    CANDLE_7AA020F7 -->|imports x8| SERVE_API_35EC8E86
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -144,106 +146,101 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Graph Build</td><td>119</td><td><code>3, 1, 9, 12, 22, 24</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>32</td><td><code>5, 23, 20</code></td></tr><tr><td>Serving API</td><td>80</td><td><code>11, 10, 13, 15, 27</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>341</td><td><code>0, 4, 2, 7, 8, 6, 14, 19, 26</code></td></tr><tr><td>app.js</td><td>14</td><td><code>16</code></td></tr><tr><td>Position</td><td>13</td><td><code>17</code></td></tr><tr><td>PortfolioState</td><td>10</td><td><code>18</code></td></tr><tr><td>ref_vitest_config</td><td>2</td><td><code>25</code></td></tr><tr><td>core/__init__.py</td><td>2</td><td><code>28</code></td></tr><tr><td>trading_app/__init__.py</td><td>2</td><td><code>29</code></td></tr><tr><td>models/__init__.py</td><td>2</td><td><code>30</code></td></tr><tr><td>services/__init__.py</td><td>2</td><td><code>31</code></td></tr><tr><td>strategies/__init__.py</td><td>2</td><td><code>32</code></td></tr><tr><td>rules/graphify.md</td><td>2</td><td><code>38</code></td></tr><tr><td>Other</td><td>6</td><td><code>39, 33, 34, 35, 40</code></td></tr>
+      <tr><td>Graph Build</td><td>161</td><td><code>1, 3, 9, 12, 22, 24</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>112</td><td><code>7, 5, 23</code></td></tr><tr><td>Serving API</td><td>87</td><td><code>11, 10, 18, 15, 27</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>258</td><td><code>0, 2, 6, 13, 14, 20, 19, 21, 26</code></td></tr><tr><td>Candle</td><td>25</td><td><code>4</code></td></tr><tr><td>app.js</td><td>14</td><td><code>16</code></td></tr><tr><td>order.py</td><td>14</td><td><code>8</code></td></tr><tr><td>Position</td><td>13</td><td><code>17</code></td></tr><tr><td>config.py</td><td>6</td><td><code>36</code></td></tr><tr><td>ref_vitest_config</td><td>2</td><td><code>25</code></td></tr><tr><td>core/__init__.py</td><td>2</td><td><code>28</code></td></tr><tr><td>trading_app/__init__.py</td><td>2</td><td><code>29</code></td></tr><tr><td>models/__init__.py</td><td>2</td><td><code>30</code></td></tr><tr><td>services/__init__.py</td><td>2</td><td><code>31</code></td></tr><tr><td>Other</td><td>10</td><td><code>32, 38, 39, 33, 34, 35, 40</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">app.js -&gt; Graph Build -&gt; Tests &amp; Fixtures -&gt; Serving API -&gt; PortfolioState -&gt; Position -&gt; CLI &amp; Skill Installers</div>
+    <div class="arrow-chain">app.js -&gt; Graph Build -&gt; Tests &amp; Fixtures -&gt; Candle -&gt; Serving API -&gt; order.py -&gt; config.py</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>629 nodes · 1288 edges · 38 communities (23 shown, 15 thin omitted)</li>
-      <li>Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 35 edges (avg confidence: 0.93)</li>
+      <li>710 nodes · 1556 edges · 40 communities (25 shown, 15 thin omitted)</li>
+      <li>Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 35 edges (avg confidence: 0.93)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `Candle` - 24 edges</li>
       <li>2. `runWorkflow()` - 23 edges</li>
-      <li>3. `react` - 19 edges</li>
+      <li>3. `react` - 20 edges</li>
     </ul>
   </div>
 </div>
 <hr>
 <!-- ====== 2. Graph Build ====== -->
 <h2 id="build-graph">2. Graph Build</h2>
-<p>Graph Build groups implementation around packagejson, components, tsconfigappjson, tsconfignodejson, mostly in package.json, tsconfig.app.json, tsconfig.node.json. This section covers 119 nodes and 136 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around components, packagejson, tsconfigappjson, tsconfignodejson, mostly in package.json, tsconfig.app.json, tsconfig.node.json. This section covers 161 nodes and 231 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (119 nodes, 136 edges)
-    subgraph build_graph_components_nodes_OrchestratorNode_ts_7f0f5720["components/nodes/OrchestratorNode.tsx"]
-        src_components_nodes_orchestratornode_orchestrat_fe09be41("OrchestratorNode<br/><small>components/nodes/OrchestratorNode.tsx</small>")
-        src_components_nodes_orchestratornode_08292241("OrchestratorNode.tsx")
+    %% Section: Graph Build (161 nodes, 231 edges)
+    subgraph build_graph_src_hooks_useDemoRunner_ts_6f05dfb6["src/hooks/useDemoRunner.ts"]
+        src_hooks_usedemorunner_1ad66c8e("useDemoRunner.ts")
+        src_hooks_usedemorunner_usedemorunner_dec6b5f6("useDemoRunner()<br/><small>src/hooks/useDemoRunner.ts</small>")
+        src_hooks_usedemorunner_traceeventtonodestatus_686b24fb("traceEventToNodeStatus()<br/><small>src/hooks/useDemoRunner.ts</small>")
+        src_hooks_usedemorunner_resetnodes_d69e73ab("resetNodes()<br/><small>src/hooks/useDemoRunner.ts</small>")
+        src_hooks_usedemorunner_resetedges_226ed97b("resetEdges()<br/><small>src/hooks/useDemoRunner.ts</small>")
     end
-    subgraph build_graph_package_json_4e40bfbd["package.json"]
-        package_582681c2("package.json")
-        ref_react_47bfb9fb("react<br/><small>package.json</small>")
+    subgraph build_graph_src_components_EventTimeline_tsx_773999e8["src/components/EventTimeline.tsx"]
+        src_components_eventtimeline_eventtimeline_689e173e("EventTimeline<br/><small>src/components/EventTimeline.tsx</small>")
+        src_components_eventtimeline_eventtypebadge_b609870e("eventTypeBadge()<br/><small>src/components/EventTimeline.tsx</small>")
     end
-    subgraph build_graph_src_components_AgentNode_tsx_17d2d9e5["src/components/AgentNode.tsx"]
-        src_components_agentnode_024c16a3("AgentNode.tsx")
-        src_components_agentnode_agentnode_03acdb7d("AgentNode<br/><small>src/components/AgentNode.tsx</small>")
+    subgraph build_graph_src_components_NodeInspector_tsx_ee097266["src/components/NodeInspector.tsx"]
+        src_components_nodeinspector_9d9a8f55("NodeInspector.tsx")
+        src_components_nodeinspector_tracesection_a4b5535c("TraceSection()<br/><small>src/components/NodeInspector.tsx</small>")
     end
-    subgraph build_graph_src_components_Navigation_tsx_90808586["src/components/Navigation.tsx"]
-        src_components_navigation_workspaceid_19920115("WorkspaceId<br/><small>src/components/Navigation.tsx</small>")
-        src_components_navigation_36de8e10("Navigation.tsx")
+    subgraph build_graph_src_data_graphData_ts_80e462b8["src/data/graphData.ts"]
+        src_data_graphdata_initial_edges_03f983b2("INITIAL_EDGES<br/><small>src/data/graphData.ts</small>")
+        src_data_graphdata_initial_nodes_7b89a934("INITIAL_NODES<br/><small>src/data/graphData.ts</small>")
     end
-    subgraph build_graph_src_components_TopBar_tsx_60439b3a["src/components/TopBar.tsx"]
-        src_components_topbar_528976f5("TopBar.tsx")
-        src_components_topbar_topbar_7046d714("TopBar<br/><small>src/components/TopBar.tsx</small>")
-    end
-    ref_xyflow_react_dist_style_css_d8ebef0c("dist style css")
+    package_582681c2("package.json")
     src_app_46efd68e("App.tsx")
-    src_components_animatededge_animatededge_52280274("AnimatedEdge<br/><small>src/components/AnimatedEdge.tsx</small>")
-    src_components_bottomcommandstrip_bottomcommands_aceebe00("BottomCommandStrip<br/><small>src/components/BottomCommandStrip.tsx</small>")
-    src_components_graphlegend_graphlegend_c32d0d7c("GraphLegend<br/><small>src/components/GraphLegend.tsx</small>")
-    src_main_3231ff52("main.tsx")
-    src_paper_papertracebridge_loadpapertrace_42da0e62("loadPaperTrace()<br/><small>src/paper/paperTraceBridge.ts</small>")
-    vite_config_433f92aa("vite.config.ts")
-    src_app_46efd68e -->|imports| src_paper_papertracebridge_loadpapertrace_42da0e62
-    src_app_46efd68e -->|imports| src_components_navigation_workspaceid_19920115
-    src_app_46efd68e -->|imports| src_components_agentnode_agentnode_03acdb7d
-    src_app_46efd68e -->|imports| src_components_nodes_orchestratornode_orchestrat_fe09be41
-    src_app_46efd68e -->|imports| src_components_animatededge_animatededge_52280274
-    src_app_46efd68e -->|imports| src_components_topbar_topbar_7046d714
-    src_app_46efd68e -->|imports| src_components_bottomcommandstrip_bottomcommands_aceebe00
-    src_app_46efd68e -->|imports| src_components_graphlegend_graphlegend_c32d0d7c
-    src_app_46efd68e -->|imports| ref_react_47bfb9fb
-    src_app_46efd68e -->|imports| ref_xyflow_react_dist_style_css_d8ebef0c
-    src_app_46efd68e -->|imports| src_components_navigation_36de8e10
+    src_components_agentnode_024c16a3("AgentNode.tsx")
+    src_components_topbar_528976f5("TopBar.tsx")
+    src_types_index_agentnodedata_fa384c32("AgentNodeData<br/><small>src/types/index.ts</small>")
+    src_workflow_replay_derivenodeinspectortrace_c6c646df("deriveNodeInspectorTrace()<br/><small>src/workflow/replay.ts</small>")
+    src_workflow_types_scenariokey_67b3375c("ScenarioKey<br/><small>src/workflow/types.ts</small>")
+    src_components_nodeinspector_tracesection_a4b5535c -->|calls| src_workflow_replay_derivenodeinspectortrace_c6c646df
+    src_hooks_usedemorunner_usedemorunner_dec6b5f6 -->|calls| src_hooks_usedemorunner_traceeventtonodestatus_686b24fb
+    src_hooks_usedemorunner_usedemorunner_dec6b5f6 -->|calls| src_hooks_usedemorunner_resetnodes_d69e73ab
+    src_hooks_usedemorunner_usedemorunner_dec6b5f6 -->|calls| src_hooks_usedemorunner_resetedges_226ed97b
+    src_components_eventtimeline_eventtimeline_689e173e -->|calls| src_components_eventtimeline_eventtypebadge_b609870e
+    src_app_46efd68e -->|imports| src_types_index_agentnodedata_fa384c32
+    src_app_46efd68e -->|imports| src_workflow_types_scenariokey_67b3375c
+    src_app_46efd68e -->|imports| src_data_graphdata_initial_edges_03f983b2
+    src_app_46efd68e -->|imports| src_data_graphdata_initial_nodes_7b89a934
     src_app_46efd68e -->|imports| src_components_agentnode_024c16a3
-    src_app_46efd68e -->|imports| src_components_nodes_orchestratornode_08292241
     src_app_46efd68e -->|imports| src_components_topbar_528976f5
-    src_components_agentnode_024c16a3 -->|imports| ref_react_47bfb9fb
-    src_components_navigation_36de8e10 -->|imports| ref_react_47bfb9fb
-    src_components_nodes_orchestratornode_08292241 -->|imports| ref_react_47bfb9fb
-    src_components_topbar_528976f5 -->|imports| src_components_navigation_workspaceid_19920115
-    src_components_topbar_528976f5 -->|imports| ref_react_47bfb9fb
-    src_components_topbar_528976f5 -->|imports| src_components_navigation_36de8e10
-    src_main_3231ff52 -->|imports| ref_react_47bfb9fb
-    src_main_3231ff52 -->|imports| src_app_46efd68e
-    package_582681c2 -->|imports| ref_react_47bfb9fb
-    %% Omitted for readability: 101 nodes, 0 edges
-    class src_components_nodes_orchestratornode_orchestrat_fe09be41 ui;
-    class src_components_nodes_orchestratornode_08292241 ui;
+    src_app_46efd68e -->|imports| src_components_nodeinspector_9d9a8f55
+    src_components_agentnode_024c16a3 -->|imports| src_types_index_agentnodedata_fa384c32
+    src_components_nodeinspector_9d9a8f55 -->|imports| src_types_index_agentnodedata_fa384c32
+    src_components_nodeinspector_9d9a8f55 -->|imports| src_workflow_replay_derivenodeinspectortrace_c6c646df
+    src_components_topbar_528976f5 -->|imports| src_workflow_types_scenariokey_67b3375c
+    src_hooks_usedemorunner_1ad66c8e -->|imports| src_types_index_agentnodedata_fa384c32
+    src_hooks_usedemorunner_1ad66c8e -->|imports| src_workflow_types_scenariokey_67b3375c
+    src_hooks_usedemorunner_1ad66c8e -->|imports| src_data_graphdata_initial_edges_03f983b2
+    src_hooks_usedemorunner_1ad66c8e -->|imports| src_data_graphdata_initial_nodes_7b89a934
+    %% Omitted for readability: 143 nodes, 0 edges
+    class src_hooks_usedemorunner_1ad66c8e ui;
+    class src_hooks_usedemorunner_usedemorunner_dec6b5f6 ui;
+    class src_hooks_usedemorunner_traceeventtonodestatus_686b24fb function;
+    class src_hooks_usedemorunner_resetnodes_d69e73ab function;
+    class src_hooks_usedemorunner_resetedges_226ed97b function;
+    class src_components_eventtimeline_eventtimeline_689e173e ui;
+    class src_components_eventtimeline_eventtypebadge_b609870e ui;
+    class src_components_nodeinspector_9d9a8f55 test;
+    class src_components_nodeinspector_tracesection_a4b5535c test;
+    class src_data_graphdata_initial_edges_03f983b2 klass;
+    class src_data_graphdata_initial_nodes_7b89a934 klass;
     class package_582681c2 function;
-    class ref_react_47bfb9fb function;
-    class src_components_agentnode_024c16a3 ui;
-    class src_components_agentnode_agentnode_03acdb7d ui;
-    class src_components_navigation_workspaceid_19920115 ui;
-    class src_components_navigation_36de8e10 ui;
-    class src_components_topbar_528976f5 ui;
-    class src_components_topbar_topbar_7046d714 ui;
-    class ref_xyflow_react_dist_style_css_d8ebef0c function;
     class src_app_46efd68e ui;
-    class src_components_animatededge_animatededge_52280274 ui;
-    class src_components_bottomcommandstrip_bottomcommands_aceebe00 entry;
-    class src_components_graphlegend_graphlegend_c32d0d7c ui;
-    class src_main_3231ff52 ui;
-    class src_paper_papertracebridge_loadpapertrace_42da0e62 function;
-    class vite_config_433f92aa module;
+    class src_components_agentnode_024c16a3 ui;
+    class src_components_topbar_528976f5 ui;
+    class src_types_index_agentnodedata_fa384c32 klass;
+    class src_workflow_replay_derivenodeinspectortrace_c6c646df function;
+    class src_workflow_types_scenariokey_67b3375c klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -267,243 +264,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>marketDataProxyPlugin()</code><br><small style="color:var(--muted)">vite.config.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AgentFlowNode</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>marketDataProxyPlugin() node in vite.config.ts.</td>
+  <td>AgentFlowNode node in src/App.tsx.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>package.json</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ActivityStripProps</code><br><small style="color:var(--muted)">src/components/ActivityStrip.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>@types/node</code><br><small style="color:var(--muted)">package.json</small><br><code>@types/react</code><br><small style="color:var(--muted)">package.json</small><br><code>@types/react-dom</code><br><small style="color:var(--muted)">package.json</small><br>+8 more</td>
-  <td>package.json node in package.json.</td>
+  <td>No direct outbound edge</td>
+  <td>ActivityStripProps node in src/components/ActivityStrip.tsx.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>dependencies</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AnimatedEdgeData</code><br><small style="color:var(--muted)">src/components/AnimatedEdge.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>dependencies node in package.json.</td>
+  <td>AnimatedEdgeData node in src/components/AnimatedEdge.tsx.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>react</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>EdgeExecutionState</code><br><small style="color:var(--muted)">src/components/AnimatedEdge.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>react node in package.json.</td>
+  <td>EdgeExecutionState node in src/components/AnimatedEdge.tsx.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>react-dom</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BottomCommandStripProps</code><br><small style="color:var(--muted)">src/components/BottomCommandStrip.tsx</small></td>
+  <td><span class="tag tag-cmd">Entry</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>react-dom node in package.json.</td>
+  <td>BottomCommandStripProps node in src/components/BottomCommandStrip.tsx.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>@xyflow/react</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>EventTimelineProps</code><br><small style="color:var(--muted)">src/components/EventTimeline.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>@xyflow/react node in package.json.</td>
+  <td>EventTimelineProps node in src/components/EventTimeline.tsx.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>devDependencies</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>NavigationProps</code><br><small style="color:var(--muted)">src/components/Navigation.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>devDependencies node in package.json.</td>
+  <td>NavigationProps node in src/components/Navigation.tsx.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>oxlint</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>WorkspaceId</code><br><small style="color:var(--muted)">src/components/Navigation.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>TopBar.tsx</code><br><small style="color:var(--muted)">src/components/TopBar.tsx</small></td>
   <td>No direct outbound edge</td>
-  <td>oxlint node in package.json.</td>
+  <td>WorkspaceId node in src/components/Navigation.tsx.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>@types/node</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>NodeInspectorProps</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
+  <td><span class="tag tag-func">Test</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>@types/node node in package.json.</td>
+  <td>NodeInspectorProps node in src/components/NodeInspector.tsx.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>@types/react</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>TraceSectionProps</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
+  <td><span class="tag tag-func">Test</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>@types/react node in package.json.</td>
+  <td>TraceSectionProps node in src/components/NodeInspector.tsx.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>@types/react-dom</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>TopBarProps</code><br><small style="color:var(--muted)">src/components/TopBar.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>@types/react-dom node in package.json.</td>
+  <td>TopBarProps node in src/components/TopBar.tsx.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>typescript</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AgentFlowNode</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>typescript node in package.json.</td>
+  <td>AgentFlowNode node in src/hooks/useDemoRunner.ts.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>vite</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>UseDemoRunnerOptions</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>vite node in package.json.</td>
+  <td>UseDemoRunnerOptions node in src/hooks/useDemoRunner.ts.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>@vitejs/plugin-react</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ActivityEvent</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ActivityStrip.tsx</code><br><small style="color:var(--muted)">src/components/ActivityStrip.tsx</small><br><code>BottomCommandStrip.tsx</code><br><small style="color:var(--muted)">src/components/BottomCommandStrip.tsx</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small><br>+1 more</td>
   <td>No direct outbound edge</td>
-  <td>@vitejs/plugin-react node in package.json.</td>
+  <td>ActivityEvent node in src/types/index.ts.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>vitest</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>AgentNodeData</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>AgentNode.tsx</code><br><small style="color:var(--muted)">src/components/AgentNode.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>graphData.ts</code><br><small style="color:var(--muted)">src/data/graphData.ts</small><br>+4 more</td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>AgentNodeData node in src/types/index.ts.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>name</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>EdgeKind</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>name node in package.json.</td>
+  <td>EdgeKind node in src/types/index.ts.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>private</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>NodeKind</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>AgentNode.tsx</code><br><small style="color:var(--muted)">src/components/AgentNode.tsx</small><br><code>NodeInspector.tsx</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
   <td>No direct outbound edge</td>
-  <td>private node in package.json.</td>
+  <td>NodeKind node in src/types/index.ts.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>scripts</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>NodeStatus</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>AgentNode.tsx</code><br><small style="color:var(--muted)">src/components/AgentNode.tsx</small><br><code>graphData.ts</code><br><small style="color:var(--muted)">src/data/graphData.ts</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small></td>
   <td>No direct outbound edge</td>
-  <td>scripts node in package.json.</td>
+  <td>NodeStatus node in src/types/index.ts.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>build</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>RunRecord</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BottomCommandStrip.tsx</code><br><small style="color:var(--muted)">src/components/BottomCommandStrip.tsx</small><br><code>EventTimeline.tsx</code><br><small style="color:var(--muted)">src/components/EventTimeline.tsx</small><br><code>NodeInspector.tsx</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small><br>+8 more</td>
   <td>No direct outbound edge</td>
-  <td>build node in package.json.</td>
+  <td>RunRecord node in src/workflow/types.ts.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>dev</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ScenarioKey</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>scenarios.ts</code><br><small style="color:var(--muted)">src/workflow/scenarios.ts</small><br><code>TopBar.tsx</code><br><small style="color:var(--muted)">src/components/TopBar.tsx</small><br>+2 more</td>
   <td>No direct outbound edge</td>
-  <td>dev node in package.json.</td>
+  <td>ScenarioKey node in src/workflow/types.ts.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>lint</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>TraceEventType</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>EventTimeline.tsx</code><br><small style="color:var(--muted)">src/components/EventTimeline.tsx</small></td>
   <td>No direct outbound edge</td>
-  <td>lint node in package.json.</td>
+  <td>TraceEventType node in src/workflow/types.ts.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>preview</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>eventTypeBadge()</code><br><small style="color:var(--muted)">src/components/EventTimeline.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>EventTimeline</code><br><small style="color:var(--muted)">src/components/EventTimeline.tsx</small></td>
   <td>No direct outbound edge</td>
-  <td>preview node in package.json.</td>
+  <td>eventTypeBadge() node in src/components/EventTimeline.tsx.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>test</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>EvalChecks()</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
+  <td><span class="tag tag-func">Test</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>EvalChecks() node in src/components/NodeInspector.tsx.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>test:watch</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>KVBlock()</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
+  <td><span class="tag tag-func">Test</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>KVBlock() node in src/components/NodeInspector.tsx.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>type</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RiskBreakdownCard()</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
+  <td><span class="tag tag-func">Test</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>type node in package.json.</td>
+  <td>RiskBreakdownCard() node in src/components/NodeInspector.tsx.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>version</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>TraceSection()</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
+  <td><span class="tag tag-func">Test</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>version node in package.json.</td>
+  <td><code>deriveNodeInspectorTrace()</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small></td>
+  <td>TraceSection() node in src/components/NodeInspector.tsx.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>vitest</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>VerdictRow()</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
+  <td><span class="tag tag-func">Test</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>VerdictRow() node in src/components/NodeInspector.tsx.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>environment</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><code>resetEdges()</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>useDemoRunner()</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
   <td>No direct outbound edge</td>
-  <td>environment node in package.json.</td>
+  <td>resetEdges() node in src/hooks/useDemoRunner.ts.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>include</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><code>resetNodes()</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>useDemoRunner()</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
   <td>No direct outbound edge</td>
-  <td>include node in package.json.</td>
+  <td>resetNodes() node in src/hooks/useDemoRunner.ts.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>vite.config.ts</code><br><small style="color:var(--muted)">vite.config.ts</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>@vitejs/plugin-react</code><br><small style="color:var(--muted)">package.json</small><br><code>vite</code><br><small style="color:var(--muted)">package.json</small></td>
-  <td>Module file in vite.config.ts.</td>
+  <td><code>traceEventToNodeStatus()</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>useDemoRunner()</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>traceEventToNodeStatus() node in src/hooks/useDemoRunner.ts.</td>
 </tr>
 </table>
 
@@ -512,91 +509,100 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>package.json</code></td><td>39 nodes</td></tr>
+      <tr><td><code>package.json</code></td><td>38 nodes</td></tr>
 <tr><td><code>tsconfig.app.json</code></td><td>20 nodes</td></tr>
 <tr><td><code>tsconfig.node.json</code></td><td>17 nodes</td></tr>
+<tr><td><code>src/components/NodeInspector.tsx</code></td><td>11 nodes</td></tr>
+<tr><td><code>src/hooks/useDemoRunner.ts</code></td><td>8 nodes</td></tr>
 <tr><td><code>.oxlintrc.json</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/types/index.ts</code></td><td>6 nodes</td></tr>
 <tr><td><code>src/App.tsx</code></td><td>5 nodes</td></tr>
-<tr><td><code>src/components/AgentNode.tsx</code></td><td>4 nodes</td></tr>
-<tr><td><code>src/components/AnimatedEdge.tsx</code></td><td>4 nodes</td></tr>
-<tr><td><code>src/components/Navigation.tsx</code></td><td>4 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x88, imports x25, imports x22, references x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x121, imports x48, imports x44, references x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">3. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around walkthroughmd, docs, readmemd, trading, mostly in docs/walkthrough.md, README.md, trading_app/main.py. This section covers 32 nodes and 29 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around competition, typests, walkthroughmd, docs, mostly in src/competition/types.ts, docs/walkthrough.md, README.md. This section covers 112 nodes and 272 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (32 nodes, 29 edges)
-    subgraph cli_skills_README_md_f7b7a552["README.md"]
-        readme_agent_trading_os_algorithmic_trading_plat_aba6306d("Agent Trading OS &amp; Algorithmic Trading...<br/><small>README.md</small>")
-        readme_1_agent_trading_os_frontend_workspace_97b6621c("1. Agent Trading OS (Frontend Workspace)<br/><small>README.md</small>")
-        readme_3_quickstart_guide_2b3a1a79("3. Quickstart Guide<br/><small>README.md</small>")
-        readme_2_python_fastapi_backend_9ccd213e("2. Python FastAPI Backend<br/><small>README.md</small>")
-        readme_4_graphify_knowledge_graph_0cb21894("4. Graphify Knowledge Graph<br/><small>README.md</small>")
-        readme_architecture_overview_1fa6bbb9("Architecture Overview<br/><small>README.md</small>")
-        readme_backend_fastapi_service_9d33ee2e("Backend (FastAPI Service)<br/><small>README.md</small>")
-        readme_frontend_agent_trading_os_7411ad65("Frontend (Agent Trading OS)<br/><small>README.md</small>")
-        readme_f78a71af("README.md")
-        readme_paper_trading_live_kalshi_prediction_mark_8fe9bece("📈 Paper Trading (Live Kalshi Prediction...<br/><small>README.md</small>")
+    %% Section: CLI &amp; Skill Installers (112 nodes, 272 edges)
+    subgraph cli_skills_src_competition_coachEvaluator_ts_56789b2a["src/competition/coachEvaluator.ts"]
+        src_competition_coachevaluator_df71bfb0("coachEvaluator.ts")
+        src_competition_coachevaluator_approveexperiment_25b85ab7("approveExperiment()<br/><small>src/competition/coachEvaluator.ts</small>")
+        src_competition_coachevaluator_loadexperiments_c2246c13("loadExperiments()<br/><small>src/competition/coachEvaluator.ts</small>")
+        src_competition_coachevaluator_saveexperiments_550daf23("saveExperiments()<br/><small>src/competition/coachEvaluator.ts</small>")
+        src_competition_coachevaluator_evaluatetrader_47527a1d("evaluateTrader()<br/><small>src/competition/coachEvaluator.ts</small>")
     end
-    subgraph cli_skills_docs_walkthrough_md_0c5f8f2f["docs/walkthrough.md"]
-        docs_walkthrough_agent_trading_os_milestone_5_wa_5a9826c9("Agent Trading OS — Milestone 5 Walkthro...<br/><small>docs/walkthrough.md</small>")
-        docs_walkthrough_2_key_architecture_milestone_5_ca8d68e6("2. Key Architecture &amp; Milestone 5 Highl...<br/><small>docs/walkthrough.md</small>")
-        docs_walkthrough_3_visual_demonstration_screensh_7a8e51f9("3. Visual Demonstration &amp; Screenshots<br/><small>docs/walkthrough.md</small>")
-        docs_walkthrough_1_quickstart_instructions_f4e92016("1. Quickstart Instructions<br/><small>docs/walkthrough.md</small>")
+    subgraph cli_skills_src_competition_eventBus_ts_fe6adc61["src/competition/eventBus.ts"]
+        src_competition_eventbus_competitioneventbus_c3724eb8("CompetitionEventBus<br/><small>src/competition/eventBus.ts</small>")
+        src_competition_eventbus_competitioneventbus_sub_bc0cbc9e("subscribe()<br/><small>src/competition/eventBus.ts</small>")
+        src_competition_eventbus_competitioneventbus_emi_db08b869("emit()<br/><small>src/competition/eventBus.ts</small>")
+        src_competition_eventbus_competitioneventbus_get_bf5eaf99("getRecentEvents()<br/><small>src/competition/eventBus.ts</small>")
+        src_competition_eventbus_competitioneventbus_cle_7d51d85f("clear()<br/><small>src/competition/eventBus.ts</small>")
     end
-    subgraph cli_skills_External_generated_0c226fa1["External / generated"]
-        trading_app_main_py_get_5025342a("get")
-        fileresponse_9e08e8fd("FileResponse")
+    subgraph cli_skills_src_competition_competitionEngine_ts_53da553f["src/competition/competitionEngine.ts"]
+        src_competition_competitionengine_df507f6b("competitionEngine.ts")
+        src_competition_competitionengine_runindependent_5e5406eb("runIndependentPhase()<br/><small>src/competition/competitionEngine.ts</small>")
     end
-    subgraph cli_skills_trading_app_main_py_76fd4bde["trading_app/main.py"]
-        trading_app_main_health_check_b8774023("health_check()<br/><small>trading_app/main.py</small>")
-        trading_app_main_serve_dashboard_8528035d("serve_dashboard()<br/><small>trading_app/main.py</small>")
+    subgraph cli_skills_src_competition_proposalEngine_ts_8600cfc3["src/competition/proposalEngine.ts"]
+        src_competition_proposalengine_65056ca0("proposalEngine.ts")
+        src_competition_proposalengine_evaluatemarketfor_be7a3bc3("evaluateMarketForTrader()<br/><small>src/competition/proposalEngine.ts</small>")
     end
-    trading_app_main_health_check_b8774023 -->|references| trading_app_main_py_get_5025342a
-    trading_app_main_serve_dashboard_8528035d -->|references| trading_app_main_py_get_5025342a
-    trading_app_main_serve_dashboard_8528035d -->|references| fileresponse_9e08e8fd
-    readme_f78a71af -->|contains| readme_agent_trading_os_algorithmic_trading_plat_aba6306d
-    readme_1_agent_trading_os_frontend_workspace_97b6621c -->|contains| readme_paper_trading_live_kalshi_prediction_mark_8fe9bece
-    readme_3_quickstart_guide_2b3a1a79 -->|contains| readme_frontend_agent_trading_os_7411ad65
-    readme_3_quickstart_guide_2b3a1a79 -->|contains| readme_backend_fastapi_service_9d33ee2e
-    readme_agent_trading_os_algorithmic_trading_plat_aba6306d -->|contains| readme_4_graphify_knowledge_graph_0cb21894
-    readme_agent_trading_os_algorithmic_trading_plat_aba6306d -->|contains| readme_1_agent_trading_os_frontend_workspace_97b6621c
-    readme_agent_trading_os_algorithmic_trading_plat_aba6306d -->|contains| readme_2_python_fastapi_backend_9ccd213e
-    readme_agent_trading_os_algorithmic_trading_plat_aba6306d -->|contains| readme_3_quickstart_guide_2b3a1a79
-    readme_agent_trading_os_algorithmic_trading_plat_aba6306d -->|contains| readme_architecture_overview_1fa6bbb9
-    docs_walkthrough_agent_trading_os_milestone_5_wa_5a9826c9 -->|contains| docs_walkthrough_2_key_architecture_milestone_5_ca8d68e6
-    docs_walkthrough_agent_trading_os_milestone_5_wa_5a9826c9 -->|contains| docs_walkthrough_1_quickstart_instructions_f4e92016
-    docs_walkthrough_agent_trading_os_milestone_5_wa_5a9826c9 -->|contains| docs_walkthrough_3_visual_demonstration_screensh_7a8e51f9
-    %% Omitted for readability: 14 nodes, 0 edges
-    class readme_agent_trading_os_algorithmic_trading_plat_aba6306d concept;
-    class readme_1_agent_trading_os_frontend_workspace_97b6621c concept;
-    class readme_3_quickstart_guide_2b3a1a79 concept;
-    class readme_2_python_fastapi_backend_9ccd213e concept;
-    class readme_4_graphify_knowledge_graph_0cb21894 concept;
-    class readme_architecture_overview_1fa6bbb9 concept;
-    class readme_backend_fastapi_service_9d33ee2e concept;
-    class readme_frontend_agent_trading_os_7411ad65 concept;
-    class readme_f78a71af concept;
-    class readme_paper_trading_live_kalshi_prediction_mark_8fe9bece concept;
-    class docs_walkthrough_agent_trading_os_milestone_5_wa_5a9826c9 concept;
-    class docs_walkthrough_2_key_architecture_milestone_5_ca8d68e6 concept;
-    class docs_walkthrough_3_visual_demonstration_screensh_7a8e51f9 concept;
-    class docs_walkthrough_1_quickstart_instructions_f4e92016 concept;
-    class trading_app_main_py_get_5025342a function;
-    class fileresponse_9e08e8fd klass;
-    class trading_app_main_health_check_b8774023 function;
-    class trading_app_main_serve_dashboard_8528035d function;
+    src_tests_competition_test_fe9a7701("competition.test.ts")
+    src_competition_portfoliostore_loadtraderportfol_657b1938("loadTraderPortfolio()<br/><small>src/competition/portfolioStore.ts</small>")
+    src_components_competitionworkspace_6e15c855("CompetitionWorkspace.tsx")
+    src_hooks_usereplayrunner_d378bfea("useReplayRunner.ts")
+    src_competition_eventbus_competitioneventbus_c3724eb8 -->|method| src_competition_eventbus_competitioneventbus_sub_bc0cbc9e
+    src_competition_eventbus_competitioneventbus_c3724eb8 -->|method| src_competition_eventbus_competitioneventbus_emi_db08b869
+    src_competition_eventbus_competitioneventbus_c3724eb8 -->|method| src_competition_eventbus_competitioneventbus_get_bf5eaf99
+    src_competition_eventbus_competitioneventbus_c3724eb8 -->|method| src_competition_eventbus_competitioneventbus_cle_7d51d85f
+    src_competition_coachevaluator_approveexperiment_25b85ab7 -->|calls| src_competition_coachevaluator_loadexperiments_c2246c13
+    src_competition_coachevaluator_approveexperiment_25b85ab7 -->|calls| src_competition_coachevaluator_saveexperiments_550daf23
+    src_competition_coachevaluator_evaluatetrader_47527a1d -->|calls| src_competition_coachevaluator_loadexperiments_c2246c13
+    src_competition_coachevaluator_evaluatetrader_47527a1d -->|calls| src_competition_coachevaluator_saveexperiments_550daf23
+    src_competition_coachevaluator_evaluatetrader_47527a1d -->|calls| src_competition_portfoliostore_loadtraderportfol_657b1938
+    src_competition_competitionengine_runindependent_5e5406eb -->|calls| src_competition_portfoliostore_loadtraderportfol_657b1938
+    src_competition_competitionengine_runindependent_5e5406eb -->|calls| src_competition_proposalengine_evaluatemarketfor_be7a3bc3
+    src_competition_coachevaluator_df71bfb0 -->|imports| src_competition_portfoliostore_loadtraderportfol_657b1938
+    src_competition_competitionengine_df507f6b -->|imports| src_competition_proposalengine_evaluatemarketfor_be7a3bc3
+    src_competition_competitionengine_df507f6b -->|imports| src_competition_portfoliostore_loadtraderportfol_657b1938
+    src_competition_competitionengine_df507f6b -->|imports| src_competition_proposalengine_65056ca0
+    src_components_competitionworkspace_6e15c855 -->|imports| src_competition_coachevaluator_approveexperiment_25b85ab7
+    src_components_competitionworkspace_6e15c855 -->|imports| src_competition_coachevaluator_loadexperiments_c2246c13
+    src_components_competitionworkspace_6e15c855 -->|imports| src_competition_coachevaluator_df71bfb0
+    src_hooks_usereplayrunner_d378bfea -->|imports| src_competition_competitionengine_runindependent_5e5406eb
+    src_hooks_usereplayrunner_d378bfea -->|imports| src_competition_competitionengine_df507f6b
+    src_tests_competition_test_fe9a7701 -->|imports| src_competition_proposalengine_evaluatemarketfor_be7a3bc3
+    src_tests_competition_test_fe9a7701 -->|imports| src_competition_competitionengine_runindependent_5e5406eb
+    src_tests_competition_test_fe9a7701 -->|imports| src_competition_portfoliostore_loadtraderportfol_657b1938
+    src_tests_competition_test_fe9a7701 -->|imports| src_competition_coachevaluator_approveexperiment_25b85ab7
+    %% Omitted for readability: 94 nodes, 4 edges
+    class src_competition_coachevaluator_df71bfb0 module;
+    class src_competition_coachevaluator_approveexperiment_25b85ab7 function;
+    class src_competition_coachevaluator_loadexperiments_c2246c13 function;
+    class src_competition_coachevaluator_saveexperiments_550daf23 function;
+    class src_competition_coachevaluator_evaluatetrader_47527a1d function;
+    class src_competition_eventbus_competitioneventbus_c3724eb8 klass;
+    class src_competition_eventbus_competitioneventbus_sub_bc0cbc9e function;
+    class src_competition_eventbus_competitioneventbus_emi_db08b869 function;
+    class src_competition_eventbus_competitioneventbus_get_bf5eaf99 function;
+    class src_competition_eventbus_competitioneventbus_cle_7d51d85f function;
+    class src_competition_competitionengine_df507f6b module;
+    class src_competition_competitionengine_runindependent_5e5406eb function;
+    class src_competition_proposalengine_65056ca0 module;
+    class src_competition_proposalengine_evaluatemarketfor_be7a3bc3 function;
+    class src_tests_competition_test_fe9a7701 test;
+    class src_competition_portfoliostore_loadtraderportfol_657b1938 function;
+    class src_components_competitionworkspace_6e15c855 ui;
+    class src_hooks_usereplayrunner_d378bfea ui;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -620,243 +626,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>walkthrough.md</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>DecisionBundle</code><br><small style="color:var(--muted)">src/competition/competitionEngine.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>portfolioManager.ts</code><br><small style="color:var(--muted)">src/competition/portfolioManager.ts</small><br><code>useReplayRunner.ts</code><br><small style="color:var(--muted)">src/hooks/useReplayRunner.ts</small></td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing walkthrough.md.</td>
+  <td>DecisionBundle node in src/competition/competitionEngine.ts.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>1. Quickstart Instructions</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
+  <td><code>CompetitionEventBus</code><br><small style="color:var(--muted)">src/competition/eventBus.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 1. Quickstart Instructions.</td>
+  <td><code>clear()</code><br><small style="color:var(--muted)">src/competition/eventBus.ts</small><br><code>emit()</code><br><small style="color:var(--muted)">src/competition/eventBus.ts</small><br><code>getRecentEvents()</code><br><small style="color:var(--muted)">src/competition/eventBus.ts</small><br>+1 more</td>
+  <td>CompetitionEventBus node in src/competition/eventBus.ts.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>2. Key Architecture &amp; Milestone 5 Highlights</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 2. Key Architecture &amp; Milestone 5 Highlights.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>3. Visual Demonstration &amp; Screenshots</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 3. Visual Demonstration &amp; Screenshots.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>4. Automated Test Suite Results</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 4. Automated Test Suite Results.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>5. Verification Checklist</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 5. Verification Checklist.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>A. Agent Studio &amp; Training Registry</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing A. Agent Studio &amp; Training Registry.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>A. Complete Replay Trace with Custom Agent &amp; 8 Pipeline Nodes</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing A. Complete Replay Trace with Custom Agent &amp; 8 Pipeline Nodes.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Agent Trading OS — Milestone 5 Walkthrough: Agent Studio, Modular Skills &amp; Episodic Learning Memory Loop</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Agent Trading OS — Milestone 5 Walkthrough: Agent Studio, Modular Skills &amp; Episodic Learning Memory Loop.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>B. Agent Memory Node Inspection (Precedent Query &amp; Conviction Adjustment)</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing B. Agent Memory Node Inspection (Precedent Query &amp; Conviction Adjustment).</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>B. Modular Skills Architecture</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing B. Modular Skills Architecture.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>C. Agent Studio — Episodic Memory History</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing C. Agent Studio — Episodic Memory History.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>D. 8-Node Graph Execution Pipeline</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing D. 8-Node Graph Execution Pipeline.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>E. Graphify Knowledge Integration</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing E. Graphify Knowledge Integration.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>Graphify Knowledge Graph Commands</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Graphify Knowledge Graph Commands.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>README.md</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing README.md.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>1. Agent Trading OS (Frontend Workspace)</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 1. Agent Trading OS (Frontend Workspace).</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>2. Python FastAPI Backend</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 2. Python FastAPI Backend.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>3. Quickstart Guide</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 3. Quickstart Guide.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>4. Graphify Knowledge Graph</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 4. Graphify Knowledge Graph.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>🔬 Agent Lab</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 🔬 Agent Lab.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>Agent Trading OS &amp; Algorithmic Trading Platform</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Agent Trading OS &amp; Algorithmic Trading Platform.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>Architecture Overview</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Architecture Overview.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>Backend (FastAPI Service)</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Backend (FastAPI Service).</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>Frontend (Agent Trading OS)</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Frontend (Agent Trading OS).</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>📈 Paper Trading (Live Kalshi Prediction Markets)</code><br><small style="color:var(--muted)">README.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 📈 Paper Trading (Live Kalshi Prediction Markets).</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>health_check()</code><br><small style="color:var(--muted)">trading_app/main.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>health_check() node in trading_app/main.py.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>serve_dashboard()</code><br><small style="color:var(--muted)">trading_app/main.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>serve_dashboard() node in trading_app/main.py.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>FileResponse</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>EventListener</code><br><small style="color:var(--muted)">src/competition/eventBus.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>FileResponse node in project.</td>
+  <td>EventListener node in src/competition/eventBus.ts.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>ManagerAllocationConfig</code><br><small style="color:var(--muted)">src/competition/portfolioManager.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>TraderDecisionResult</code><br><small style="color:var(--muted)">src/competition/proposalEngine.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>competitionEngine.ts</code><br><small style="color:var(--muted)">src/competition/competitionEngine.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>TraderDecisionResult node in src/competition/proposalEngine.ts.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>ActionType</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ActionType node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>CategoryMetric</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>competitionScorer.ts</code><br><small style="color:var(--muted)">src/competition/competitionScorer.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>CategoryMetric node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>CoachEvaluation</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>coachEvaluator.ts</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>CoachEvaluation node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>CompetitionMetrics</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>competitionScorer.ts</code><br><small style="color:var(--muted)">src/competition/competitionScorer.ts</small><br><code>CompetitionWorkspace.tsx</code><br><small style="color:var(--muted)">src/components/CompetitionWorkspace.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>CompetitionMetrics node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>CompetitorRole</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>coachEvaluator.ts</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small><br><code>competitionEngine.ts</code><br><small style="color:var(--muted)">src/competition/competitionEngine.ts</small><br><code>competitionScorer.ts</code><br><small style="color:var(--muted)">src/competition/competitionScorer.ts</small><br>+4 more</td>
+  <td>No direct outbound edge</td>
+  <td>CompetitorRole node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>ManagerDecision</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>portfolioManager.ts</code><br><small style="color:var(--muted)">src/competition/portfolioManager.ts</small><br><code>useReplayRunner.ts</code><br><small style="color:var(--muted)">src/hooks/useReplayRunner.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>ManagerDecision node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>ManagerDecisionItem</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>portfolioManager.ts</code><br><small style="color:var(--muted)">src/competition/portfolioManager.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>ManagerDecisionItem node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>MarketCategory</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>competitionScorer.ts</code><br><small style="color:var(--muted)">src/competition/competitionScorer.ts</small><br><code>portfolioStore.ts</code><br><small style="color:var(--muted)">src/competition/portfolioStore.ts</small><br><code>proposalEngine.ts</code><br><small style="color:var(--muted)">src/competition/proposalEngine.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>MarketCategory node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>NoTradeDecision</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>competitionEngine.ts</code><br><small style="color:var(--muted)">src/competition/competitionEngine.ts</small><br><code>portfolioStore.ts</code><br><small style="color:var(--muted)">src/competition/portfolioStore.ts</small><br><code>proposalEngine.ts</code><br><small style="color:var(--muted)">src/competition/proposalEngine.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>NoTradeDecision node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>NoTradeReason</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>NoTradeReason node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>PositionThesis</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>portfolioStore.ts</code><br><small style="color:var(--muted)">src/competition/portfolioStore.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>PositionThesis node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>ProposedExperiment</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>coachEvaluator.ts</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>ProposedExperiment node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>RiskPlan</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>proposalEngine.ts</code><br><small style="color:var(--muted)">src/competition/proposalEngine.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>RiskPlan node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Season</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>seasonStore.ts</code><br><small style="color:var(--muted)">src/competition/seasonStore.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>Season node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>SeasonParticipant</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>SeasonParticipant node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>StructuredThesis</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>proposalEngine.ts</code><br><small style="color:var(--muted)">src/competition/proposalEngine.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>StructuredThesis node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>SystemEvent</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>CompetitionWorkspace.tsx</code><br><small style="color:var(--muted)">src/components/CompetitionWorkspace.tsx</small><br><code>eventBus.ts</code><br><small style="color:var(--muted)">src/competition/eventBus.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>SystemEvent node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>TradeProposal</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>competitionEngine.ts</code><br><small style="color:var(--muted)">src/competition/competitionEngine.ts</small><br><code>portfolioStore.ts</code><br><small style="color:var(--muted)">src/competition/portfolioStore.ts</small><br><code>proposalEngine.ts</code><br><small style="color:var(--muted)">src/competition/proposalEngine.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>TradeProposal node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>TraderPortfolio</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>coachEvaluator.ts</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small><br><code>portfolioStore.ts</code><br><small style="color:var(--muted)">src/competition/portfolioStore.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>TraderPortfolio node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>TraderPosition</code><br><small style="color:var(--muted)">src/competition/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>TraderPosition node in src/competition/types.ts.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>UseReplayRunnerResult</code><br><small style="color:var(--muted)">src/hooks/useReplayRunner.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>UseReplayRunnerResult node in src/hooks/useReplayRunner.ts.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>NormalizedMarketSnapshot</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>account.ts</code><br><small style="color:var(--muted)">src/paper/account.ts</small><br><code>competition.test.ts</code><br><small style="color:var(--muted)">src/__tests__/competition.test.ts</small><br><code>competitionEngine.ts</code><br><small style="color:var(--muted)">src/competition/competitionEngine.ts</small><br>+9 more</td>
+  <td>No direct outbound edge</td>
+  <td>NormalizedMarketSnapshot node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>approveExperiment()</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>competition.test.ts</code><br><small style="color:var(--muted)">src/__tests__/competition.test.ts</small><br><code>CompetitionWorkspace()</code><br><small style="color:var(--muted)">src/components/CompetitionWorkspace.tsx</small><br><code>CompetitionWorkspace.tsx</code><br><small style="color:var(--muted)">src/components/CompetitionWorkspace.tsx</small><br>+2 more</td>
+  <td><code>loadExperiments()</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small><br><code>saveExperiments()</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small></td>
+  <td>approveExperiment() node in src/competition/coachEvaluator.ts.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>evaluateTrader()</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>competition.test.ts</code><br><small style="color:var(--muted)">src/__tests__/competition.test.ts</small><br><code>CompetitorInspectorSection()</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small><br><code>NodeInspector.tsx</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
+  <td><code>loadExperiments()</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small><br><code>loadTraderPortfolio()</code><br><small style="color:var(--muted)">src/competition/portfolioStore.ts</small><br><code>saveExperiments()</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small></td>
+  <td>evaluateTrader() node in src/competition/coachEvaluator.ts.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>get</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>loadExperiments()</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>approveExperiment()</code><br><small style="color:var(--muted)">src/competition/coachEvaluator.ts</small><br><code>CompetitionWorkspace()</code><br><small style="color:var(--muted)">src/components/CompetitionWorkspace.tsx</small><br><code>CompetitionWorkspace.tsx</code><br><small style="color:var(--muted)">src/components/CompetitionWorkspace.tsx</small><br>+3 more</td>
   <td>No direct outbound edge</td>
-  <td>get node in project.</td>
+  <td>loadExperiments() node in src/competition/coachEvaluator.ts.</td>
 </tr>
 </table>
 
@@ -865,26 +871,31 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>docs/walkthrough.md</code></td><td>15 nodes</td></tr>
+      <tr><td><code>src/competition/types.ts</code></td><td>21 nodes</td></tr>
+<tr><td><code>docs/walkthrough.md</code></td><td>16 nodes</td></tr>
 <tr><td><code>README.md</code></td><td>11 nodes</td></tr>
-<tr><td><code>trading_app/main.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/competition/portfolioStore.ts</code></td><td>10 nodes</td></tr>
+<tr><td><code>src/competition/traderProfiles.ts</code></td><td>10 nodes</td></tr>
+<tr><td><code>src/competition/eventBus.ts</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/competition/portfolioManager.ts</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/competition/coachEvaluator.ts</code></td><td>5 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x24, references x3, explains x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x91, imports x83, calls x42, imports x41. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 4. Serving API ====== -->
 <h2 id="serve-api">4. Serving API</h2>
-<p>Serving API groups implementation around trading, app, api, services, mostly in trading_app/services/execution.py, trading_app/api/market.py, trading_app/services/market_data.py. This section covers 80 nodes and 115 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around trading, app, api, services, mostly in trading_app/services/execution.py, trading_app/models/portfolio.py, trading_app/api/market.py. This section covers 87 nodes and 134 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (80 nodes, 115 edges)
+    %% Section: Serving API (87 nodes, 134 edges)
     subgraph serve_api_trading_app_services_execution_py_8aaea375["trading_app/services/execution.py"]
         trading_app_services_execution_executionservice_7c027033("ExecutionService<br/><small>trading_app/services/execution.py</small>")
         trading_app_services_execution_executionservice_d398077f("get_orders()<br/><small>trading_app/services/execution.py</small>")
@@ -894,23 +905,21 @@ flowchart LR
         trading_app_services_execution_executionservice_0005bd94("place_order()<br/><small>trading_app/services/execution.py</small>")
         trading_app_services_execution_executionservice_53df4112("_try_fill()<br/><small>trading_app/services/execution.py</small>")
     end
-    subgraph serve_api_trading_app_api_market_py_3d270471["trading_app/api/market.py"]
-        trading_app_api_market_d362693c("market.py")
-        trading_app_api_market_candles_b0e815c2("candles()<br/><small>trading_app/api/market.py</small>")
-        trading_app_api_market_quote_79121848("quote()<br/><small>trading_app/api/market.py</small>")
+    subgraph serve_api_trading_app_models_portfolio_py_5a2aa11d["trading_app/models/portfolio.py"]
+        trading_app_models_portfolio_portfoliostate_f710d873("PortfolioState<br/><small>trading_app/models/portfolio.py</small>")
+        trading_app_models_portfolio_portfoliostate_tota_b4976652("total_market_value()<br/><small>trading_app/models/portfolio.py</small>")
+        trading_app_models_portfolio_portfoliostate_tota_709cc31b("total_equity()<br/><small>trading_app/models/portfolio.py</small>")
+        trading_app_models_portfolio_portfoliostate_tota_3864e038("total_unrealized_pnl()<br/><small>trading_app/models/portfolio.py</small>")
     end
     subgraph serve_api_trading_app_models_order_py_180e9522["trading_app/models/order.py"]
         trading_app_models_order_order_6f1ec358("Order<br/><small>trading_app/models/order.py</small>")
         trading_app_models_order_order_is_complete_f50f1a2d("is_complete()<br/><small>trading_app/models/order.py</small>")
     end
-    subgraph serve_api_trading_app_services_market_data_py_d4b7a389["trading_app/services/market_data.py"]
-        trading_app_services_market_data_get_candles_fe89d600("get_candles()<br/><small>trading_app/services/market_data.py</small>")
-        trading_app_services_market_data_get_quote_f433be9e("get_quote()<br/><small>trading_app/services/market_data.py</small>")
-    end
+    tests_test_portfolio_ee98ee7c("test_portfolio.py")
     trading_app_api_backtest_d82cdc38("backtest.py")
-    trading_app_api_orders_2a1d3076("orders.py")
+    trading_app_api_market_d362693c("market.py")
     trading_app_api_router_b0983cb0("router.py")
-    trading_app_main_bc4e69ea("main.py")
+    trading_app_services_portfolio_5b8c6f32("portfolio.py")
     trading_app_models_order_order_6f1ec358 -->|method| trading_app_models_order_order_is_complete_f50f1a2d
     trading_app_services_execution_executionservice_7c027033 -->|method| trading_app_services_execution_executionservice_d398077f
     trading_app_services_execution_executionservice_7c027033 -->|method| trading_app_services_execution_executionservice_c703f2e8
@@ -918,22 +927,21 @@ flowchart LR
     trading_app_services_execution_executionservice_7c027033 -->|method| trading_app_services_execution_executionservice_531ddb5d
     trading_app_services_execution_executionservice_7c027033 -->|method| trading_app_services_execution_executionservice_0005bd94
     trading_app_services_execution_executionservice_7c027033 -->|method| trading_app_services_execution_executionservice_53df4112
-    trading_app_api_market_candles_b0e815c2 -->|calls| trading_app_services_market_data_get_candles_fe89d600
-    trading_app_api_market_quote_79121848 -->|calls| trading_app_services_market_data_get_quote_f433be9e
+    trading_app_models_portfolio_portfoliostate_f710d873 -->|method| trading_app_models_portfolio_portfoliostate_tota_b4976652
+    trading_app_models_portfolio_portfoliostate_f710d873 -->|method| trading_app_models_portfolio_portfoliostate_tota_709cc31b
+    trading_app_models_portfolio_portfoliostate_f710d873 -->|method| trading_app_models_portfolio_portfoliostate_tota_3864e038
     trading_app_services_execution_executionservice_0005bd94 -->|calls| trading_app_services_execution_executionservice_53df4112
-    trading_app_services_execution_executionservice_53df4112 -->|calls| trading_app_services_market_data_get_quote_f433be9e
     trading_app_services_execution_executionservice_53df4112 -->|calls| trading_app_services_execution_executionservice_564bac8f
     trading_app_services_execution_executionservice_53df4112 -->|calls| trading_app_services_execution_executionservice_531ddb5d
-    trading_app_api_market_d362693c -->|imports| trading_app_services_market_data_get_candles_fe89d600
-    trading_app_api_market_d362693c -->|imports| trading_app_services_market_data_get_quote_f433be9e
-    trading_app_api_orders_2a1d3076 -->|imports| trading_app_models_order_order_6f1ec358
     trading_app_api_router_b0983cb0 -->|imports| trading_app_api_backtest_d82cdc38
     trading_app_api_router_b0983cb0 -->|imports| trading_app_api_market_d362693c
-    trading_app_api_router_b0983cb0 -->|imports| trading_app_api_orders_2a1d3076
-    trading_app_main_bc4e69ea -->|imports| trading_app_api_router_b0983cb0
-    trading_app_api_backtest_d82cdc38 -->|imports| trading_app_services_market_data_get_candles_fe89d600
+    tests_test_portfolio_ee98ee7c -->|imports| trading_app_models_order_order_6f1ec358
+    tests_test_portfolio_ee98ee7c -->|imports| trading_app_models_portfolio_portfoliostate_f710d873
+    tests_test_portfolio_ee98ee7c -->|imports| trading_app_services_portfolio_5b8c6f32
+    trading_app_services_portfolio_5b8c6f32 -->|imports| trading_app_models_portfolio_portfoliostate_f710d873
+    trading_app_services_portfolio_5b8c6f32 -->|imports| trading_app_models_order_order_6f1ec358
     trading_app_services_execution_executionservice_7c027033 -->|uses| trading_app_models_order_order_6f1ec358
-    %% Omitted for readability: 62 nodes, 0 edges
+    %% Omitted for readability: 69 nodes, 0 edges
     class trading_app_services_execution_executionservice_7c027033 klass;
     class trading_app_services_execution_executionservice_d398077f function;
     class trading_app_services_execution_executionservice_c703f2e8 function;
@@ -941,17 +949,17 @@ flowchart LR
     class trading_app_services_execution_executionservice_531ddb5d function;
     class trading_app_services_execution_executionservice_0005bd94 function;
     class trading_app_services_execution_executionservice_53df4112 function;
-    class trading_app_api_market_d362693c module;
-    class trading_app_api_market_candles_b0e815c2 function;
-    class trading_app_api_market_quote_79121848 function;
+    class trading_app_models_portfolio_portfoliostate_f710d873 klass;
+    class trading_app_models_portfolio_portfoliostate_tota_b4976652 function;
+    class trading_app_models_portfolio_portfoliostate_tota_709cc31b function;
+    class trading_app_models_portfolio_portfoliostate_tota_3864e038 function;
     class trading_app_models_order_order_6f1ec358 klass;
     class trading_app_models_order_order_is_complete_f50f1a2d function;
-    class trading_app_services_market_data_get_candles_fe89d600 function;
-    class trading_app_services_market_data_get_quote_f433be9e function;
+    class tests_test_portfolio_ee98ee7c test;
     class trading_app_api_backtest_d82cdc38 test;
-    class trading_app_api_orders_2a1d3076 module;
+    class trading_app_api_market_d362693c module;
     class trading_app_api_router_b0983cb0 api;
-    class trading_app_main_bc4e69ea module;
+    class trading_app_services_portfolio_5b8c6f32 module;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1221,37 +1229,38 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>trading_app/services/execution.py</code></td><td>13 nodes</td></tr>
+<tr><td><code>trading_app/models/portfolio.py</code></td><td>10 nodes</td></tr>
 <tr><td><code>trading_app/api/market.py</code></td><td>8 nodes</td></tr>
 <tr><td><code>trading_app/services/market_data.py</code></td><td>8 nodes</td></tr>
 <tr><td><code>trading_app/api/orders.py</code></td><td>7 nodes</td></tr>
 <tr><td><code>trading_app/models/order.py</code></td><td>6 nodes</td></tr>
 <tr><td><code>trading_app/api/backtest.py</code></td><td>5 nodes</td></tr>
 <tr><td><code>trading_app/api/portfolio.py</code></td><td>4 nodes</td></tr>
-<tr><td><code>trading_app/core/config.py</code></td><td>4 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: explains x30, imports x21, references x13, contains x13. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x36, imports x26, references x13, imports x13. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 5. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">5. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, trading, app, tests, mostly in tests/test_api.py, src/workflow/types.ts, tests/test_strategies.py. This section covers 341 nodes and 836 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, tests, paper, workflow, mostly in tests/test_api.py, src/paper/account.ts, tests/test_strategies.py. This section covers 258 nodes and 585 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (341 nodes, 836 edges)
-    subgraph tests_fixtures_trading_app_services_portfolio_py_18af45ef["trading_app/services/portfolio.py"]
-        trading_app_services_portfolio_portfolioservice_32794f49("PortfolioService<br/><small>trading_app/services/portfolio.py</small>")
-        trading_app_services_portfolio_portfolioservice_fde7f979("update_prices()<br/><small>trading_app/services/portfolio.py</small>")
-        trading_app_services_portfolio_portfolioservice_202b22db("__init__()<br/><small>trading_app/services/portfolio.py</small>")
-        trading_app_services_portfolio_portfolioservice_313c6ee6("can_buy()<br/><small>trading_app/services/portfolio.py</small>")
-        trading_app_services_portfolio_portfolioservice_7cba8944("can_sell()<br/><small>trading_app/services/portfolio.py</small>")
-        trading_app_services_portfolio_portfolioservice_afb6fb66("apply_fill()<br/><small>trading_app/services/portfolio.py</small>")
+    %% Section: Tests &amp; Fixtures (258 nodes, 585 edges)
+    subgraph tests_fixtures_tests_test_strategies_py_233c02a7["tests/test_strategies.py"]
+        tests_test_strategies_testsmacrossstrategy_f15ebacd("TestSMACrossStrategy<br/><small>tests/test_strategies.py</small>")
+        tests_test_strategies_testsmacrossstrategy_test_26a48649("test_insufficient_data_returns_hold()<br/><small>tests/test_strategies.py</small>")
+        tests_test_strategies_testsmacrossstrategy_test_5a96e7ef("test_golden_cross_returns_buy()<br/><small>tests/test_strategies.py</small>")
+        tests_test_strategies_testsmacrossstrategy_test_b4687635("test_death_cross_returns_sell()<br/><small>tests/test_strategies.py</small>")
+        tests_test_strategies_testsmacrossstrategy_test_9ccfdc58("test_flat_market_returns_hold()<br/><small>tests/test_strategies.py</small>")
+        tests_test_strategies_testsmacrossstrategy_test_cb09a419("test_invalid_windows_raises()<br/><small>tests/test_strategies.py</small>")
+        tests_test_strategies_testsmacrossstrategy_test_8adf8b9b("test_strategy_name()<br/><small>tests/test_strategies.py</small>")
     end
     subgraph tests_fixtures_src_workflow_adapter_ts_3e0bb1f1["src/workflow/adapter.ts"]
         src_workflow_adapter_mockexecutionadapter_5594d7a9("MockExecutionAdapter<br/><small>src/workflow/adapter.ts</small>")
@@ -1266,30 +1275,31 @@ flowchart LR
     src_paper_usepapertrading_5815feb9("usePaperTrading.ts")
     src_workflow_runner_4b2eb836("runner.ts")
     src_workflow_stages_523aa516("stages.ts")
-    tests_test_portfolio_testportfolioservice_312cca11("TestPortfolioService<br/><small>tests/test_portfolio.py</small>")
     src_workflow_adapter_mockexecutionadapter_5594d7a9 -->|method| src_workflow_adapter_mockexecutionadapter_callco_a05e8e0f
     src_workflow_adapter_mockexecutionadapter_5594d7a9 -->|method| src_workflow_adapter_mockexecutionadapter_orders_6df02410
     src_workflow_adapter_mockexecutionadapter_5594d7a9 -->|method| src_workflow_adapter_mockexecutionadapter_submit_5974d1ac
     src_workflow_adapter_mockexecutionadapter_5594d7a9 -->|method| src_workflow_adapter_mockexecutionadapter_reset_fc05ef51
-    trading_app_services_portfolio_portfolioservice_32794f49 -->|method| trading_app_services_portfolio_portfolioservice_fde7f979
-    trading_app_services_portfolio_portfolioservice_32794f49 -->|method| trading_app_services_portfolio_portfolioservice_202b22db
-    trading_app_services_portfolio_portfolioservice_32794f49 -->|method| trading_app_services_portfolio_portfolioservice_313c6ee6
-    trading_app_services_portfolio_portfolioservice_32794f49 -->|method| trading_app_services_portfolio_portfolioservice_7cba8944
-    trading_app_services_portfolio_portfolioservice_32794f49 -->|method| trading_app_services_portfolio_portfolioservice_afb6fb66
+    tests_test_strategies_testsmacrossstrategy_f15ebacd -->|method| tests_test_strategies_testsmacrossstrategy_test_26a48649
+    tests_test_strategies_testsmacrossstrategy_f15ebacd -->|method| tests_test_strategies_testsmacrossstrategy_test_5a96e7ef
+    tests_test_strategies_testsmacrossstrategy_f15ebacd -->|method| tests_test_strategies_testsmacrossstrategy_test_b4687635
+    tests_test_strategies_testsmacrossstrategy_f15ebacd -->|method| tests_test_strategies_testsmacrossstrategy_test_9ccfdc58
+    tests_test_strategies_testsmacrossstrategy_f15ebacd -->|method| tests_test_strategies_testsmacrossstrategy_test_cb09a419
+    tests_test_strategies_testsmacrossstrategy_f15ebacd -->|method| tests_test_strategies_testsmacrossstrategy_test_8adf8b9b
+    src_tests_agents_test_9e563ebb -->|imports| src_workflow_runner_4b2eb836
     src_tests_replay_test_b8dac025 -->|imports| src_workflow_adapter_mockexecutionadapter_5594d7a9
     src_tests_replay_test_b8dac025 -->|imports| src_workflow_runner_4b2eb836
     src_tests_replay_test_b8dac025 -->|imports| src_workflow_stages_523aa516
     src_workflow_runner_4b2eb836 -->|imports| src_workflow_adapter_mockexecutionadapter_5594d7a9
     src_workflow_runner_4b2eb836 -->|imports| src_workflow_stages_523aa516
     src_workflow_stages_523aa516 -->|imports| src_workflow_adapter_mockexecutionadapter_5594d7a9
-    src_tests_agents_test_9e563ebb -->|imports| src_workflow_runner_4b2eb836
-    %% Omitted for readability: 323 nodes, 0 edges
-    class trading_app_services_portfolio_portfolioservice_32794f49 klass;
-    class trading_app_services_portfolio_portfolioservice_fde7f979 function;
-    class trading_app_services_portfolio_portfolioservice_202b22db function;
-    class trading_app_services_portfolio_portfolioservice_313c6ee6 function;
-    class trading_app_services_portfolio_portfolioservice_7cba8944 function;
-    class trading_app_services_portfolio_portfolioservice_afb6fb66 function;
+    %% Omitted for readability: 240 nodes, 0 edges
+    class tests_test_strategies_testsmacrossstrategy_f15ebacd test;
+    class tests_test_strategies_testsmacrossstrategy_test_26a48649 test;
+    class tests_test_strategies_testsmacrossstrategy_test_5a96e7ef test;
+    class tests_test_strategies_testsmacrossstrategy_test_b4687635 test;
+    class tests_test_strategies_testsmacrossstrategy_test_9ccfdc58 test;
+    class tests_test_strategies_testsmacrossstrategy_test_cb09a419 test;
+    class tests_test_strategies_testsmacrossstrategy_test_8adf8b9b test;
     class src_workflow_adapter_mockexecutionadapter_5594d7a9 klass;
     class src_workflow_adapter_mockexecutionadapter_callco_a05e8e0f function;
     class src_workflow_adapter_mockexecutionadapter_orders_6df02410 function;
@@ -1301,7 +1311,6 @@ flowchart LR
     class src_paper_usepapertrading_5815feb9 ui;
     class src_workflow_runner_4b2eb836 module;
     class src_workflow_stages_523aa516 module;
-    class tests_test_portfolio_testportfolioservice_312cca11 test;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1325,6 +1334,38 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
+  <td><code>AgentLearningStats</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>agentRegistry.ts</code><br><small style="color:var(--muted)">src/agents/agentRegistry.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>AgentLearningStats node in src/agents/types.ts.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>AgentParameters</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AgentParameters node in src/agents/types.ts.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>AgentSkillDefinition</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>agentRegistry.ts</code><br><small style="color:var(--muted)">src/agents/agentRegistry.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>AgentSkillDefinition node in src/agents/types.ts.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>EpisodicMemoryItem</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>memoryStore.ts</code><br><small style="color:var(--muted)">src/agents/memoryStore.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>EpisodicMemoryItem node in src/agents/types.ts.</td>
+</tr>
+<tr>
+  <td>5</td>
   <td><code>MemoryQueryOutput</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>memoryStore.ts</code><br><small style="color:var(--muted)">src/agents/memoryStore.ts</small><br><code>runner.ts</code><br><small style="color:var(--muted)">src/workflow/runner.ts</small><br><code>stages.ts</code><br><small style="color:var(--muted)">src/workflow/stages.ts</small></td>
@@ -1332,7 +1373,15 @@ flowchart LR
   <td>MemoryQueryOutput node in src/agents/types.ts.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>6</td>
+  <td><code>MemoryRelevanceTag</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>MemoryRelevanceTag node in src/agents/types.ts.</td>
+</tr>
+<tr>
+  <td>7</td>
   <td><code>SkillExecutionOutput</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>runner.ts</code><br><small style="color:var(--muted)">src/workflow/runner.ts</small><br><code>stages.ts</code><br><small style="color:var(--muted)">src/workflow/stages.ts</small></td>
@@ -1340,111 +1389,55 @@ flowchart LR
   <td>SkillExecutionOutput node in src/agents/types.ts.</td>
 </tr>
 <tr>
-  <td>3</td>
-  <td><code>ActivityStripProps</code><br><small style="color:var(--muted)">src/components/ActivityStrip.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ActivityStripProps node in src/components/ActivityStrip.tsx.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>BottomCommandStripProps</code><br><small style="color:var(--muted)">src/components/BottomCommandStrip.tsx</small></td>
-  <td><span class="tag tag-cmd">Entry</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>BottomCommandStripProps node in src/components/BottomCommandStrip.tsx.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>EventTimelineProps</code><br><small style="color:var(--muted)">src/components/EventTimeline.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>EventTimelineProps node in src/components/EventTimeline.tsx.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>NodeInspectorProps</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>NodeInspectorProps node in src/components/NodeInspector.tsx.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>TraceSectionProps</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>TraceSectionProps node in src/components/NodeInspector.tsx.</td>
-</tr>
-<tr>
   <td>8</td>
-  <td><code>AgentFlowNode</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
+  <td><code>StrategyType</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>AgentStudioModal.tsx</code><br><small style="color:var(--muted)">src/components/AgentStudioModal.tsx</small></td>
   <td>No direct outbound edge</td>
-  <td>AgentFlowNode node in src/hooks/useDemoRunner.ts.</td>
+  <td>StrategyType node in src/agents/types.ts.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>UseDemoRunnerOptions</code><br><small style="color:var(--muted)">src/hooks/useDemoRunner.ts</small></td>
+  <td><code>TradingAgentProfile</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>agentRegistry.ts</code><br><small style="color:var(--muted)">src/agents/agentRegistry.ts</small><br><code>agents.test.ts</code><br><small style="color:var(--muted)">src/__tests__/agents.test.ts</small><br><code>AgentStudioModal.tsx</code><br><small style="color:var(--muted)">src/components/AgentStudioModal.tsx</small><br>+7 more</td>
   <td>No direct outbound edge</td>
-  <td>UseDemoRunnerOptions node in src/hooks/useDemoRunner.ts.</td>
+  <td>TradingAgentProfile node in src/agents/types.ts.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>UseReplayRunnerResult</code><br><small style="color:var(--muted)">src/hooks/useReplayRunner.ts</small></td>
+  <td><code>TradingAgentRole</code><br><small style="color:var(--muted)">src/agents/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>UseReplayRunnerResult node in src/hooks/useReplayRunner.ts.</td>
+  <td>TradingAgentRole node in src/agents/types.ts.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>ActivityEvent</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>ActivityStrip.tsx</code><br><small style="color:var(--muted)">src/components/ActivityStrip.tsx</small><br><code>BottomCommandStrip.tsx</code><br><small style="color:var(--muted)">src/components/BottomCommandStrip.tsx</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small><br>+1 more</td>
+  <td><code>AgentStudioModalProps</code><br><small style="color:var(--muted)">src/components/AgentStudioModal.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>ActivityEvent node in src/types/index.ts.</td>
+  <td>AgentStudioModalProps node in src/components/AgentStudioModal.tsx.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>AgentNodeData</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>AgentNode.tsx</code><br><small style="color:var(--muted)">src/components/AgentNode.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>graphData.ts</code><br><small style="color:var(--muted)">src/data/graphData.ts</small><br>+4 more</td>
+  <td><code>StudioTab</code><br><small style="color:var(--muted)">src/components/AgentStudioModal.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>AgentNodeData node in src/types/index.ts.</td>
+  <td>StudioTab node in src/components/AgentStudioModal.tsx.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>EdgeKind</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>EdgeKind node in src/types/index.ts.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>NodeStatus</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>AgentNode.tsx</code><br><small style="color:var(--muted)">src/components/AgentNode.tsx</small><br><code>graphData.ts</code><br><small style="color:var(--muted)">src/data/graphData.ts</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small></td>
-  <td>No direct outbound edge</td>
-  <td>NodeStatus node in src/types/index.ts.</td>
-</tr>
-<tr>
-  <td>15</td>
   <td><code>MockExecutionAdapter</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>freshAdapter()</code><br><small style="color:var(--muted)">src/__tests__/workflow.test.ts</small><br><code>freshAdapter()</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small><br><code>replay.test.ts</code><br><small style="color:var(--muted)">src/__tests__/replay.test.ts</small><br>+3 more</td>
+  <td><code>freshAdapter()</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small><br><code>freshAdapter()</code><br><small style="color:var(--muted)">src/__tests__/workflow.test.ts</small><br><code>replay.test.ts</code><br><small style="color:var(--muted)">src/__tests__/replay.test.ts</small><br>+3 more</td>
   <td><code>callCount()</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small><br><code>orders()</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small><br><code>reset()</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small><br>+1 more</td>
   <td>MockExecutionAdapter node in src/workflow/adapter.ts.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>14</td>
   <td><code>AgentFlowNode</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1452,7 +1445,7 @@ flowchart LR
   <td>AgentFlowNode node in src/workflow/replay.ts.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>15</td>
   <td><code>NodePointInTimeTrace</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1460,7 +1453,7 @@ flowchart LR
   <td>NodePointInTimeTrace node in src/workflow/replay.ts.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>16</td>
   <td><code>RiskDecisionBreakdown</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>NodeInspector.tsx</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small></td>
@@ -1468,7 +1461,7 @@ flowchart LR
   <td>RiskDecisionBreakdown node in src/workflow/replay.ts.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>17</td>
   <td><code>AnalystOutput</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>stages.ts</code><br><small style="color:var(--muted)">src/workflow/stages.ts</small></td>
@@ -1476,7 +1469,7 @@ flowchart LR
   <td>Orchestrates analysis and returns structured documentation data.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>18</td>
   <td><code>Approval</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>adapter.ts</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small><br><code>paperTraceBridge.ts</code><br><small style="color:var(--muted)">src/paper/paperTraceBridge.ts</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small><br>+1 more</td>
@@ -1484,7 +1477,7 @@ flowchart LR
   <td>Approval node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>19</td>
   <td><code>EvaluationCheck</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>NodeInspector.tsx</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small><br><code>paperTraceBridge.ts</code><br><small style="color:var(--muted)">src/paper/paperTraceBridge.ts</small><br><code>stages.ts</code><br><small style="color:var(--muted)">src/workflow/stages.ts</small></td>
@@ -1492,7 +1485,7 @@ flowchart LR
   <td>EvaluationCheck node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>20</td>
   <td><code>EvaluationOutput</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>memoryStore.ts</code><br><small style="color:var(--muted)">src/agents/memoryStore.ts</small><br><code>paperTraceBridge.ts</code><br><small style="color:var(--muted)">src/paper/paperTraceBridge.ts</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small><br>+1 more</td>
@@ -1500,7 +1493,7 @@ flowchart LR
   <td>EvaluationOutput node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>21</td>
   <td><code>ExecutionOutput</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>memoryStore.ts</code><br><small style="color:var(--muted)">src/agents/memoryStore.ts</small><br><code>runner.ts</code><br><small style="color:var(--muted)">src/workflow/runner.ts</small><br><code>stages.ts</code><br><small style="color:var(--muted)">src/workflow/stages.ts</small></td>
@@ -1508,7 +1501,7 @@ flowchart LR
   <td>ExecutionOutput node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>22</td>
   <td><code>MarketFeedOutput</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>stages.ts</code><br><small style="color:var(--muted)">src/workflow/stages.ts</small></td>
@@ -1516,7 +1509,7 @@ flowchart LR
   <td>MarketFeedOutput node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>23</td>
   <td><code>MockOrder</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>adapter.ts</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small></td>
@@ -1524,7 +1517,7 @@ flowchart LR
   <td>MockOrder node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>24</td>
   <td><code>PipelineInput</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>runner.ts</code><br><small style="color:var(--muted)">src/workflow/runner.ts</small><br><code>scenarios.ts</code><br><small style="color:var(--muted)">src/workflow/scenarios.ts</small></td>
@@ -1532,7 +1525,7 @@ flowchart LR
   <td>PipelineInput node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>25</td>
   <td><code>RiskOutput</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>memoryStore.ts</code><br><small style="color:var(--muted)">src/agents/memoryStore.ts</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small><br><code>stages.ts</code><br><small style="color:var(--muted)">src/workflow/stages.ts</small></td>
@@ -1540,7 +1533,7 @@ flowchart LR
   <td>RiskOutput node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>26</td>
   <td><code>RuleVerdict</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small></td>
@@ -1548,20 +1541,36 @@ flowchart LR
   <td>RuleVerdict node in src/workflow/types.ts.</td>
 </tr>
 <tr>
-  <td>29</td>
-  <td><code>RunRecord</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
+  <td>27</td>
+  <td><code>Signal</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>BottomCommandStrip.tsx</code><br><small style="color:var(--muted)">src/components/BottomCommandStrip.tsx</small><br><code>EventTimeline.tsx</code><br><small style="color:var(--muted)">src/components/EventTimeline.tsx</small><br><code>NodeInspector.tsx</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small><br>+8 more</td>
+  <td><code>stages.ts</code><br><small style="color:var(--muted)">src/workflow/stages.ts</small></td>
   <td>No direct outbound edge</td>
-  <td>RunRecord node in src/workflow/types.ts.</td>
+  <td>Signal node in src/workflow/types.ts.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>StrategyOutput</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>adapter.ts</code><br><small style="color:var(--muted)">src/workflow/adapter.ts</small><br><code>portfolioManager.ts</code><br><small style="color:var(--muted)">src/competition/portfolioManager.ts</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>StrategyOutput node in src/workflow/types.ts.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>TraceEvent</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>NodeInspector.tsx</code><br><small style="color:var(--muted)">src/components/NodeInspector.tsx</small><br><code>paperTraceBridge.ts</code><br><small style="color:var(--muted)">src/paper/paperTraceBridge.ts</small><br><code>replay.ts</code><br><small style="color:var(--muted)">src/workflow/replay.ts</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>TraceEvent node in src/workflow/types.ts.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>ScenarioKey</code><br><small style="color:var(--muted)">src/workflow/types.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>scenarios.ts</code><br><small style="color:var(--muted)">src/workflow/scenarios.ts</small><br><code>TopBar.tsx</code><br><small style="color:var(--muted)">src/components/TopBar.tsx</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>ScenarioKey node in src/workflow/types.ts.</td>
+  <td><code>createCustomAgent()</code><br><small style="color:var(--muted)">src/agents/agentRegistry.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>agents.test.ts</code><br><small style="color:var(--muted)">src/__tests__/agents.test.ts</small><br><code>AgentStudioModal()</code><br><small style="color:var(--muted)">src/components/AgentStudioModal.tsx</small><br><code>AgentStudioModal.tsx</code><br><small style="color:var(--muted)">src/components/AgentStudioModal.tsx</small></td>
+  <td><code>loadCustomAgents()</code><br><small style="color:var(--muted)">src/agents/agentRegistry.ts</small><br><code>saveCustomAgents()</code><br><small style="color:var(--muted)">src/agents/agentRegistry.ts</small></td>
+  <td>createCustomAgent() node in src/agents/agentRegistry.ts.</td>
 </tr>
 </table>
 
@@ -1571,24 +1580,340 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>tests/test_api.py</code></td><td>18 nodes</td></tr>
-<tr><td><code>src/workflow/types.ts</code></td><td>17 nodes</td></tr>
-<tr><td><code>tests/test_portfolio.py</code></td><td>16 nodes</td></tr>
+<tr><td><code>src/paper/account.ts</code></td><td>16 nodes</td></tr>
 <tr><td><code>tests/test_strategies.py</code></td><td>16 nodes</td></tr>
-<tr><td><code>src/paper/account.ts</code></td><td>15 nodes</td></tr>
-<tr><td><code>src/paper/types.ts</code></td><td>14 nodes</td></tr>
+<tr><td><code>src/workflow/types.ts</code></td><td>14 nodes</td></tr>
+<tr><td><code>tests/test_portfolio.py</code></td><td>14 nodes</td></tr>
+<tr><td><code>src/paper/types.ts</code></td><td>13 nodes</td></tr>
 <tr><td><code>trading_app/services/portfolio.py</code></td><td>13 nodes</td></tr>
-<tr><td><code>src/agents/agentRegistry.ts</code></td><td>12 nodes</td></tr>
+<tr><td><code>src/agents/agentRegistry.ts</code></td><td>11 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: imports x231, contains x188, calls x126, imports x126. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x159, contains x137, calls x115, imports x73. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 6. app.js ====== -->
-<h2 id="app-js">6. app.js</h2>
+<!-- ====== 6. Candle ====== -->
+<h2 id="candle">6. Candle</h2>
+<p>Candle groups implementation around trading, app, services, strategies, mostly in trading_app/models/market_data.py, services/strategies/base.py, trading_app/services/backtest.py. This section covers 25 nodes and 39 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Candle (25 nodes, 39 edges)
+    subgraph candle_services_strategies_base_py_2f041fb4["services/strategies/base.py"]
+        trading_app_services_strategies_base_a57e70f9("base.py")
+        trading_app_services_strategies_base_basestrateg_4d32be01("BaseStrategy<br/><small>services/strategies/base.py</small>")
+        trading_app_services_strategies_base_basestrateg_27d9a74f("name()<br/><small>services/strategies/base.py</small>")
+        trading_app_services_strategies_base_basestrateg_41090dee("generate_signal()<br/><small>services/strategies/base.py</small>")
+        trading_app_services_strategies_base_rationale_1_4eb440de("Abstract base class for all trading str...<br/><small>services/strategies/base.py</small>")
+        trading_app_services_strategies_base_rationale_1_d9b5fd76("Base strategy interface for Trading App...<br/><small>services/strategies/base.py</small>")
+        trading_app_services_strategies_base_rationale_2_78538b25("Generate a trading signal from a list o...<br/><small>services/strategies/base.py</small>")
+        trading_app_services_strategies_base_rationale_2_0fe099cf("Human-readable strategy name.<br/><small>services/strategies/base.py</small>")
+    end
+    subgraph candle_trading_app_models_market_data_py_6f068e0a["trading_app/models/market_data.py"]
+        trading_app_models_market_data_candle_44d6866f("Candle<br/><small>trading_app/models/market_data.py</small>")
+        trading_app_models_market_data_candle_body_size_25441c2a("body_size()<br/><small>trading_app/models/market_data.py</small>")
+        trading_app_models_market_data_candle_is_bullish_c3a5ef0c("is_bullish()<br/><small>trading_app/models/market_data.py</small>")
+        trading_app_models_market_data_58ac9b1f("market_data.py")
+    end
+    subgraph candle_External_generated_233bfbe7["External / generated"]
+        math_7a488390("math")
+        abc_a9993e36("ABC")
+        trading_app_models_market_data_py_basemodel_eb482616("BaseModel")
+    end
+    trading_app_services_strategies_rsi_0c8200af("rsi.py")
+    trading_app_services_strategies_sma_cross_d39c2b77("sma_cross.py")
+    trading_app_services_backtest_974a220a("backtest.py")
+    trading_app_models_market_data_candle_44d6866f -->|method| trading_app_models_market_data_candle_body_size_25441c2a
+    trading_app_models_market_data_candle_44d6866f -->|method| trading_app_models_market_data_candle_is_bullish_c3a5ef0c
+    trading_app_services_strategies_base_basestrateg_4d32be01 -->|method| trading_app_services_strategies_base_basestrateg_27d9a74f
+    trading_app_services_strategies_base_basestrateg_4d32be01 -->|method| trading_app_services_strategies_base_basestrateg_41090dee
+    trading_app_services_backtest_974a220a -->|imports| trading_app_models_market_data_candle_44d6866f
+    trading_app_services_backtest_974a220a -->|imports| trading_app_services_strategies_base_basestrateg_4d32be01
+    trading_app_services_backtest_974a220a -->|imports| math_7a488390
+    trading_app_services_backtest_974a220a -->|imports| trading_app_models_market_data_58ac9b1f
+    trading_app_services_backtest_974a220a -->|imports| trading_app_services_strategies_base_a57e70f9
+    trading_app_services_backtest_974a220a -->|imports| trading_app_services_strategies_sma_cross_d39c2b77
+    trading_app_services_backtest_974a220a -->|imports| trading_app_services_strategies_rsi_0c8200af
+    trading_app_services_strategies_base_a57e70f9 -->|imports| trading_app_models_market_data_candle_44d6866f
+    trading_app_services_strategies_base_a57e70f9 -->|imports| abc_a9993e36
+    trading_app_services_strategies_base_a57e70f9 -->|imports| trading_app_models_market_data_58ac9b1f
+    trading_app_services_strategies_rsi_0c8200af -->|imports| trading_app_models_market_data_candle_44d6866f
+    trading_app_services_strategies_rsi_0c8200af -->|imports| trading_app_services_strategies_base_basestrateg_4d32be01
+    trading_app_services_strategies_rsi_0c8200af -->|imports| trading_app_models_market_data_58ac9b1f
+    trading_app_services_strategies_rsi_0c8200af -->|imports| trading_app_services_strategies_base_a57e70f9
+    trading_app_services_strategies_sma_cross_d39c2b77 -->|imports| trading_app_models_market_data_candle_44d6866f
+    trading_app_services_strategies_sma_cross_d39c2b77 -->|imports| trading_app_services_strategies_base_basestrateg_4d32be01
+    trading_app_services_strategies_sma_cross_d39c2b77 -->|imports| trading_app_models_market_data_58ac9b1f
+    trading_app_services_strategies_sma_cross_d39c2b77 -->|imports| trading_app_services_strategies_base_a57e70f9
+    trading_app_services_strategies_base_basestrateg_4d32be01 -->|uses| trading_app_models_market_data_candle_44d6866f
+    %% Omitted for readability: 7 nodes, 0 edges
+    class trading_app_services_strategies_base_a57e70f9 module;
+    class trading_app_services_strategies_base_basestrateg_4d32be01 klass;
+    class trading_app_services_strategies_base_basestrateg_27d9a74f function;
+    class trading_app_services_strategies_base_basestrateg_41090dee function;
+    class trading_app_services_strategies_base_rationale_1_4eb440de concept;
+    class trading_app_services_strategies_base_rationale_1_d9b5fd76 concept;
+    class trading_app_services_strategies_base_rationale_2_78538b25 concept;
+    class trading_app_services_strategies_base_rationale_2_0fe099cf concept;
+    class trading_app_models_market_data_candle_44d6866f klass;
+    class trading_app_models_market_data_candle_body_size_25441c2a function;
+    class trading_app_models_market_data_candle_is_bullish_c3a5ef0c function;
+    class trading_app_models_market_data_58ac9b1f module;
+    class math_7a488390 function;
+    class abc_a9993e36 klass;
+    class trading_app_models_market_data_py_basemodel_eb482616 klass;
+    class trading_app_services_strategies_rsi_0c8200af module;
+    class trading_app_services_strategies_sma_cross_d39c2b77 module;
+    class trading_app_services_backtest_974a220a test;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>Candle</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>base.py</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>BaseStrategy</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br>+13 more</td>
+  <td><code>body_size()</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small><br><code>is_bullish()</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td>Candle node in trading_app/models/market_data.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>BaseStrategy</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>rsi.py</code><br><small style="color:var(--muted)">services/strategies/rsi.py</small><br><code>sma_cross.py</code><br><small style="color:var(--muted)">services/strategies/sma_cross.py</small></td>
+  <td><code>Candle</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small><br><code>generate_signal()</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>name()</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td>BaseStrategy node in services/strategies/base.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>.body_size()</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Candle</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.body_size() node in trading_app/models/market_data.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>.is_bullish()</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Candle</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.is_bullish() node in trading_app/models/market_data.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>.generate_signal()</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BaseStrategy</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.generate_signal() node in services/strategies/base.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>.name()</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BaseStrategy</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.name() node in services/strategies/base.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>ABC</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>base.py</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>ABC node in project.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>models/market_data.py</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>base.py</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>market.py</code><br><small style="color:var(--muted)">trading_app/api/market.py</small><br>+5 more</td>
+  <td><code>datetime</code><br><code>pydantic</code></td>
+  <td>Module file in trading_app/models/market_data.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>BaseModel</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>BaseModel node in project.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>services/backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/api/backtest.py</small><br><code>test_backtest.py</code><br><small style="color:var(--muted)">tests/test_backtest.py</small></td>
+  <td><code>base.py</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>BaseStrategy</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>Candle</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small><br>+9 more</td>
+  <td>Module file in trading_app/services/backtest.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>base.py</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>rsi.py</code><br><small style="color:var(--muted)">services/strategies/rsi.py</small><br><code>sma_cross.py</code><br><small style="color:var(--muted)">services/strategies/sma_cross.py</small></td>
+  <td><code>ABC</code><br><code>Candle</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small><br><code>market_data.py</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small><br>+1 more</td>
+  <td>Module file in services/strategies/base.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>rsi.py</code><br><small style="color:var(--muted)">services/strategies/rsi.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>test_strategies.py</code><br><small style="color:var(--muted)">tests/test_strategies.py</small></td>
+  <td><code>base.py</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>BaseStrategy</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>Candle</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small><br>+2 more</td>
+  <td>Module file in services/strategies/rsi.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>sma_cross.py</code><br><small style="color:var(--muted)">services/strategies/sma_cross.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>test_strategies.py</code><br><small style="color:var(--muted)">tests/test_strategies.py</small></td>
+  <td><code>base.py</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>BaseStrategy</code><br><small style="color:var(--muted)">services/strategies/base.py</small><br><code>Candle</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small><br>+2 more</td>
+  <td>Module file in services/strategies/sma_cross.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Market data models for Trading App.</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Market data models for Trading App..</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>OHLCV candlestick bar.</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for OHLCV candlestick bar..</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Return the absolute size of the candle body.</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Return the absolute size of the candle body..</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Return True if candle closed higher than it opened.</code><br><small style="color:var(--muted)">trading_app/models/market_data.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Return True if candle closed higher than it opened..</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Backtesting engine for Trading App strategies.</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Backtesting engine for Trading App strategies..</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Base strategy interface for Trading App strategies.</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Base strategy interface for Trading App strategies..</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Abstract base class for all trading strategies.</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Abstract base class for all trading strategies..</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Human-readable strategy name.</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Human-readable strategy name..</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Generate a trading signal from a list of candles. Args: candles: List of OHLCV…</code><br><small style="color:var(--muted)">services/strategies/base.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Generate a trading signal from a list of candles. Args: candles: List of OHLCV….</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>RSI mean reversion strategy.</code><br><small style="color:var(--muted)">services/strategies/rsi.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for RSI mean reversion strategy..</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>SMA (Simple Moving Average) crossover strategy.</code><br><small style="color:var(--muted)">services/strategies/sma_cross.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for SMA (Simple Moving Average) crossover strategy..</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>math</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>market_data.py</code><br><small style="color:var(--muted)">trading_app/services/market_data.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>math node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>trading_app/models/market_data.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>services/strategies/base.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>trading_app/services/backtest.py</code></td><td>2 nodes</td></tr>
+<tr><td><code>services/strategies/rsi.py</code></td><td>2 nodes</td></tr>
+<tr><td><code>services/strategies/sma_cross.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x11, imports x10, imports x8, method x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 7. app.js ====== -->
+<h2 id="app-js">7. app.js</h2>
 <p>app.js groups implementation around appjs, trading, app, static, mostly in trading_app/static/app.js. This section covers 14 nodes and 19 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1779,8 +2104,207 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 7. Position ====== -->
-<h2 id="position">7. Position</h2>
+<!-- ====== 8. order.py ====== -->
+<h2 id="order-py">8. order.py</h2>
+<p>order.py groups implementation around trading, app, models, orderpy, mostly in trading_app/models/order.py, trading_app/services/execution.py. This section covers 14 nodes and 20 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: order.py (14 nodes, 20 edges)
+    subgraph order_py_trading_app_models_order_py_17c65ce5["trading_app/models/order.py"]
+        trading_app_models_order_9d1f3788("order.py")
+        trading_app_models_order_orderstatus_199bc386("OrderStatus<br/><small>trading_app/models/order.py</small>")
+        trading_app_models_order_ordertype_22047607("OrderType<br/><small>trading_app/models/order.py</small>")
+        trading_app_models_order_orderside_62bd80f9("OrderSide<br/><small>trading_app/models/order.py</small>")
+        trading_app_models_order_rationale_14_6f11fc99("Direction of the order.<br/><small>trading_app/models/order.py</small>")
+        trading_app_models_order_rationale_20_0a591a02("Execution type of the order.<br/><small>trading_app/models/order.py</small>")
+        trading_app_models_order_rationale_27_c9028403("Lifecycle status of the order.<br/><small>trading_app/models/order.py</small>")
+        trading_app_models_order_rationale_1_b760c5e0("Order models for Trading App.<br/><small>trading_app/models/order.py</small>")
+    end
+    subgraph order_py_External_generated_bde25141["External / generated"]
+        uuid_48e3462c("uuid")
+        enum_e338e8e3("Enum")
+        random_a415ab5c("random")
+        str_3442496b("str")
+    end
+    subgraph order_py_trading_app_services_execution_py_3b67653f["trading_app/services/execution.py"]
+        trading_app_services_execution_b04f623e("execution.py")
+        trading_app_services_execution_rationale_1_c2bc7226("Execution engine — paper trading order...<br/><small>trading_app/services/execution.py</small>")
+    end
+    trading_app_models_order_9d1f3788 -->|imports| uuid_48e3462c
+    trading_app_models_order_9d1f3788 -->|imports| enum_e338e8e3
+    trading_app_services_execution_b04f623e -->|imports| trading_app_models_order_orderstatus_199bc386
+    trading_app_services_execution_b04f623e -->|imports| trading_app_models_order_ordertype_22047607
+    trading_app_services_execution_b04f623e -->|imports| random_a415ab5c
+    trading_app_services_execution_b04f623e -->|imports| trading_app_models_order_9d1f3788
+    class trading_app_models_order_9d1f3788 module;
+    class trading_app_models_order_orderstatus_199bc386 klass;
+    class trading_app_models_order_ordertype_22047607 klass;
+    class trading_app_models_order_orderside_62bd80f9 klass;
+    class trading_app_models_order_rationale_14_6f11fc99 concept;
+    class trading_app_models_order_rationale_20_0a591a02 concept;
+    class trading_app_models_order_rationale_27_c9028403 concept;
+    class trading_app_models_order_rationale_1_b760c5e0 concept;
+    class uuid_48e3462c function;
+    class enum_e338e8e3 klass;
+    class random_a415ab5c function;
+    class str_3442496b function;
+    class trading_app_services_execution_b04f623e module;
+    class trading_app_services_execution_rationale_1_c2bc7226 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>OrderSide</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>make_filled_order()</code><br><small style="color:var(--muted)">tests/test_portfolio.py</small><br><code>portfolio.py</code><br><small style="color:var(--muted)">trading_app/services/portfolio.py</small><br><code>PortfolioService</code><br><small style="color:var(--muted)">trading_app/services/portfolio.py</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>OrderSide node in trading_app/models/order.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>OrderStatus</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>execution.py</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small><br><code>ExecutionService</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small><br><code>make_filled_order()</code><br><small style="color:var(--muted)">tests/test_portfolio.py</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>OrderStatus node in trading_app/models/order.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>OrderType</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>execution.py</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small><br><code>ExecutionService</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small><br><code>make_filled_order()</code><br><small style="color:var(--muted)">tests/test_portfolio.py</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>OrderType node in trading_app/models/order.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Enum</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>order.py</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Enum node in project.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>str</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>str node in project.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>order.py</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>execution.py</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small><br><code>orders.py</code><br><small style="color:var(--muted)">trading_app/api/orders.py</small><br><code>portfolio.py</code><br><small style="color:var(--muted)">trading_app/services/portfolio.py</small><br>+1 more</td>
+  <td><code>datetime</code><br><code>Enum</code><br><code>pydantic</code><br>+2 more</td>
+  <td>Module file in trading_app/models/order.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>execution.py</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>orders.py</code><br><small style="color:var(--muted)">trading_app/api/orders.py</small></td>
+  <td><code>config.py</code><br><small style="color:var(--muted)">trading_app/core/config.py</small><br><code>datetime</code><br><code>get_quote()</code><br><small style="color:var(--muted)">trading_app/services/market_data.py</small><br>+9 more</td>
+  <td>Module file in trading_app/services/execution.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Order models for Trading App.</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Order models for Trading App..</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Direction of the order.</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Direction of the order..</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Execution type of the order.</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Execution type of the order..</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Lifecycle status of the order.</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Lifecycle status of the order..</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Execution engine — paper trading order matching and fills.</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Execution engine — paper trading order matching and fills..</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>random</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>execution.py</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small><br><code>market_data.py</code><br><small style="color:var(--muted)">trading_app/services/market_data.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>random node in project.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>uuid</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>order.py</code><br><small style="color:var(--muted)">trading_app/models/order.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>uuid node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>trading_app/models/order.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>trading_app/services/execution.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: inherits x6, explains x5, imports x4, contains x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 9. Position ====== -->
+<h2 id="position">9. Position</h2>
 <p>Position groups implementation around trading, app, portfoliopy, models, mostly in trading_app/models/portfolio.py, trading_app/services/portfolio.py. This section covers 13 nodes and 12 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1964,41 +2488,31 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 8. PortfolioState ====== -->
-<h2 id="portfoliostate">8. PortfolioState</h2>
-<p>PortfolioState groups implementation around trading, app, portfoliopy, models, mostly in trading_app/models/portfolio.py, trading_app/services/portfolio.py. This section covers 10 nodes and 9 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 10. config.py ====== -->
+<h2 id="config-py">10. config.py</h2>
+<p>config.py groups implementation around trading, app, configpy, settings, mostly in trading_app/core/config.py. This section covers 6 nodes and 5 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: PortfolioState (10 nodes, 9 edges)
-    subgraph portfoliostate_trading_app_models_portfolio_py_1f6a2d20["trading_app/models/portfolio.py"]
-        trading_app_models_portfolio_portfoliostate_f710d873("PortfolioState<br/><small>trading_app/models/portfolio.py</small>")
-        trading_app_models_portfolio_portfoliostate_tota_b4976652("total_market_value()<br/><small>trading_app/models/portfolio.py</small>")
-        trading_app_models_portfolio_portfoliostate_tota_709cc31b("total_equity()<br/><small>trading_app/models/portfolio.py</small>")
-        trading_app_models_portfolio_portfoliostate_tota_3864e038("total_unrealized_pnl()<br/><small>trading_app/models/portfolio.py</small>")
-        trading_app_models_portfolio_rationale_61_055b123d("Combined unrealized P&amp;L across all posi...<br/><small>trading_app/models/portfolio.py</small>")
-        trading_app_models_portfolio_rationale_42_ccf5b2c2("Full snapshot of the portfolio at a poi...<br/><small>trading_app/models/portfolio.py</small>")
-        trading_app_models_portfolio_rationale_51_f4807f0c("Sum of market value across all open pos...<br/><small>trading_app/models/portfolio.py</small>")
-        trading_app_models_portfolio_rationale_56_f569fe21("Total account equity: cash + market val...<br/><small>trading_app/models/portfolio.py</small>")
+    %% Section: config.py (6 nodes, 5 edges)
+    subgraph config_py_trading_app_core_config_py_8b78452c["trading_app/core/config.py"]
+        trading_app_core_config_1f86ffff("config.py")
+        trading_app_core_config_settings_4688cb98("Settings<br/><small>trading_app/core/config.py</small>")
+        trading_app_core_config_rationale_1_6ae80ef4("Configuration settings for Trading App.<br/><small>trading_app/core/config.py</small>")
+        trading_app_core_config_rationale_7_0837f6f4("Global application settings.<br/><small>trading_app/core/config.py</small>")
     end
-    subgraph portfoliostate_trading_app_services_portfolio_py_1cfbd0af["trading_app/services/portfolio.py"]
-        trading_app_services_portfolio_portfolioservice_eef3ba0d("get_state()<br/><small>trading_app/services/portfolio.py</small>")
-        trading_app_services_portfolio_rationale_27_7db2fac4("Return a snapshot of the current portfo...<br/><small>trading_app/services/portfolio.py</small>")
+    subgraph config_py_External_generated_1e1891f9["External / generated"]
+        pydantic_196fee65("pydantic")
+        trading_app_core_config_py_basemodel_8fa00e21("BaseModel")
     end
-    trading_app_models_portfolio_portfoliostate_f710d873 -->|method| trading_app_models_portfolio_portfoliostate_tota_b4976652
-    trading_app_models_portfolio_portfoliostate_f710d873 -->|method| trading_app_models_portfolio_portfoliostate_tota_709cc31b
-    trading_app_models_portfolio_portfoliostate_f710d873 -->|method| trading_app_models_portfolio_portfoliostate_tota_3864e038
-    class trading_app_models_portfolio_portfoliostate_f710d873 klass;
-    class trading_app_models_portfolio_portfoliostate_tota_b4976652 function;
-    class trading_app_models_portfolio_portfoliostate_tota_709cc31b function;
-    class trading_app_models_portfolio_portfoliostate_tota_3864e038 function;
-    class trading_app_models_portfolio_rationale_61_055b123d concept;
-    class trading_app_models_portfolio_rationale_42_ccf5b2c2 concept;
-    class trading_app_models_portfolio_rationale_51_f4807f0c concept;
-    class trading_app_models_portfolio_rationale_56_f569fe21 concept;
-    class trading_app_services_portfolio_portfolioservice_eef3ba0d function;
-    class trading_app_services_portfolio_rationale_27_7db2fac4 concept;
+    trading_app_core_config_1f86ffff -->|imports| pydantic_196fee65
+    class trading_app_core_config_1f86ffff module;
+    class trading_app_core_config_settings_4688cb98 klass;
+    class trading_app_core_config_rationale_1_6ae80ef4 concept;
+    class trading_app_core_config_rationale_7_0837f6f4 concept;
+    class pydantic_196fee65 function;
+    class trading_app_core_config_py_basemodel_8fa00e21 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2022,83 +2536,51 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>PortfolioState</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
+  <td><code>Settings</code><br><small style="color:var(--muted)">trading_app/core/config.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>get_portfolio()</code><br><small style="color:var(--muted)">trading_app/api/portfolio.py</small><br><code>portfolio.py</code><br><small style="color:var(--muted)">trading_app/services/portfolio.py</small><br><code>portfolio.py</code><br><small style="color:var(--muted)">trading_app/api/portfolio.py</small><br>+2 more</td>
-  <td><code>total_equity()</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small><br><code>total_market_value()</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small><br><code>total_unrealized_pnl()</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td>PortfolioState node in trading_app/models/portfolio.py.</td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Settings node in trading_app/core/config.py.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>.total_equity()</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>PortfolioState</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>.total_equity() node in trading_app/models/portfolio.py.</td>
+  <td><code>config.py</code><br><small style="color:var(--muted)">trading_app/core/config.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/api/backtest.py</small><br><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>execution.py</code><br><small style="color:var(--muted)">trading_app/services/execution.py</small><br>+3 more</td>
+  <td><code>pydantic</code></td>
+  <td>Module file in trading_app/core/config.py.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>.total_market_value()</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>PortfolioState</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
+  <td><code>BaseModel</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.total_market_value() node in trading_app/models/portfolio.py.</td>
+  <td>BaseModel node in project.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>.total_unrealized_pnl()</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>PortfolioState</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
+  <td><code>Configuration settings for Trading App.</code><br><small style="color:var(--muted)">trading_app/core/config.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.total_unrealized_pnl() node in trading_app/models/portfolio.py.</td>
+  <td>Design note for Configuration settings for Trading App..</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>.get_state()</code><br><small style="color:var(--muted)">trading_app/services/portfolio.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>PortfolioService</code><br><small style="color:var(--muted)">trading_app/services/portfolio.py</small></td>
+  <td><code>Global application settings.</code><br><small style="color:var(--muted)">trading_app/core/config.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.get_state() node in trading_app/services/portfolio.py.</td>
+  <td>Design note for Global application settings..</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>Full snapshot of the portfolio at a point in time.</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>pydantic</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/api/backtest.py</small><br><code>backtest.py</code><br><small style="color:var(--muted)">trading_app/services/backtest.py</small><br><code>config.py</code><br><small style="color:var(--muted)">trading_app/core/config.py</small><br>+3 more</td>
   <td>No direct outbound edge</td>
-  <td>Design note for Full snapshot of the portfolio at a point in time..</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Sum of market value across all open positions.</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Sum of market value across all open positions..</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>Total account equity: cash + market value of positions.</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Total account equity: cash + market value of positions..</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Combined unrealized P&amp;L across all positions.</code><br><small style="color:var(--muted)">trading_app/models/portfolio.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Combined unrealized P&amp;L across all positions..</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>Return a snapshot of the current portfolio state.</code><br><small style="color:var(--muted)">trading_app/services/portfolio.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Return a snapshot of the current portfolio state..</td>
+  <td>pydantic node in project.</td>
 </tr>
 </table>
 
@@ -2107,19 +2589,18 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>trading_app/models/portfolio.py</code></td><td>8 nodes</td></tr>
-<tr><td><code>trading_app/services/portfolio.py</code></td><td>2 nodes</td></tr>
+      <tr><td><code>trading_app/core/config.py</code></td><td>4 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: explains x5, method x3, references x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x2, inherits x1, imports x1, contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 9. ref_vitest_config ====== -->
-<h2 id="ref-vitest-config">9. ref_vitest_config</h2>
+<!-- ====== 11. ref_vitest_config ====== -->
+<h2 id="ref-vitest-config">11. ref_vitest_config</h2>
 <p>ref_vitest_config groups implementation around vitestconfigts, ref, vitest, config, mostly in vitest.config.ts. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2185,8 +2666,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 10. core/__init__.py ====== -->
-<h2 id="core-init-py">10. core/__init__.py</h2>
+<!-- ====== 12. core/__init__.py ====== -->
+<h2 id="core-init-py">12. core/__init__.py</h2>
 <p>core/__init__.py groups implementation around trading, app, package, mostly in trading_app/core/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2252,8 +2733,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 11. trading_app/__init__.py ====== -->
-<h2 id="trading-app-init-py">11. trading_app/__init__.py</h2>
+<!-- ====== 13. trading_app/__init__.py ====== -->
+<h2 id="trading-app-init-py">13. trading_app/__init__.py</h2>
 <p>trading_app/__init__.py groups implementation around trading, app, algorithmic, paper, mostly in trading_app/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2319,8 +2800,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 12. models/__init__.py ====== -->
-<h2 id="models-init-py">12. models/__init__.py</h2>
+<!-- ====== 14. models/__init__.py ====== -->
+<h2 id="models-init-py">14. models/__init__.py</h2>
 <p>models/__init__.py groups implementation around models, trading, app, package, mostly in trading_app/models/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2386,8 +2867,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 13. services/__init__.py ====== -->
-<h2 id="services-init-py">13. services/__init__.py</h2>
+<!-- ====== 15. services/__init__.py ====== -->
+<h2 id="services-init-py">15. services/__init__.py</h2>
 <p>services/__init__.py groups implementation around services, trading, app, package, mostly in trading_app/services/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2453,19 +2934,43 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. strategies/__init__.py ====== -->
-<h2 id="strategies-init-py">14. strategies/__init__.py</h2>
-<p>strategies/__init__.py groups implementation around strategies, trading, app, services, mostly in services/strategies/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around graphifymd, strategies, trading, app, mostly in services/strategies/__init__.py, .agents/rules/graphify.md, .agents/workflows/graphify.md. This section covers 10 nodes and 3 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: strategies/__init__.py (2 nodes, 1 edges)
-    trading_app_services_strategies_init_rationale_1_52fe5ffa("Strategies package for Trading App.<br/><small>services/strategies/__init__.py</small>")
-    trading_app_services_strategies_init_9326b6fc("__init__.py")
+    %% Section: Other (10 nodes, 3 edges)
+    subgraph other_agents_rules_graphify_md_46085eba[".agents/rules/graphify.md"]
+        agents_rules_graphify_8193478b("rules/graphify.md")
+        agents_rules_graphify_graphify_dd1d4f66("graphify<br/><small>.agents/rules/graphify.md</small>")
+    end
+    subgraph other_agents_workflows_graphify_md_fa0cc363[".agents/workflows/graphify.md"]
+        agents_workflows_graphify_08a1cc26("workflows/graphify.md")
+        agents_workflows_graphify_workflow_graphify_87f5fa2b("Workflow: graphify<br/><small>.agents/workflows/graphify.md</small>")
+    end
+    subgraph other_services_strategies_init_py_991e48ef["services/strategies/__init__.py"]
+        trading_app_services_strategies_init_rationale_1_52fe5ffa("Strategies package for Trading App.<br/><small>services/strategies/__init__.py</small>")
+        trading_app_services_strategies_init_9326b6fc("__init__.py")
+    end
+    src_types_index_scenariokey_dae239ce("src_types_index_scenariokey")
+    pkg_trading_app_9385862e("trading-app<br/><small>pyproject.toml</small>")
+    run_graphify_11aeab39("run_graphify.ps1")
+    src_data_demosequence_ff6d858c("demoSequence.ts")
+    agents_rules_graphify_8193478b -->|contains| agents_rules_graphify_graphify_dd1d4f66
+    agents_workflows_graphify_08a1cc26 -->|contains| agents_workflows_graphify_workflow_graphify_87f5fa2b
     trading_app_services_strategies_init_rationale_1_52fe5ffa -->|explains| trading_app_services_strategies_init_9326b6fc
+    class agents_rules_graphify_8193478b concept;
+    class agents_rules_graphify_graphify_dd1d4f66 concept;
+    class agents_workflows_graphify_08a1cc26 concept;
+    class agents_workflows_graphify_workflow_graphify_87f5fa2b concept;
     class trading_app_services_strategies_init_rationale_1_52fe5ffa concept;
     class trading_app_services_strategies_init_9326b6fc module;
+    class src_types_index_scenariokey_dae239ce function;
+    class pkg_trading_app_9385862e module;
+    class run_graphify_11aeab39 function;
+    class src_data_demosequence_ff6d858c module;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2503,59 +3008,8 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Design note for Strategies package for Trading App..</td>
 </tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>services/strategies/__init__.py</code></td><td>2 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 15. rules/graphify.md ====== -->
-<h2 id="rules-graphify-md">15. rules/graphify.md</h2>
-<p>rules/graphify.md groups implementation around rules, graphifymd, agents, graphify, mostly in .agents/rules/graphify.md. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: rules/graphify.md (2 nodes, 1 edges)
-    agents_rules_graphify_8193478b("rules/graphify.md")
-    agents_rules_graphify_graphify_dd1d4f66("graphify<br/><small>.agents/rules/graphify.md</small>")
-    agents_rules_graphify_8193478b -->|contains| agents_rules_graphify_graphify_dd1d4f66
-    class agents_rules_graphify_8193478b concept;
-    class agents_rules_graphify_graphify_dd1d4f66 concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
 <tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
+  <td>3</td>
   <td><code>rules/graphify.md</code><br><small style="color:var(--muted)">.agents/rules/graphify.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2563,76 +3017,15 @@ flowchart LR
   <td>Documentation node describing rules/graphify.md.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>4</td>
   <td><code>graphify</code><br><small style="color:var(--muted)">.agents/rules/graphify.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Documentation node describing graphify.</td>
 </tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>.agents/rules/graphify.md</code></td><td>2 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around workflows, graphifymd, agents, run, mostly in .agents/workflows/graphify.md, pyproject.toml, run_graphify.ps1. This section covers 6 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (6 nodes, 1 edges)
-    subgraph other_agents_workflows_graphify_md_fa0cc363[".agents/workflows/graphify.md"]
-        agents_workflows_graphify_08a1cc26("workflows/graphify.md")
-        agents_workflows_graphify_workflow_graphify_87f5fa2b("Workflow: graphify<br/><small>.agents/workflows/graphify.md</small>")
-    end
-    src_types_index_scenariokey_dae239ce("src_types_index_scenariokey")
-    pkg_trading_app_9385862e("trading-app<br/><small>pyproject.toml</small>")
-    run_graphify_11aeab39("run_graphify.ps1")
-    src_data_demosequence_ff6d858c("demoSequence.ts")
-    agents_workflows_graphify_08a1cc26 -->|contains| agents_workflows_graphify_workflow_graphify_87f5fa2b
-    class agents_workflows_graphify_08a1cc26 concept;
-    class agents_workflows_graphify_workflow_graphify_87f5fa2b concept;
-    class src_types_index_scenariokey_dae239ce function;
-    class pkg_trading_app_9385862e module;
-    class run_graphify_11aeab39 function;
-    class src_data_demosequence_ff6d858c module;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
 <tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
+  <td>5</td>
   <td><code>workflows/graphify.md</code><br><small style="color:var(--muted)">.agents/workflows/graphify.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2640,7 +3033,7 @@ flowchart LR
   <td>Documentation node describing workflows/graphify.md.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>6</td>
   <td><code>Workflow: graphify</code><br><small style="color:var(--muted)">.agents/workflows/graphify.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2648,7 +3041,7 @@ flowchart LR
   <td>Documentation node describing Workflow: graphify.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>7</td>
   <td><code>trading-app</code><br><small style="color:var(--muted)">pyproject.toml</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
@@ -2656,7 +3049,7 @@ flowchart LR
   <td>trading-app node in pyproject.toml.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>8</td>
   <td><code>run_graphify.ps1</code><br><small style="color:var(--muted)">run_graphify.ps1</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2664,7 +3057,7 @@ flowchart LR
   <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>9</td>
   <td><code>demoSequence.ts</code><br><small style="color:var(--muted)">src/data/demoSequence.ts</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
@@ -2672,7 +3065,7 @@ flowchart LR
   <td>Module file in src/data/demoSequence.ts.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>10</td>
   <td><code>src_types_index_scenariokey</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2686,7 +3079,9 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>.agents/workflows/graphify.md</code></td><td>2 nodes</td></tr>
+      <tr><td><code>.agents/rules/graphify.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>.agents/workflows/graphify.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>services/strategies/__init__.py</code></td><td>2 nodes</td></tr>
 <tr><td><code>pyproject.toml</code></td><td>1 nodes</td></tr>
 <tr><td><code>run_graphify.ps1</code></td><td>1 nodes</td></tr>
 <tr><td><code>src/data/demoSequence.ts</code></td><td>1 nodes</td></tr>
@@ -2694,7 +3089,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2, explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2705,17 +3100,17 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>629</td></tr>
-      <tr><td>Edges</td><td>1288</td></tr>
+      <tr><td>Nodes</td><td>710</td></tr>
+      <tr><td>Edges</td><td>1556</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>38</td></tr>
+      <tr><td>Communities</td><td>40</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1253</td></tr>
+      <tr><td>EXTRACTED</td><td>1521</td></tr>
       <tr><td>INFERRED</td><td>35</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
@@ -2724,7 +3119,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>trading app — Architecture Documentation</p>
-  <p>Generated: 2026-09-21 21:13 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-09-21 21:49 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

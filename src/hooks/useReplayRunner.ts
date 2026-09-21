@@ -17,6 +17,9 @@ import { SCENARIOS } from '../workflow/scenarios';
 
 import type { TradingAgentProfile } from '../agents/types';
 import type { NormalizedMarketSnapshot } from '../paper/types';
+import { runIndependentPhase, type DecisionBundle } from '../competition/competitionEngine';
+import { reviewProposals } from '../competition/portfolioManager';
+import type { ManagerDecision } from '../competition/types';
 
 export const PLAYBACK_STEP_MS = 900;
 
@@ -30,6 +33,11 @@ export interface UseReplayRunnerResult {
   runScenario: (key: ScenarioKey, activeAgent?: TradingAgentProfile) => void;
   runTrainingCycle: (agent: TradingAgentProfile) => void;
   runLiveCycle: (snapshot: NormalizedMarketSnapshot, agent: TradingAgentProfile) => RunRecord;
+  runCompetitiveCycle: (snapshot: NormalizedMarketSnapshot) => {
+    bundle: DecisionBundle;
+    decision: ManagerDecision;
+    record: RunRecord;
+  };
   toggleLiveAutonomous: () => void;
   togglePlayPause: () => void;
   stepNext: () => void;
@@ -160,6 +168,31 @@ export function useReplayRunner(): UseReplayRunnerResult {
     [clearTimer],
   );
 
+  /** Runs the multi-agent competition cycle across Alpha, Beta, Gamma, and Manager */
+  const runCompetitiveCycle = useCallback(
+    (snapshot: NormalizedMarketSnapshot) => {
+      clearTimer();
+      const bundle = runIndependentPhase(snapshot);
+      const decision = reviewProposals(bundle);
+
+      const topProposal = bundle.proposals[0];
+      const input = {
+        scenarioKey: (topProposal ? 'allowed' : 'blocked') as ScenarioKey,
+        description: `Competitive Cycle — 3 Traders on ${snapshot.ticker} (${decision.disagreementSummary})`,
+        symbol: snapshot.ticker,
+        proposedQty: topProposal?.contracts || 1,
+        liveSnapshot: snapshot,
+        seasonId: 'season-1',
+      };
+
+      const record = runWorkflow(input, executionAdapter);
+      setRunRecord(record);
+      setCursorIndex(record.events.length - 1);
+      return { bundle, decision, record };
+    },
+    [clearTimer],
+  );
+
   const toggleLiveAutonomous = useCallback(() => {
     setIsLiveAutonomous((prev) => !prev);
   }, []);
@@ -251,6 +284,7 @@ export function useReplayRunner(): UseReplayRunnerResult {
     runScenario,
     runTrainingCycle,
     runLiveCycle,
+    runCompetitiveCycle,
     toggleLiveAutonomous,
     togglePlayPause,
     stepNext,

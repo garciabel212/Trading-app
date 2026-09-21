@@ -9,27 +9,35 @@ import type { AgentNodeData, NodeKind, NodeStatus } from '../types';
 
 // ── Kind Taxonomy Definitions ────────────────────────────────────────────────
 const KIND_ICONS: Record<NodeKind, string> = {
-  'orchestrator': '⟡',
-  'data-source':  '📡',
-  'analyst':      '◈',
-  'strategy':     '▲',
-  'risk':         '⬡',
-  'execution':    '⚡',
-  'evaluation':   '◎',
-  'skill':        '◇',
-  'memory':       '□',
+  'orchestrator':      '⟡',
+  'data-source':       '📡',
+  'analyst':           '◈',
+  'strategy':          '▲',
+  'risk':              '⬡',
+  'execution':         '⚡',
+  'evaluation':        '◎',
+  'skill':             '◇',
+  'memory':            '□',
+  'trader':            '⚔',
+  'portfolio-manager': '⚖',
+  'coach':             '🧠',
+  'portfolio':         '💼',
 };
 
 const KIND_ROLES: Record<NodeKind, string> = {
-  'orchestrator': 'COORDINATOR',
-  'data-source':  'FEED BEACON',
-  'analyst':      'SIGNAL PERCEPTION',
-  'strategy':     'DELIBERATION',
-  'risk':         'SAFETY BOUNDARY',
-  'execution':    'PAPER ROUTER',
-  'evaluation':   'AUDIT & REFLECTION',
-  'skill':        'SKILL SATELLITE',
-  'memory':       'EPISODIC STORE',
+  'orchestrator':      'COORDINATOR',
+  'data-source':       'FEED BEACON',
+  'analyst':           'SIGNAL PERCEPTION',
+  'strategy':          'DELIBERATION',
+  'risk':              'SAFETY BOUNDARY',
+  'execution':         'PAPER ROUTER',
+  'evaluation':        'AUDIT & REFLECTION',
+  'skill':             'SKILL SATELLITE',
+  'memory':            'EPISODIC STORE',
+  'trader':            'COMPETITOR AGENT',
+  'portfolio-manager': 'SUPERVISOR & ALLOCATOR',
+  'coach':             'COACH & AUDITOR',
+  'portfolio':         'SIMULATED PORTFOLIO',
 };
 
 const AgentNode = memo(function AgentNode({ data, selected }: NodeProps) {
@@ -42,6 +50,7 @@ const AgentNode = memo(function AgentNode({ data, selected }: NodeProps) {
     __dimmed,
     isSatellite,
     isExpanded,
+    equity,
   } = nodeData;
 
   const nodeKind = (kind as NodeKind) || 'analyst';
@@ -55,6 +64,12 @@ const AgentNode = memo(function AgentNode({ data, selected }: NodeProps) {
     variantClass = 'agent-node--skill';
   } else if (nodeKind === 'data-source' || nodeKind === 'memory') {
     variantClass = 'agent-node--data';
+  } else if (nodeKind === 'trader') {
+    variantClass = 'agent-node--trader';
+  } else if (nodeKind === 'portfolio-manager' || nodeKind === 'coach') {
+    variantClass = 'agent-node--supervisor';
+  } else if (nodeKind === 'portfolio') {
+    variantClass = 'agent-node--portfolio';
   }
 
   const isExecuting = nodeStatus === 'running';
@@ -97,9 +112,16 @@ const AgentNode = memo(function AgentNode({ data, selected }: NodeProps) {
             <span className={`agent-node__state-dot state-dot--${nodeStatus}`} />
           </div>
 
-          <span className="agent-node__label" title={String(label)}>
-            {String(label)}
-          </span>
+          <div className="agent-node__title-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+            <span className="agent-node__label" title={String(label)}>
+              {String(label)}
+            </span>
+            {equity !== undefined && (
+              <span className="agent-node__equity-pill" style={{ fontSize: '10px', padding: '1px 5px', borderRadius: '4px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)', fontFamily: 'monospace' }}>
+                ${equity.toLocaleString()}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Cluster expansion toggle if node has satellites */}

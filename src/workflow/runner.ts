@@ -143,6 +143,8 @@ export function runWorkflow(
     completedAt: null,
     agentId: activeAgent?.id,
     agentName: activeAgent?.name,
+    traderId: input.traderId,
+    seasonId: input.seasonId,
   };
 
   const emit = (event: TraceEvent) => {

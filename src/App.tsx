@@ -35,6 +35,7 @@ import NodeInspector from './components/NodeInspector';
 import BottomCommandStrip from './components/BottomCommandStrip';
 import GraphLegend from './components/GraphLegend';
 import PaperTradingWorkspace from './components/PaperTradingWorkspace';
+import CompetitionWorkspace from './components/CompetitionWorkspace';
 import AgentStudioModal from './components/AgentStudioModal';
 import { PRESET_AGENTS, getAllAgents } from './agents/agentRegistry';
 import type { TradingAgentProfile } from './agents/types';
@@ -101,7 +102,7 @@ export default function App() {
     isLiveAutonomous,
     runScenario,
     runTrainingCycle,
-    runLiveCycle,
+    runCompetitiveCycle,
     toggleLiveAutonomous,
     togglePlayPause,
     stepNext,
@@ -112,15 +113,15 @@ export default function App() {
     reset,
   } = useReplayRunner();
 
-  // Autonomous live agent monitoring loop: continuously samples live bets & market data
+  // Autonomous live agent monitoring loop: continuously samples live bets & market data across all 3 traders
   useEffect(() => {
-    if (!isLiveAutonomous || activeWorkspace !== 'agent-lab') return;
+    if (!isLiveAutonomous) return;
 
     let timer: ReturnType<typeof setTimeout> | null = null;
 
     const executeCycle = () => {
       if (paperState.snapshot) {
-        runLiveCycle(paperState.snapshot, activeAgent);
+        runCompetitiveCycle(paperState.snapshot);
       }
       timer = setTimeout(executeCycle, 5000);
     };
@@ -130,7 +131,7 @@ export default function App() {
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [isLiveAutonomous, activeWorkspace, paperState.snapshot, activeAgent, runLiveCycle]);
+  }, [isLiveAutonomous, paperState.snapshot, runCompetitiveCycle]);
 
   // ── Derived State from Shared Replay Cursor ─────────────────────────────────
   const activeEvents = useMemo(() => {
@@ -294,7 +295,9 @@ export default function App() {
         liveTicker={paperState.selectedTicker}
       />
 
-      {activeWorkspace === 'paper-trading' ? (
+      {activeWorkspace === 'competition' ? (
+        <CompetitionWorkspace />
+      ) : activeWorkspace === 'paper-trading' ? (
         <PaperTradingWorkspace
           paperState={paperState}
           onInspectDecision={handleInspectDecision}

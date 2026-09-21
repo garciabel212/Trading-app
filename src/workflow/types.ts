@@ -20,6 +20,10 @@ export interface PipelineInput {
   proposedQty: number;
   /** Genuine live snapshot if running on real-time market data */
   liveSnapshot?: NormalizedMarketSnapshot;
+  /** Competitor trader ID if executed as part of the multi-agent competition */
+  traderId?: string;
+  /** Season ID if executed as part of an active season */
+  seasonId?: string;
 }
 
 // ── Stage-level data ──────────────────────────────────────────────────────────
@@ -156,6 +160,8 @@ export interface RunRecord {
   completedAt: number | null;
   agentId?: string;
   agentName?: string;
+  traderId?: string;
+  seasonId?: string;
   episodicMemory?: unknown;
 }
 

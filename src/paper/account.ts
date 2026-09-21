@@ -347,12 +347,25 @@ export function executePaperTrade(
       };
     }
 
+    const currentEquity = roundCents(newCash + (newPosition ? newPosition.totalCostBasis : 0));
+    const prevPeak = account.peakEquity ?? currentEquity;
+    const peakEquity = Math.max(prevPeak, currentEquity);
+    const drawdown = roundCents(peakEquity - currentEquity);
+    const drawdownPct = peakEquity > 0 ? roundCents((drawdown / peakEquity) * 100) : 0;
+    const maxDrawdown = Math.max(account.maxDrawdown ?? 0, drawdown);
+    const maxDrawdownPct = Math.max(account.maxDrawdownPct ?? 0, drawdownPct);
+
     const updatedAccount: PaperAccount = {
+      traderId: account.traderId,
       cash: newCash,
       position: newPosition,
       realizedPnl: account.realizedPnl,
       totalFeesPaid: roundCents(account.totalFeesPaid + fee),
       lastUpdated: now,
+      peakEquity,
+      maxDrawdown,
+      maxDrawdownPct,
+      tradeCount: (account.tradeCount ?? 0) + 1,
     };
 
     const order: PaperOrder = {
@@ -393,12 +406,25 @@ export function executePaperTrade(
           }
         : null;
 
+    const currentEquity = roundCents(newCash + (newPosition ? newPosition.totalCostBasis : 0));
+    const prevPeak = account.peakEquity ?? currentEquity;
+    const peakEquity = Math.max(prevPeak, currentEquity);
+    const drawdown = roundCents(peakEquity - currentEquity);
+    const drawdownPct = peakEquity > 0 ? roundCents((drawdown / peakEquity) * 100) : 0;
+    const maxDrawdown = Math.max(account.maxDrawdown ?? 0, drawdown);
+    const maxDrawdownPct = Math.max(account.maxDrawdownPct ?? 0, drawdownPct);
+
     const updatedAccount: PaperAccount = {
+      traderId: account.traderId,
       cash: newCash,
       position: newPosition,
       realizedPnl: roundCents(account.realizedPnl + tradePnl),
       totalFeesPaid: roundCents(account.totalFeesPaid + fee),
       lastUpdated: now,
+      peakEquity,
+      maxDrawdown,
+      maxDrawdownPct,
+      tradeCount: (account.tradeCount ?? 0) + 1,
     };
 
     const order: PaperOrder = {
@@ -510,3 +536,22 @@ export function valuePosition(
     note: `Valued at executable YES bid ($${bid.toFixed(2)}) net of estimated taker fee ($${exitFee.toFixed(2)}).`,
   };
 }
+
+/**
+ * Creates an independent paper trading account for a competitor or manager.
+ */
+export function createTraderAccount(traderId: string, initialCash: number = 10000.0): PaperAccount {
+  return {
+    traderId,
+    cash: initialCash,
+    position: null,
+    realizedPnl: 0,
+    totalFeesPaid: 0,
+    lastUpdated: Date.now(),
+    peakEquity: initialCash,
+    maxDrawdown: 0,
+    maxDrawdownPct: 0,
+    tradeCount: 0,
+  };
+}
+

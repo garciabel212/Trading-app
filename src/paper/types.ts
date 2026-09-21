@@ -75,13 +75,18 @@ export interface PaperPosition {
   totalCostBasis: number;
 }
 
-/** Virtual paper account state (initial $1,000 cash) */
+/** Virtual paper account state */
 export interface PaperAccount {
+  traderId?: string;
   cash: number;
   position: PaperPosition | null;
   realizedPnl: number;
   totalFeesPaid: number;
   lastUpdated: number;
+  peakEquity?: number;
+  maxDrawdown?: number;
+  maxDrawdownPct?: number;
+  tradeCount?: number;
 }
 
 export type OrderOrigin = 'manual-user' | 'agent-workflow';
@@ -91,6 +96,7 @@ export type OrderStatus = 'filled' | 'rejected';
 /** Paper execution order record with links to trace and market snapshot */
 export interface PaperOrder {
   orderId: string;
+  traderId?: string;
   runId: string;
   snapshotId: string;
   ticker: string;

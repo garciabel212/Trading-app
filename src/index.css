@@ -493,6 +493,59 @@ body {
   justify-content: center;
 }
 
+/* ── Morphology E: Competitor Traders (Alpha, Beta, Gamma) ─────────────────── */
+.agent-node--trader {
+  width: 210px;
+}
+
+.agent-node--trader .agent-node__frame {
+  border-radius: var(--radius-md);
+  background: rgba(11, 17, 30, 0.94);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.agent-node--trader .agent-node__glyph-ring {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+}
+
+/* ── Morphology F: Supervisors (Coach & Portfolio Manager) ─────────────────── */
+.agent-node--supervisor {
+  width: 224px;
+}
+
+.agent-node--supervisor .agent-node__frame {
+  border-radius: var(--radius-md);
+  background: rgba(18, 20, 38, 0.94);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  box-shadow: 0 4px 24px rgba(168, 85, 247, 0.12);
+}
+
+.agent-node--supervisor .agent-node__glyph-ring {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+}
+
+/* ── Morphology G: Portfolios (Simulated Accounts) ─────────────────────────── */
+.agent-node--portfolio {
+  width: 190px;
+}
+
+.agent-node--portfolio .agent-node__frame {
+  border-radius: var(--radius-md);
+  background: rgba(8, 22, 18, 0.92);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.agent-node--portfolio .agent-node__glyph-ring {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
 /* Node Body & Micro Labels */
 .agent-node__body {
   display: flex;

@@ -3,7 +3,7 @@
 
 import { memo } from 'react';
 
-export type WorkspaceId = 'agent-lab' | 'paper-trading';
+export type WorkspaceId = 'agent-lab' | 'paper-trading' | 'competition';
 
 interface NavigationProps {
   activeWorkspace: WorkspaceId;
@@ -24,10 +24,28 @@ const Navigation = memo(function Navigation({
         onClick={() => onSelectWorkspace('agent-lab')}
         role="tab"
         aria-selected={activeWorkspace === 'agent-lab'}
-        title="Agent Lab: Workflow Graph, Execution Traces & Replay"
+        title="Agent Lab: Multi-Agent Hierarchy, Traces & Live Replay"
       >
         <span className="workspace-nav__icon" aria-hidden="true">⟡</span>
         <span className="workspace-nav__title">Agent Lab</span>
+      </button>
+
+      <button
+        id="nav-tab-competition"
+        className={`workspace-nav__tab ${activeWorkspace === 'competition' ? 'workspace-nav__tab--active' : ''}`}
+        onClick={() => onSelectWorkspace('competition')}
+        role="tab"
+        aria-selected={activeWorkspace === 'competition'}
+        title="Arena Mode: Competitive Multi-Agent Trading Tournament"
+      >
+        <span className="workspace-nav__icon" aria-hidden="true">🏆</span>
+        <span className="workspace-nav__title">Arena Mode</span>
+        <span
+          className="workspace-nav__badge"
+          style={{ background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8' }}
+        >
+          3 Traders
+        </span>
       </button>
 
       <button

@@ -11,7 +11,11 @@ export type NodeKind =
   | 'execution'
   | 'evaluation'
   | 'skill'
-  | 'memory';
+  | 'memory'
+  | 'trader'
+  | 'portfolio-manager'
+  | 'coach'
+  | 'portfolio';
 
 export type EdgeKind = 'workflow' | 'dependency' | 'coordination';
 
@@ -28,7 +32,7 @@ export interface AgentNodeData extends Record<string, unknown> {
   /** Internal: set by App for dimming unrelated nodes */
   __dimmed?: boolean;
   /** Architectural cluster */
-  cluster?: 'core' | 'perception' | 'deliberation' | 'execution';
+  cluster?: 'core' | 'perception' | 'deliberation' | 'execution' | 'competition';
   /** Parent node ID for satellites */
   parentId?: string;
   /** Whether node is a secondary satellite */
@@ -37,6 +41,12 @@ export interface AgentNodeData extends Record<string, unknown> {
   isExpanded?: boolean;
   /** Callback to toggle expansion of satellite nodes */
   onToggleCluster?: () => void;
+  /** Multi-agent competition fields */
+  traderRole?: 'alpha' | 'beta' | 'gamma' | 'manager' | 'coach';
+  equity?: number;
+  lastDecision?: string;
+  activePositionsCount?: number;
+  compositeScore?: number;
 }
 
 export interface ActivityEvent {

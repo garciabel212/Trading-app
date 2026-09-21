@@ -46,6 +46,9 @@ export interface TradingAgentProfile {
   skills: string[]; // Skill IDs
   parameters: AgentParameters;
   systemPrompt: string;
+  competitorRole?: 'alpha' | 'beta' | 'gamma' | 'manager' | 'coach';
+  strategyPhilosophy?: string;
+  initialBankroll?: number;
   learningStats: AgentLearningStats;
   createdAt: number;
   lastTrainedAt: number | null;

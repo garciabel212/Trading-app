@@ -6,33 +6,45 @@
 // - Risk Engine breakdown: proposed qty, limit, comparison, verdict, route
 // - Clear separation of run-level metadata from historical state
 
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import type { AgentNodeData, NodeKind } from '../types';
 import type { TraceEvent, RunRecord, EvaluationCheck } from '../workflow/types';
 import { deriveNodeInspectorTrace, type RiskDecisionBreakdown } from '../workflow/replay';
+import { loadTraderPortfolio } from '../competition/portfolioStore';
+import { evaluateTrader, approveExperiment, loadExperiments } from '../competition/coachEvaluator';
+import { computeTraderMetrics } from '../competition/competitionScorer';
+import type { CompetitorRole } from '../competition/types';
 
 const KIND_ICONS: Record<NodeKind, string> = {
-  'orchestrator': '⟡',
-  'data-source':  '📡',
-  'analyst':      '◈',
-  'strategy':     '▲',
-  'risk':         '⬡',
-  'execution':    '⚡',
-  'evaluation':   '◎',
-  'skill':        '◇',
-  'memory':       '□',
+  'orchestrator':      '⟡',
+  'data-source':       '📡',
+  'analyst':           '◈',
+  'strategy':          '▲',
+  'risk':              '⬡',
+  'execution':         '⚡',
+  'evaluation':        '◎',
+  'skill':             '◇',
+  'memory':            '□',
+  'trader':            '⚔',
+  'portfolio-manager': '⚖',
+  'coach':             '🧠',
+  'portfolio':         '💼',
 };
 
 const KIND_LABELS: Record<NodeKind, string> = {
-  'orchestrator': 'Orchestrator Core',
-  'data-source':  'Data Source',
-  'analyst':      'Analyst Agent',
-  'strategy':     'Strategy Agent',
-  'risk':         'Risk Engine',
-  'execution':    'Execution',
-  'evaluation':   'Evaluation',
-  'skill':        'Skill Module',
-  'memory':       'Memory Store',
+  'orchestrator':      'Orchestrator Core',
+  'data-source':       'Data Source',
+  'analyst':           'Analyst Agent',
+  'strategy':          'Strategy Agent',
+  'risk':              'Risk Engine',
+  'execution':         'Execution',
+  'evaluation':        'Evaluation',
+  'skill':             'Skill Module',
+  'memory':            'Memory Store',
+  'trader':            'Competitor Trader',
+  'portfolio-manager': 'Portfolio Manager',
+  'coach':             'Coach & Evaluator',
+  'portfolio':         'Simulated Portfolio',
 };
 
 // ── Helper: render key-value pairs ────────────────────────────────────────────
@@ -436,6 +448,197 @@ function TraceSection({
   );
 }
 
+// ── Multi-Agent Competition Inspector Section ─────────────────────────────────
+
+function CompetitorInspectorSection({ node }: { node: AgentNodeData }) {
+  const role = (node.traderRole || (node.id.startsWith('trader-') ? node.id.replace('trader-', '') : null)) as CompetitorRole | null;
+  const isManager = node.kind === 'portfolio-manager' || role === 'manager';
+  const isCoach = node.kind === 'coach' || role === 'coach';
+  const isTrader = node.kind === 'trader' || (role && ['alpha', 'beta', 'gamma'].includes(role));
+  const isPortfolio = node.kind === 'portfolio';
+
+  const [, setRefresh] = useState(0);
+
+  if (!isManager && !isCoach && !isTrader && !isPortfolio) {
+    return null;
+  }
+
+  // 1. Trader Inspector
+  if (isTrader && role) {
+    const portfolio = loadTraderPortfolio(role);
+    const metrics = computeTraderMetrics(role);
+    const positionsList = Object.values(portfolio.positions || {});
+
+    return (
+      <section className="inspector__competition-section" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12, marginTop: 12 }}>
+        <div className="inspector__section-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>⚔ Competitor Ledger ({role.toUpperCase()})</span>
+          <span style={{ color: '#38bdf8' }}>Score: {metrics.compositeScore}</span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', margin: '8px 0' }}>
+          <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>EQUITY / CASH</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#10b981' }}>
+              ${portfolio.equity?.toLocaleString() ?? '10,000'}
+            </div>
+            <div style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>
+              Cash: ${portfolio.cash?.toLocaleString()}
+            </div>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>BRIER / CALIBRATION</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#38bdf8' }}>
+              {metrics.brierScore.toFixed(3)}
+            </div>
+            <div style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>
+              Err: {(metrics.calibrationError * 100).toFixed(1)}% | Win: {metrics.winRate}%
+            </div>
+          </div>
+        </div>
+
+        {/* Positions & Theses */}
+        <div style={{ marginTop: 10 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>
+            Open Positions & Invalidation Theses ({positionsList.length})
+          </div>
+          {positionsList.length === 0 ? (
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+              No open contracts currently held. Waiting for edge setups.
+            </div>
+          ) : (
+            positionsList.map((pos) => (
+              <div key={pos.ticker} style={{ background: 'rgba(0,0,0,0.25)', padding: '6px 8px', borderRadius: '4px', marginBottom: 4, fontSize: '11px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}>
+                  <span>{pos.contracts}x {pos.ticker} ({pos.side.toUpperCase()})</span>
+                  <span>Avg: ${pos.averageEntryPrice.toFixed(2)}</span>
+                </div>
+                {pos.thesis?.initialThesis && (
+                  <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: 2 }}>
+                    Thesis: {pos.thesis.initialThesis}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Recent proposals and no-trades */}
+        <div style={{ marginTop: 10 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>
+            Recent Selectivity (No-Trades: {portfolio.noTradeCount || 0})
+          </div>
+          {portfolio.recentNoTrades && portfolio.recentNoTrades.length > 0 && (
+            <div style={{ fontSize: '10px', background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '6px', borderRadius: '4px', color: '#fca5a5' }}>
+              Latest Pass: {portfolio.recentNoTrades[0].explanation}
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  }
+
+  // 2. Portfolio Manager Inspector
+  if (isManager) {
+    const mgrPortfolio = loadTraderPortfolio('manager');
+    return (
+      <section className="inspector__competition-section" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12, marginTop: 12 }}>
+        <div className="inspector__section-label">⚖ Portfolio Manager Ensemble ($50,000)</div>
+        <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '6px', border: '1px solid var(--border-subtle)', margin: '8px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 600 }}>
+            <span>Ensemble Equity:</span>
+            <span style={{ color: '#10b981' }}>${mgrPortfolio.equity?.toLocaleString() ?? '50,000'}</span>
+          </div>
+          <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: 4 }}>
+            Realized P&L: ${mgrPortfolio.realizedPnL?.toFixed(2)} | Peak: ${mgrPortfolio.peakEquity?.toLocaleString()}
+          </div>
+        </div>
+
+        <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
+          Active Capital Allocation Boundaries (15% - 50% limit)
+        </div>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <div style={{ flex: 1, background: 'rgba(56, 189, 248, 0.1)', padding: '6px', borderRadius: '4px', textAlign: 'center', border: '1px solid rgba(56, 189, 248, 0.3)' }}>
+            <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>ALPHA</div>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: '#38bdf8' }}>35%</div>
+          </div>
+          <div style={{ flex: 1, background: 'rgba(16, 185, 129, 0.1)', padding: '6px', borderRadius: '4px', textAlign: 'center', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+            <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>BETA</div>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: '#10b981' }}>35%</div>
+          </div>
+          <div style={{ flex: 1, background: 'rgba(245, 158, 11, 0.1)', padding: '6px', borderRadius: '4px', textAlign: 'center', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+            <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>GAMMA</div>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: '#f59e0b' }}>30%</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // 3. Coach Inspector
+  if (isCoach) {
+    const alphaEval = evaluateTrader('alpha');
+    const experiments = loadExperiments();
+
+    return (
+      <section className="inspector__competition-section" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12, marginTop: 12 }}>
+        <div className="inspector__section-label">🧠 Coach Evaluations & Proposed Experiments</div>
+        <div style={{ fontSize: '11px', color: 'var(--text-secondary)', margin: '6px 0' }}>
+          {alphaEval.calibrationAssessment}
+        </div>
+
+        <div style={{ marginTop: 8 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>
+            Pending Experiments ({experiments.filter((e) => e.status === 'pending_review').length})
+          </div>
+          {experiments.map((exp) => (
+            <div key={exp.experimentId} style={{ background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px', marginBottom: 6, border: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#38bdf8' }}>{exp.title}</span>
+                <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '3px', background: exp.status === 'approved' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)', color: exp.status === 'approved' ? '#10b981' : '#f59e0b' }}>
+                  {exp.status.toUpperCase()}
+                </span>
+              </div>
+              <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: '4px 0' }}>{exp.hypothesis}</p>
+              {exp.status === 'pending_review' && (
+                <button
+                  type="button"
+                  style={{ fontSize: '10px', padding: '3px 8px', background: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '4px', fontWeight: 600, cursor: 'pointer', marginTop: 4 }}
+                  onClick={() => {
+                    approveExperiment(exp.experimentId);
+                    setRefresh((r) => r + 1);
+                  }}
+                >
+                  Approve Experiment
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  // 4. Portfolio Inspector
+  if (isPortfolio) {
+    const pRole = (node.traderRole || 'alpha') as CompetitorRole;
+    const p = loadTraderPortfolio(pRole);
+    return (
+      <section className="inspector__competition-section" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12, marginTop: 12 }}>
+        <div className="inspector__section-label">💼 Simulated Account Breakdown</div>
+        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 4 }}>
+          Cash: ${p.cash?.toLocaleString()} | Equity: ${p.equity?.toLocaleString()}
+        </div>
+        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: 2 }}>
+          Peak Equity: ${p.peakEquity?.toLocaleString()} | Max Drawdown: {p.maxDrawdownPct?.toFixed(1)}%
+        </div>
+      </section>
+    );
+  }
+
+  return null;
+}
+
 // ── Main Inspector Component ──────────────────────────────────────────────────
 
 interface NodeInspectorProps {
@@ -524,6 +727,9 @@ const NodeInspector = memo(function NodeInspector({
                 ))}
               </ul>
             </section>
+
+            {/* Competitor / Manager / Coach Live Metrics */}
+            <CompetitorInspectorSection node={node} />
 
             {/* Execution Replay Trace */}
             <TraceSection
