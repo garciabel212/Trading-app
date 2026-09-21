@@ -1,9 +1,10 @@
-// ─── Agent Trading OS — Top Bar ───────────────────────────────────────────────
+// ─── Agent Trading OS — Sleek Command TopBar ──────────────────────────────────
+// Technical command center header with compact typography, clean workspace switching,
+// scenario triggers, agent studio integration, and minimal chrome.
 
 import { memo } from 'react';
 import type { ScenarioKey } from '../workflow/types';
 import Navigation, { type WorkspaceId } from './Navigation';
-
 import type { TradingAgentProfile } from '../agents/types';
 
 interface TopBarProps {
@@ -23,8 +24,8 @@ interface TopBarProps {
 }
 
 const SCENARIO_LABELS: Record<ScenarioKey, string> = {
-  allowed: 'A: Allowed (5 units)',
-  blocked: 'B: Blocked (20 units)',
+  allowed: 'A: ALLOWED (5)',
+  blocked: 'B: BLOCKED (20)',
 };
 
 const TopBar = memo(function TopBar({
@@ -42,121 +43,102 @@ const TopBar = memo(function TopBar({
   onOpenAgentStudio,
   onRunTrainingCycle,
 }: TopBarProps) {
-  const statusLabel = isRunning
-    ? 'replaying…'
-    : hasRunRecord
-      ? `recorded (${totalEvents} events)`
-      : 'idle';
-
-  const dotClass = [
-    'topbar__status-dot',
-    isRunning ? 'topbar__status-dot--running' : '',
-    (!isRunning && hasRunRecord) ? 'topbar__status-dot--success' : '',
-  ].filter(Boolean).join(' ');
-
   return (
     <header className="topbar" role="banner">
-      {/* Logo + title */}
-      <div className="topbar__logo">
-        <div className="topbar__logo-icon" aria-hidden="true">⟡</div>
-        <span className="topbar__title">Agent Trading OS</span>
+      {/* Brand & System Status */}
+      <div className="topbar__brand">
+        <span className="topbar__emblem" aria-hidden="true">⟡</span>
+        <span className="topbar__title font-mono">AGENT TRADING OS</span>
+        <span className="topbar__online-tag font-mono">
+          <span className="online-dot" />
+          ONLINE
+        </span>
       </div>
 
-      {/* Main Workspace Navigation */}
+      {/* Main Workspace Navigation (Agent Lab / Paper Trading) */}
       <Navigation
         activeWorkspace={activeWorkspace}
         onSelectWorkspace={onSelectWorkspace}
         openPositionCount={openPositionCount}
       />
 
-      <span className="topbar__badge" role="status" aria-label="Simulation active">
-        {activeWorkspace === 'paper-trading'
-          ? 'Real Data · Simulated Exec'
-          : 'Agent Lab'}
-      </span>
-
-      {/* Lab-specific scenario selector */}
+      {/* Lab Actions & Triggers */}
       {activeWorkspace === 'agent-lab' && (
-        <div
-          className="topbar__scenario-group"
-          role="group"
-          aria-label="Select lab scenario"
-        >
-          {(Object.keys(SCENARIO_LABELS) as ScenarioKey[]).map((key) => (
-            <button
-              key={key}
-              id={`btn-scenario-${key}`}
-              className={[
-                'btn',
-                scenarioKey === key ? 'btn--scenario-active' : 'btn--scenario',
-              ].join(' ')}
-              onClick={() => onScenarioChange(key)}
-              aria-pressed={scenarioKey === key}
-              aria-label={`Scenario ${SCENARIO_LABELS[key]}`}
-            >
-              {SCENARIO_LABELS[key]}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Agent Studio Trigger & Active Agent Badge */}
-      {activeWorkspace === 'agent-lab' && activeAgent && (
-        <div className="topbar__agent-group">
-          <button
-            id="btn-open-agent-studio"
-            className="btn btn--timeline"
-            onClick={onOpenAgentStudio}
-            title="Open Agent Studio to create, edit, or configure trading agents"
-          >
-            🤖 Agent: <strong>{activeAgent.name}</strong>
-          </button>
-        </div>
-      )}
-
-      <div className="topbar__spacer" />
-
-      {/* Status (when in Agent Lab) */}
-      {activeWorkspace === 'agent-lab' && (
-        <>
-          <div className="topbar__status" aria-live="polite" aria-atomic="true">
-            <span className={dotClass} aria-hidden="true" />
-            {statusLabel}
+        <div className="topbar__lab-controls" role="group" aria-label="Lab scenario and training controls">
+          {/* Scenario Selector */}
+          <div className="topbar__scenario-group">
+            {(Object.keys(SCENARIO_LABELS) as ScenarioKey[]).map((key) => (
+              <button
+                key={key}
+                id={`btn-scenario-${key}`}
+                className={`scenario-btn ${scenarioKey === key ? 'scenario-btn--active' : ''} font-mono`}
+                onClick={() => onScenarioChange(key)}
+                aria-pressed={scenarioKey === key}
+              >
+                {SCENARIO_LABELS[key]}
+              </button>
+            ))}
           </div>
 
-          {onRunTrainingCycle && (
+          {/* Agent Studio Trigger */}
+          {activeAgent && onOpenAgentStudio && (
             <button
-              id="btn-run-training-cycle"
-              className="btn btn--primary"
-              onClick={onRunTrainingCycle}
-              aria-label="Run episodic learning cycle with memory feedback"
-              title={`Execute training cycle for ${activeAgent?.name ?? 'active agent'} with memory feedback`}
+              id="btn-agent-studio"
+              className="agent-profile-btn font-mono"
+              onClick={onOpenAgentStudio}
+              title={`Active Agent: ${activeAgent.name} (${activeAgent.strategyType})`}
             >
-              ⚡ Run Learning Cycle
+              <span className="agent-profile-btn__icon">🤖</span>
+              <span className="agent-profile-btn__name">{activeAgent.name}</span>
             </button>
           )}
 
+          {/* Training Cycle Action */}
+          {onRunTrainingCycle && (
+            <button
+              id="btn-run-learning-cycle"
+              className="topbar-action-btn topbar-action-btn--train font-mono"
+              onClick={onRunTrainingCycle}
+              title="Run end-to-end learning cycle with episodic reflection"
+              disabled={isRunning}
+            >
+              ⚡ RUN CYCLE
+            </button>
+          )}
+
+          {/* Scenario Run Button */}
           <button
             id="btn-run-scenario"
-            className="btn btn--timeline"
+            className="topbar-action-btn topbar-action-btn--run font-mono"
             onClick={onRunScenario}
-            aria-label="Run selected scenario and record trace"
-            title={`Execute scenario ${SCENARIO_LABELS[scenarioKey]} and record trace`}
+            title="Execute selected scenario"
+            disabled={isRunning}
           >
-            Scenario Run
+            {isRunning ? '▶ RUNNING...' : '▶ EXECUTE'}
           </button>
 
+          {/* Reset */}
           <button
             id="btn-reset"
-            className="btn btn--ghost"
+            className="topbar-action-btn topbar-action-btn--reset font-mono"
             onClick={onReset}
-            aria-label="Reset to initial state"
-            title="Reset run record and all nodes to initial state"
+            title="Clear run and return to idle"
           >
-            ↺ Reset
+            ↺
           </button>
-        </>
+        </div>
       )}
+
+      {/* Right Telemetry Badge */}
+      <div className="topbar__telemetry">
+        <span className="topbar__mode-badge font-mono">
+          {activeWorkspace === 'paper-trading'
+            ? 'KALSHI LIVE · SIMULATED EXEC'
+            : hasRunRecord
+            ? `RECORDED · ${totalEvents} EVENTS`
+            : 'GRAPH WORKSPACE · READY'}
+        </span>
+      </div>
     </header>
   );
 });

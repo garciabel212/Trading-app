@@ -3,6 +3,7 @@
 export type NodeStatus = 'idle' | 'running' | 'success' | 'warning' | 'failed' | 'skipped';
 
 export type NodeKind =
+  | 'orchestrator'
   | 'data-source'
   | 'analyst'
   | 'strategy'
@@ -12,7 +13,7 @@ export type NodeKind =
   | 'skill'
   | 'memory';
 
-export type EdgeKind = 'workflow' | 'dependency';
+export type EdgeKind = 'workflow' | 'dependency' | 'coordination';
 
 // React Flow v12 requires node data to extend Record<string, unknown>
 export interface AgentNodeData extends Record<string, unknown> {
@@ -26,6 +27,16 @@ export interface AgentNodeData extends Record<string, unknown> {
   latestActivity: string | null;
   /** Internal: set by App for dimming unrelated nodes */
   __dimmed?: boolean;
+  /** Architectural cluster */
+  cluster?: 'core' | 'perception' | 'deliberation' | 'execution';
+  /** Parent node ID for satellites */
+  parentId?: string;
+  /** Whether node is a secondary satellite */
+  isSatellite?: boolean;
+  /** Satellite expansion state */
+  isExpanded?: boolean;
+  /** Callback to toggle expansion of satellite nodes */
+  onToggleCluster?: () => void;
 }
 
 export interface ActivityEvent {

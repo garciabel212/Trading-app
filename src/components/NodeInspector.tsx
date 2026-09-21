@@ -12,25 +12,27 @@ import type { TraceEvent, RunRecord, EvaluationCheck } from '../workflow/types';
 import { deriveNodeInspectorTrace, type RiskDecisionBreakdown } from '../workflow/replay';
 
 const KIND_ICONS: Record<NodeKind, string> = {
-  'data-source': '📡',
-  'analyst':     '🔍',
-  'strategy':    '♟',
-  'risk':        '🛡',
-  'execution':   '⚡',
-  'evaluation':  '📊',
-  'skill':       '🔧',
-  'memory':      '🧠',
+  'orchestrator': '⟡',
+  'data-source':  '📡',
+  'analyst':      '◈',
+  'strategy':     '▲',
+  'risk':         '⬡',
+  'execution':    '⚡',
+  'evaluation':   '◎',
+  'skill':        '◇',
+  'memory':       '□',
 };
 
 const KIND_LABELS: Record<NodeKind, string> = {
-  'data-source': 'Data Source',
-  'analyst':     'Analyst Agent',
-  'strategy':    'Strategy Agent',
-  'risk':        'Risk Engine',
-  'execution':   'Execution',
-  'evaluation':  'Evaluation',
-  'skill':       'Skill Module',
-  'memory':      'Memory Store',
+  'orchestrator': 'Orchestrator Core',
+  'data-source':  'Data Source',
+  'analyst':      'Analyst Agent',
+  'strategy':     'Strategy Agent',
+  'risk':         'Risk Engine',
+  'execution':    'Execution',
+  'evaluation':   'Evaluation',
+  'skill':        'Skill Module',
+  'memory':       'Memory Store',
 };
 
 // ── Helper: render key-value pairs ────────────────────────────────────────────

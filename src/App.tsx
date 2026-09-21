@@ -1,8 +1,7 @@
-// ─── Agent Trading OS — App Root (v4) ─────────────────────────────────────────
-// Multi-Workspace Architecture:
-// - Agent Lab: Interactive agent graph, deterministic stage trace, inspectable replay
-// - Paper Trading: Live Kalshi binary market data, observation chart, simulated execution
-// - "Inspect decision" seamlessly bridges real-data paper transactions into Agent Lab traces
+// ─── Agent Trading OS — App Root (v5: Living AI Operating System) ────────────
+// The graph is the product: 70–80% viewport presence, deep infinite canvas,
+// hierarchical node morphologies, smooth camera tweening, progressive cluster disclosure,
+// dynamic energy flow edges, sleek bottom command strip, and glassmorphic inspector.
 
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -11,6 +10,7 @@ import {
   type Node,
   type Edge,
   type NodeMouseHandler,
+  type ReactFlowInstance,
 } from '@xyflow/react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import '@xyflow/react/dist/style.css';
@@ -28,11 +28,12 @@ import {
 
 import type { WorkspaceId } from './components/Navigation';
 import AgentNode from './components/AgentNode';
+import OrchestratorNode from './components/nodes/OrchestratorNode';
 import AnimatedEdge from './components/AnimatedEdge';
 import TopBar from './components/TopBar';
 import NodeInspector from './components/NodeInspector';
-import EventTimeline from './components/EventTimeline';
-import ActivityStrip from './components/ActivityStrip';
+import BottomCommandStrip from './components/BottomCommandStrip';
+import GraphLegend from './components/GraphLegend';
 import PaperTradingWorkspace from './components/PaperTradingWorkspace';
 import AgentStudioModal from './components/AgentStudioModal';
 import { PRESET_AGENTS, getAllAgents } from './agents/agentRegistry';
@@ -40,8 +41,14 @@ import type { TradingAgentProfile } from './agents/types';
 
 type AgentFlowNode = Node<AgentNodeData>;
 
-const NODE_TYPES = { agentNode: AgentNode };
-const EDGE_TYPES = { animatedEdge: AnimatedEdge };
+const NODE_TYPES = {
+  agentNode: AgentNode,
+  orchestratorNode: OrchestratorNode,
+};
+
+const EDGE_TYPES = {
+  animatedEdge: AnimatedEdge,
+};
 
 const NODE_LABELS: Record<string, string> = INITIAL_NODES.reduce(
   (acc, n) => {
@@ -55,6 +62,26 @@ export default function App() {
   const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceId>('agent-lab');
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [scenarioKey, setScenarioKey] = useState<ScenarioKey>('allowed');
+
+  // React Flow instance for smooth cinematic camera tweening
+  const [rfInstance, setRfInstance] = useState<ReactFlowInstance<AgentFlowNode, Edge> | null>(null);
+
+  // Progressive cluster disclosure: tracks which agents have expanded satellites
+  const [expandedClusters, setExpandedClusters] = useState<Set<string>>(
+    () => new Set(['market-analyst', 'strategy-agent', 'risk-engine', 'paper-execution']),
+  );
+
+  const handleToggleCluster = useCallback((nodeId: string) => {
+    setExpandedClusters((prev) => {
+      const next = new Set(prev);
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+      return next;
+    });
+  }, []);
 
   // Agent State & Studio Modal
   const [activeAgent, setActiveAgent] = useState<TradingAgentProfile>(
@@ -82,71 +109,98 @@ export default function App() {
     reset,
   } = useReplayRunner();
 
-  // ── Derived State from Shared Cursor ─────────────────────────────────────────
+  // ── Derived State from Shared Replay Cursor ─────────────────────────────────
   const activeEvents = useMemo(() => {
     if (!runRecord || cursorIndex < 0) return [];
     return runRecord.events.slice(0, cursorIndex + 1);
   }, [runRecord, cursorIndex]);
 
   // Derived graph nodes
-  const nodes = useMemo(() => {
+  const rawNodes = useMemo(() => {
     return deriveNodeStates(INITIAL_NODES, activeEvents);
   }, [activeEvents]);
 
   // Derived graph edges
-  const edges = useMemo(() => {
+  const rawEdges = useMemo(() => {
     return deriveEdgeStates(INITIAL_EDGES, activeEvents);
   }, [activeEvents]);
 
-  // Derived activity strip events
+  // Derived activity ticker events
   const activity = useMemo(() => {
     return deriveActivityEvents(activeEvents, NODE_LABELS);
   }, [activeEvents]);
 
-  // ── Selection & Graph Highlighting ───────────────────────────────────────────
+  // ── Selection & Spatial Focus Highlighting ───────────────────────────────────
   const connectedNodeIds = useMemo(() => {
     if (!selectedNodeId) return new Set<string>();
     const connected = new Set<string>();
-    edges.forEach((e) => {
+    rawEdges.forEach((e) => {
       if (e.source === selectedNodeId) connected.add(e.target);
       if (e.target === selectedNodeId) connected.add(e.source);
     });
     return connected;
-  }, [selectedNodeId, edges]);
+  }, [selectedNodeId, rawEdges]);
 
+  // Apply Progressive Disclosure & Dimming to Nodes
   const displayNodes = useMemo<AgentFlowNode[]>(() => {
-    return nodes.map((n) => ({
-      ...n,
-      selected: n.id === selectedNodeId,
-      data: {
-        ...n.data,
-        __dimmed:
-          selectedNodeId !== null &&
-          n.id !== selectedNodeId &&
-          !connectedNodeIds.has(n.id),
-      },
-    }));
-  }, [nodes, selectedNodeId, connectedNodeIds]);
+    return rawNodes
+      .map((n) => {
+        const parentId = n.data.parentId;
+        // If it's a satellite and its parent cluster is collapsed, hide it
+        const isHidden = Boolean(parentId && !expandedClusters.has(parentId));
 
+        return {
+          ...n,
+          hidden: isHidden,
+          selected: n.id === selectedNodeId,
+          data: {
+            ...n.data,
+            isExpanded: expandedClusters.has(n.id),
+            onToggleCluster: () => handleToggleCluster(n.id),
+            __dimmed:
+              selectedNodeId !== null &&
+              n.id !== selectedNodeId &&
+              !connectedNodeIds.has(n.id),
+          },
+        };
+      })
+      .filter((n) => !n.hidden);
+  }, [rawNodes, selectedNodeId, connectedNodeIds, expandedClusters, handleToggleCluster]);
+
+  // Apply Dimming & Visibility to Edges
   const displayEdges = useMemo<Edge[]>(() => {
-    if (!selectedNodeId) return edges;
-    return edges.map((e) => ({
-      ...e,
-      selected: e.source === selectedNodeId || e.target === selectedNodeId,
-    }));
-  }, [edges, selectedNodeId]);
+    const visibleNodeIds = new Set(displayNodes.map((n) => n.id));
+    return rawEdges
+      .filter((e) => visibleNodeIds.has(e.source) && visibleNodeIds.has(e.target))
+      .map((e) => ({
+        ...e,
+        selected: e.source === selectedNodeId || e.target === selectedNodeId,
+      }));
+  }, [rawEdges, displayNodes, selectedNodeId]);
 
   // Point-in-time node for inspector
   const inspectorNode = useMemo<AgentNodeData | null>(() => {
     if (!selectedNodeId) return null;
-    const found = nodes.find((n) => n.id === selectedNodeId);
+    const found = rawNodes.find((n) => n.id === selectedNodeId);
     return found ? (found.data as AgentNodeData) : null;
-  }, [nodes, selectedNodeId]);
+  }, [rawNodes, selectedNodeId]);
 
-  // ── Handlers ─────────────────────────────────────────────────────────────────
-  const handleNodeClick: NodeMouseHandler<AgentFlowNode> = useCallback((_evt, node) => {
-    setSelectedNodeId((prev) => (prev === node.id ? null : node.id));
-  }, []);
+  // ── Handlers & Smooth Camera Tweens ──────────────────────────────────────────
+  const handleNodeClick: NodeMouseHandler<AgentFlowNode> = useCallback(
+    (_evt, node) => {
+      const isDeselecting = selectedNodeId === node.id;
+      setSelectedNodeId(isDeselecting ? null : node.id);
+
+      // Smooth camera tween toward clicked node
+      if (!isDeselecting && rfInstance && node.position) {
+        rfInstance.setCenter(node.position.x + 80, node.position.y + 40, {
+          duration: 600,
+          zoom: 1.15,
+        });
+      }
+    },
+    [selectedNodeId, rfInstance],
+  );
 
   const handlePaneClick = useCallback((_evt: ReactMouseEvent) => {
     setSelectedNodeId(null);
@@ -174,7 +228,10 @@ export default function App() {
   const handleReset = useCallback(() => {
     reset();
     setSelectedNodeId(null);
-  }, [reset]);
+    if (rfInstance) {
+      rfInstance.fitView({ padding: 0.2, duration: 600 });
+    }
+  }, [reset, rfInstance]);
 
   // Bridge: "Inspect decision" in Paper Trading loads run trace into Agent Lab
   const handleInspectDecision = useCallback(
@@ -182,15 +239,19 @@ export default function App() {
       const trace = loadPaperTrace(runId);
       if (trace) {
         loadRecord(trace);
-        setSelectedNodeId('risk-engine'); // Immediately highlight the risk decision
+        setSelectedNodeId('risk-engine');
         setActiveWorkspace('agent-lab');
+        if (rfInstance) {
+          rfInstance.setCenter(850 + 80, 220 + 40, { duration: 600, zoom: 1.2 });
+        }
       }
     },
-    [loadRecord],
+    [loadRecord, rfInstance],
   );
 
   return (
     <div className="app-shell">
+      {/* Sleek Technical Command Bar */}
       <TopBar
         activeWorkspace={activeWorkspace}
         onSelectWorkspace={setActiveWorkspace}
@@ -214,29 +275,36 @@ export default function App() {
         />
       ) : (
         <>
-          <div className="app-body">
+          {/* Main 75-80% Canvas Viewport */}
+          <main className="app-body" role="main" aria-label="Knowledge graph workspace">
             <div className="canvas-area">
               <ReactFlow<AgentFlowNode, Edge>
                 nodes={displayNodes}
                 edges={displayEdges}
                 onNodeClick={handleNodeClick}
                 onPaneClick={handlePaneClick}
+                onInit={setRfInstance}
                 nodeTypes={NODE_TYPES}
                 edgeTypes={EDGE_TYPES}
                 fitView
-                fitViewOptions={{ padding: 0.18, maxZoom: 1.1 }}
+                fitViewOptions={{ padding: 0.16, maxZoom: 1.1 }}
                 minZoom={0.2}
-                maxZoom={2.5}
+                maxZoom={2.6}
                 proOptions={{ hideAttribution: true }}
-                aria-label="Agent workflow graph"
+                aria-label="Living agent workflow knowledge graph"
               >
                 <Controls
                   aria-label="Graph controls: zoom and fit"
                   showInteractive={false}
+                  className="graph-controls-custom"
                 />
               </ReactFlow>
+
+              {/* Floating Taxonomy & State Legend */}
+              <GraphLegend />
             </div>
 
+            {/* Translucent Right-Side System Inspector */}
             <NodeInspector
               node={inspectorNode}
               runRecord={runRecord}
@@ -244,9 +312,10 @@ export default function App() {
               activeEvents={activeEvents}
               onClose={() => setSelectedNodeId(null)}
             />
-          </div>
+          </main>
 
-          <EventTimeline
+          {/* Unified Bottom Command Strip */}
+          <BottomCommandStrip
             runRecord={runRecord}
             cursorIndex={cursorIndex}
             isPlaying={isPlaying}
@@ -255,13 +324,12 @@ export default function App() {
             onStepPrev={stepPrev}
             onRestart={restartPlayback}
             onSeek={seekTo}
+            activityEvents={activity}
           />
-
-          <ActivityStrip events={activity} />
         </>
       )}
 
-      {/* Agent Studio Modal */}
+      {/* Agent Studio & Training Registry Modal */}
       <AgentStudioModal
         isOpen={isAgentStudioOpen}
         onClose={() => setIsAgentStudioOpen(false)}

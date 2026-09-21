@@ -1,100 +1,131 @@
-// ─── Agent Trading OS — Custom Agent Node ─────────────────────────────────────
+// ─── Agent Trading OS — Redesigned Agent Node ─────────────────────────────────
+// Visual Taxonomy: Cognitive Agents, System Mechanical Nodes, Satellite Skills,
+// and Data/Tool Beacons. Removes heavy rectangular card containers in favor of
+// high-hierarchy, organic, living AI system morphologies.
 
 import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import type { AgentNodeData, NodeKind, NodeStatus } from '../types';
 
-// ── Kind → icon emoji map ──────────────────────────────────────────────────────
+// ── Kind Taxonomy Definitions ────────────────────────────────────────────────
 const KIND_ICONS: Record<NodeKind, string> = {
-  'data-source': '📡',
-  'analyst':     '🔍',
-  'strategy':    '♟',
-  'risk':        '🛡',
-  'execution':   '⚡',
-  'evaluation':  '📊',
-  'skill':       '🔧',
-  'memory':      '🧠',
+  'orchestrator': '⟡',
+  'data-source':  '📡',
+  'analyst':      '◈',
+  'strategy':     '▲',
+  'risk':         '⬡',
+  'execution':    '⚡',
+  'evaluation':   '◎',
+  'skill':        '◇',
+  'memory':       '□',
 };
 
-// ── Kind → human label ─────────────────────────────────────────────────────────
-const KIND_LABELS: Record<NodeKind, string> = {
-  'data-source': 'data source',
-  'analyst':     'analyst agent',
-  'strategy':    'strategy agent',
-  'risk':        'risk engine',
-  'execution':   'execution',
-  'evaluation':  'evaluation',
-  'skill':       'skill module',
-  'memory':      'memory store',
+const KIND_ROLES: Record<NodeKind, string> = {
+  'orchestrator': 'COORDINATOR',
+  'data-source':  'FEED BEACON',
+  'analyst':      'SIGNAL PERCEPTION',
+  'strategy':     'DELIBERATION',
+  'risk':         'SAFETY BOUNDARY',
+  'execution':    'PAPER ROUTER',
+  'evaluation':   'AUDIT & REFLECTION',
+  'skill':        'SKILL SATELLITE',
+  'memory':       'EPISODIC STORE',
 };
 
-// ── Status badge label ─────────────────────────────────────────────────────────
-const STATUS_LABELS: Record<NodeStatus, string> = {
-  idle:    'idle',
-  running: 'running',
-  success: 'done',
-  warning: 'warn',
-  failed:  'failed',
-  skipped: 'skipped',
-};
-
-// ── Status badge component ─────────────────────────────────────────────────────
-function StatusBadge({ status }: { status: NodeStatus }) {
-  return (
-    <span className={`agent-node__status-badge status-badge--${status}`} aria-label={`Status: ${status}`}>
-      <span className="status-badge__dot" aria-hidden="true" />
-      {STATUS_LABELS[status]}
-    </span>
-  );
-}
-
-// ── Main Node Component ────────────────────────────────────────────────────────
 const AgentNode = memo(function AgentNode({ data, selected }: NodeProps) {
-  // Cast data to typed shape (React Flow v12 requires data extends Record<string,unknown>)
   const nodeData = data as AgentNodeData;
-  const { label, kind, status, latestActivity, __dimmed } = nodeData;
+  const {
+    label,
+    kind,
+    status,
+    latestActivity,
+    __dimmed,
+    isSatellite,
+    isExpanded,
+  } = nodeData;
+
+  const nodeKind = (kind as NodeKind) || 'analyst';
+  const nodeStatus = (status as NodeStatus) || 'idle';
+
+  // Determine structural variant class
+  let variantClass = 'agent-node--agent';
+  if (nodeKind === 'risk' || nodeKind === 'execution' || nodeKind === 'evaluation') {
+    variantClass = 'agent-node--system';
+  } else if (nodeKind === 'skill') {
+    variantClass = 'agent-node--skill';
+  } else if (nodeKind === 'data-source' || nodeKind === 'memory') {
+    variantClass = 'agent-node--data';
+  }
+
+  const isExecuting = nodeStatus === 'running';
 
   return (
     <div
       className={[
         'agent-node',
+        variantClass,
+        `node-status--${nodeStatus}`,
         selected ? 'agent-node--selected' : '',
         __dimmed ? 'agent-node--dimmed' : '',
+        isSatellite ? 'agent-node--satellite' : '',
       ].filter(Boolean).join(' ')}
-      data-status={status}
       tabIndex={0}
-      aria-label={`${label}, ${KIND_LABELS[kind as NodeKind]}, status: ${status}`}
       role="button"
+      aria-label={`${label}, ${KIND_ROLES[nodeKind]}, Status: ${nodeStatus}`}
     >
-      {/* Source / Target handles — all sides for flexible layouts */}
-      <Handle type="target" position={Position.Left}   id="left"   style={{ top: '50%' }} />
-      <Handle type="target" position={Position.Top}    id="top"    style={{ left: '50%' }} />
-      <Handle type="source" position={Position.Right}  id="right"  style={{ top: '50%' }} />
-      <Handle type="source" position={Position.Bottom} id="bottom" style={{ left: '50%' }} />
+      {/* Universal Handles for organic connections */}
+      <Handle type="target" position={Position.Left}   id="left"   className="node-handle" />
+      <Handle type="target" position={Position.Top}    id="top"    className="node-handle" />
+      <Handle type="source" position={Position.Right}  id="right"  className="node-handle" />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="node-handle" />
 
-      {/* Header row: icon + label */}
-      <div className="agent-node__header">
-        <span
-          className={`agent-node__icon agent-node__icon--${kind}`}
-          aria-hidden="true"
-        >
-          {KIND_ICONS[kind as NodeKind]}
-        </span>
-        <span className="agent-node__label" title={String(label)}>
-          {String(label)}
-        </span>
+      {/* Luminous aura behind active/selected node */}
+      <div className="agent-node__aura" aria-hidden="true" />
+
+      {/* Primary Node Frame */}
+      <div className="agent-node__frame">
+        {/* State Ring & Core Indicator */}
+        <div className="agent-node__glyph-ring" aria-hidden="true">
+          <span className="agent-node__glyph">{KIND_ICONS[nodeKind]}</span>
+          {isExecuting && <span className="agent-node__ring-pulse" />}
+        </div>
+
+        {/* Content Body */}
+        <div className="agent-node__body">
+          <div className="agent-node__role-bar">
+            <span className="agent-node__role">{KIND_ROLES[nodeKind]}</span>
+            <span className={`agent-node__state-dot state-dot--${nodeStatus}`} />
+          </div>
+
+          <span className="agent-node__label" title={String(label)}>
+            {String(label)}
+          </span>
+        </div>
+
+        {/* Cluster expansion toggle if node has satellites */}
+        {nodeData.parentId === undefined && (nodeKind === 'analyst' || nodeKind === 'strategy' || nodeKind === 'risk') && (
+          <button
+            type="button"
+            className={`agent-node__cluster-toggle ${isExpanded ? 'agent-node__cluster-toggle--expanded' : ''}`}
+            title={isExpanded ? 'Collapse satellite nodes' : 'Expand satellite nodes'}
+            aria-label={isExpanded ? 'Collapse satellite nodes' : 'Expand satellite nodes'}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (typeof nodeData.onToggleCluster === 'function') {
+                nodeData.onToggleCluster();
+              }
+            }}
+          >
+            <span>{isExpanded ? '−' : '+'}</span>
+          </button>
+        )}
       </div>
 
-      {/* Status badge */}
-      <StatusBadge status={status as NodeStatus} />
-
-      {/* Kind sub-label */}
-      <div className="agent-node__kind">{KIND_LABELS[kind as NodeKind]}</div>
-
-      {/* Latest activity snippet */}
+      {/* Hover activity beacon: only appears on hover or active step, NOT taking permanent card space */}
       {latestActivity && (
-        <div className="agent-node__activity" title={String(latestActivity)}>
-          {String(latestActivity)}
+        <div className="agent-node__micro-activity" title={String(latestActivity)}>
+          <span className="agent-node__micro-activity-dot" />
+          <span className="agent-node__micro-activity-text">{String(latestActivity)}</span>
         </div>
       )}
     </div>
