@@ -4,6 +4,8 @@
 
 // ── Primitive domain types ────────────────────────────────────────────────────
 
+import type { NormalizedMarketSnapshot } from '../paper/types';
+
 export type ScenarioKey = 'allowed' | 'blocked';
 
 /** What the pipeline receives at its entry point */
@@ -16,6 +18,8 @@ export interface PipelineInput {
   symbol: string;
   /** Quantity proposed by Strategy Agent (set by scenario) */
   proposedQty: number;
+  /** Genuine live snapshot if running on real-time market data */
+  liveSnapshot?: NormalizedMarketSnapshot;
 }
 
 // ── Stage-level data ──────────────────────────────────────────────────────────

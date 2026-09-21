@@ -12,16 +12,16 @@
     "semantic_hash": "dcffcb8a37a3422c093a71e5c3638e56"
   },
   "src/App.tsx": {
-    "mtime": 1790023615.969644,
-    "seen": 1790024042.3296616,
-    "ast_hash": "157880fd93300c3875444d9d027366c7",
+    "mtime": 1790024757.705648,
+    "seen": 1790025215.6340473,
+    "ast_hash": "c1cb476b306f1ecfcf720d6aea113b4d",
     "semantic_hash": ""
   },
   "src/__tests__/paperTrading.test.ts": {
-    "mtime": 1790012869.1454775,
-    "seen": 1790014646.0534067,
-    "ast_hash": "c4eef4ed143c2d5d7431aee6138f7bd7",
-    "semantic_hash": "c4eef4ed143c2d5d7431aee6138f7bd7"
+    "mtime": 1790024796.9418008,
+    "seen": 1790025215.6340516,
+    "ast_hash": "0afd9e03a2407ac6c7242656092bead6",
+    "semantic_hash": ""
   },
   "src/__tests__/replay.test.ts": {
     "mtime": 1790010221.1054924,
@@ -72,10 +72,10 @@
     "semantic_hash": ""
   },
   "src/components/PaperTradingWorkspace.tsx": {
-    "mtime": 1790013758.179298,
-    "seen": 1790014646.0534167,
-    "ast_hash": "107258d34ab9a66c825b2c6fc377293d",
-    "semantic_hash": "107258d34ab9a66c825b2c6fc377293d"
+    "mtime": 1790024536.2133164,
+    "seen": 1790025215.6340742,
+    "ast_hash": "015dfd9ac833cd1413e96c319c7d91c7",
+    "semantic_hash": ""
   },
   "src/components/PriceChart.tsx": {
     "mtime": 1790012718.697174,
@@ -84,9 +84,9 @@
     "semantic_hash": "6a4cd4bdb632c2d5c75abaceb6e16d88"
   },
   "src/components/TopBar.tsx": {
-    "mtime": 1790023583.1020517,
-    "seen": 1790024042.329696,
-    "ast_hash": "a97e901f022f807f9bf02f5b172dcd27",
+    "mtime": 1790024690.2240906,
+    "seen": 1790025215.6340766,
+    "ast_hash": "e4c8bd6387633620bb95f5f1bc6b0de6",
     "semantic_hash": ""
   },
   "src/data/demoSequence.ts": {
@@ -108,10 +108,10 @@
     "semantic_hash": "362f31d51af99874042dbf830164fcb4"
   },
   "src/hooks/useReplayRunner.ts": {
-    "mtime": 1790015284.559626,
-    "seen": 1790015326.4444265,
-    "ast_hash": "35d5993adfac2b5ac444472b00e5f0b4",
-    "semantic_hash": "35d5993adfac2b5ac444472b00e5f0b4"
+    "mtime": 1790024645.8370912,
+    "seen": 1790025215.6340837,
+    "ast_hash": "626acb9a7a90f15409ef910414a03c2a",
+    "semantic_hash": ""
   },
   "src/main.tsx": {
     "mtime": 1789143790.879017,
@@ -126,10 +126,10 @@
     "semantic_hash": "4077012eeb48efbd80dd8a6fd3617c1b"
   },
   "src/paper/kalshi.ts": {
-    "mtime": 1790013737.3186395,
-    "seen": 1790014646.0534256,
-    "ast_hash": "f8bcf27334d04609518d5500a0b396d5",
-    "semantic_hash": "f8bcf27334d04609518d5500a0b396d5"
+    "mtime": 1790024485.3076642,
+    "seen": 1790025215.6340895,
+    "ast_hash": "1f8c965fcff9c7614a4a1c341e98c830",
+    "semantic_hash": ""
   },
   "src/paper/paperTraceBridge.ts": {
     "mtime": 1790012691.645254,
@@ -144,10 +144,10 @@
     "semantic_hash": "6444b9816d6c18b3b0a62a24c70be848"
   },
   "src/paper/usePaperTrading.ts": {
-    "mtime": 1790012700.6624365,
-    "seen": 1790014646.053429,
-    "ast_hash": "9521946af83da47d7f6a34520cb49ddd",
-    "semantic_hash": "9521946af83da47d7f6a34520cb49ddd"
+    "mtime": 1790024518.4078844,
+    "seen": 1790025215.6340935,
+    "ast_hash": "c26b5e767f70205e978237737baa8195",
+    "semantic_hash": ""
   },
   "src/types/index.ts": {
     "mtime": 1790023590.7880461,
@@ -168,10 +168,10 @@
     "semantic_hash": "a4b937bec54e8a4f595e4a88e5135ab8"
   },
   "src/workflow/runner.ts": {
-    "mtime": 1790015309.2426891,
-    "seen": 1790015326.4463716,
-    "ast_hash": "4622d9bec6740ace03fb0cc61da28063",
-    "semantic_hash": "4622d9bec6740ace03fb0cc61da28063"
+    "mtime": 1790024592.727283,
+    "seen": 1790025215.634099,
+    "ast_hash": "2ec68c6f2319465f8e7be86a13440650",
+    "semantic_hash": ""
   },
   "src/workflow/scenarios.ts": {
     "mtime": 1790006270.0768583,
@@ -180,16 +180,16 @@
     "semantic_hash": "3009c3cb43964a1111c49517ff4a0af3"
   },
   "src/workflow/stages.ts": {
-    "mtime": 1790014906.3717966,
-    "seen": 1790015326.4466426,
-    "ast_hash": "6f3bd4841c2e747e83f1c85969a3a396",
-    "semantic_hash": "6f3bd4841c2e747e83f1c85969a3a396"
+    "mtime": 1790024581.6819446,
+    "seen": 1790025215.6341014,
+    "ast_hash": "b5f45e48ab20c9d5940e7b6179b896c9",
+    "semantic_hash": ""
   },
   "src/workflow/types.ts": {
-    "mtime": 1790014885.0201979,
-    "seen": 1790015326.4466443,
-    "ast_hash": "5a0d1432a2780f718a0810e3cba3f258",
-    "semantic_hash": "5a0d1432a2780f718a0810e3cba3f258"
+    "mtime": 1790024563.8537807,
+    "seen": 1790025215.6341026,
+    "ast_hash": "5f49f54c02e09d0a9bdd462c67892930",
+    "semantic_hash": ""
   },
   "tsconfig.app.json": {
     "mtime": 1789143790.880611,
@@ -210,10 +210,10 @@
     "semantic_hash": "f9cb81ddcea69ffdab672fc8c48dca66"
   },
   "vite.config.ts": {
-    "mtime": 1790012628.927251,
-    "seen": 1790014646.0534394,
-    "ast_hash": "352b9db773aa95f0647de387662f0526",
-    "semantic_hash": "352b9db773aa95f0647de387662f0526"
+    "mtime": 1790024471.0497487,
+    "seen": 1790025215.6341481,
+    "ast_hash": "ab0e25e1c03b9c824d184fe57ef410b9",
+    "semantic_hash": ""
   },
   "vitest.config.ts": {
     "mtime": 1790006581.4305239,
@@ -438,9 +438,9 @@
     "semantic_hash": "650af0eb256b208b9a378825dfcf0a74"
   },
   "src/components/BottomCommandStrip.tsx": {
-    "mtime": 1790023308.623976,
-    "seen": 1790024042.3296845,
-    "ast_hash": "6671b5c4189b3510f734295367065053",
+    "mtime": 1790024714.3150625,
+    "seen": 1790025215.6340673,
+    "ast_hash": "d6e15ad2937dfc4a6df6164f9ff92319",
     "semantic_hash": ""
   },
   "src/components/GraphLegend.tsx": {
@@ -657,6 +657,12 @@
     "mtime": 1789143790.875924,
     "seen": 1790024042.3298213,
     "ast_hash": "9960a24288958394ac50e57ff638b036",
+    "semantic_hash": ""
+  },
+  "src/paper/crypto.ts": {
+    "mtime": 1790024492.927741,
+    "seen": 1790025215.6340883,
+    "ast_hash": "5f18a908356e34363ef431793f95226b",
     "semantic_hash": ""
   }
 }

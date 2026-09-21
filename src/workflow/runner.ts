@@ -151,14 +151,16 @@ export function runWorkflow(
   };
 
   // ── Stage 1: Market Feed ────────────────────────────────────────────────────
-  const feedInput = {};
+  const feedInput = input.liveSnapshot ? { ticker: input.liveSnapshot.ticker, live: true } : {};
   emit(startEvent(runId, seq++, 'market-feed', feedInput));
-  const feedOutput = runMarketFeed();
+  const feedOutput = runMarketFeed(input.liveSnapshot);
   emit(completeEvent(
     runId, seq++, 'market-feed',
     feedInput,
     feedOutput as unknown as Record<string, unknown>,
-    `Loaded ${feedOutput.tickCount} ticks across ${feedOutput.symbols.length} symbols. Top: ${feedOutput.topSymbol}.`,
+    input.liveSnapshot
+      ? `Streamed live market snapshot for ${input.liveSnapshot.ticker}: last $${input.liveSnapshot.lastPrice ?? input.liveSnapshot.bestYesAsk ?? '0.00'} (${input.liveSnapshot.depth?.yesBids?.length ?? 0} bid tiers).`
+      : `Loaded ${feedOutput.tickCount} ticks across ${feedOutput.symbols.length} symbols. Top: ${feedOutput.topSymbol}.`,
   ));
 
   // ── Stage 1b: Analysis Skill (if active agent) ──────────────────────────────
@@ -167,7 +169,7 @@ export function runWorkflow(
     const skillId = activeAgent.skills[0] ?? 'kalshi-spread-analyzer';
     const skillInput = { topSymbol: feedOutput.topSymbol, skillId };
     emit(startEvent(runId, seq++, 'analysis-skill', skillInput));
-    skillOutput = runAnalysisSkill(feedOutput, skillId);
+    skillOutput = runAnalysisSkill(feedOutput, skillId, input.liveSnapshot);
     emit(completeEvent(
       runId, seq++, 'analysis-skill',
       skillInput,
@@ -179,7 +181,7 @@ export function runWorkflow(
   // ── Stage 2: Market Analyst ─────────────────────────────────────────────────
   const analystInput = feedOutput as unknown as Record<string, unknown>;
   emit(startEvent(runId, seq++, 'market-analyst', analystInput));
-  const analystOutput = runMarketAnalyst(feedOutput, skillOutput);
+  const analystOutput = runMarketAnalyst(feedOutput, skillOutput, input.liveSnapshot);
   emit(completeEvent(
     runId, seq++, 'market-analyst',
     analystInput,
@@ -190,9 +192,10 @@ export function runWorkflow(
   // ── Stage 2b: Memory Query (if active agent) ────────────────────────────────
   let memoryQuery: MemoryQueryOutput | undefined;
   if (activeAgent) {
-    const memoryQueryInput = { agentId: activeAgent.id, symbol: input.symbol, spread: 0.03 };
+    const observedSpread = input.liveSnapshot?.spread ?? 0.03;
+    const memoryQueryInput = { agentId: activeAgent.id, symbol: input.symbol, spread: observedSpread };
     emit(startEvent(runId, seq++, 'agent-memory', memoryQueryInput));
-    memoryQuery = queryRelevantMemories(activeAgent, input.symbol, 0.03);
+    memoryQuery = queryRelevantMemories(activeAgent, input.symbol, observedSpread);
     emit(completeEvent(
       runId, seq++, 'agent-memory',
       memoryQueryInput,

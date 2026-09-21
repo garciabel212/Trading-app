@@ -12,33 +12,48 @@ import type {
 
 export const CURATED_MARKETS: MarketOption[] = [
   {
+    ticker: 'KXOAIANTH-40-ANTH',
+    title: 'Will OpenAI or Anthropic IPO first? — Anthropic',
+    category: 'Tech & AI Bets',
+  },
+  {
+    ticker: 'KXOAIANTH-40-OAI',
+    title: 'Will OpenAI or Anthropic IPO first? — OpenAI',
+    category: 'Tech & AI Bets',
+  },
+  {
+    ticker: 'KXRAMPBREX-40-RAMP',
+    title: 'Will Ramp or Brex IPO first? — Ramp',
+    category: 'Tech & AI Bets',
+  },
+  {
     ticker: 'KXELONMARS-99',
     title: 'Will Elon Musk visit Mars before Aug 1, 2099?',
-    category: 'Science & Tech',
+    category: 'World & Space Bets',
   },
   {
     ticker: 'KXWARMING-50',
     title: 'Will the world pass 2 degrees Celsius over pre-industrial levels before 2050?',
-    category: 'Climate',
+    category: 'Climate & World Bets',
+  },
+  {
+    ticker: 'KXNEWPOPE-70-PPAR',
+    title: 'Who will the next Pope be? — Cardinal Pietro Parolin',
+    category: 'Politics & Leadership Bets',
   },
   {
     ticker: 'KXMARSVRAIL-50',
     title: 'Will a human land on Mars before California starts high-speed rail?',
-    category: 'Science & Tech',
+    category: 'Tech & Infrastructure Bets',
   },
   {
-    ticker: 'KXERUPTSUPER-0',
-    title: 'Will a supervolcano erupt before 2050?',
-    category: 'Climate',
-  },
-  {
-    ticker: 'KXCOLONIZEMARS-50',
-    title: 'Will humans colonize Mars before 2050?',
-    category: 'Science & Tech',
+    ticker: 'KXERUPTSUPER-0-50JAN01',
+    title: 'When will a supervolcano next erupt? — Before 2050',
+    category: 'Climate & World Bets',
   },
 ];
 
-export const KALSHI_POLL_INTERVAL_MS = 6000;
+export const KALSHI_POLL_INTERVAL_MS = 3500;
 export const STALE_DATA_THRESHOLD_MS = 30000; // 30s
 
 /** Decimal-safe 4-place rounding */

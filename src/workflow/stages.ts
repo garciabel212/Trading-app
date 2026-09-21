@@ -22,10 +22,21 @@ import type {
   MemoryQueryOutput,
   TradingAgentProfile,
 } from '../agents/types';
+import type { NormalizedMarketSnapshot } from '../paper/types';
 
 // ── Stage 1: Market Feed ──────────────────────────────────────────────────────
 
-export function runMarketFeed(): MarketFeedOutput {
+export function runMarketFeed(liveSnapshot?: NormalizedMarketSnapshot): MarketFeedOutput {
+  if (liveSnapshot) {
+    const depthCount =
+      (liveSnapshot.depth?.yesBids?.length ?? 0) +
+      (liveSnapshot.depth?.noBids?.length ?? 0);
+    return {
+      symbols: [liveSnapshot.ticker, 'AAPL', 'SPY'],
+      tickCount: Math.max(1, depthCount),
+      topSymbol: liveSnapshot.ticker,
+    };
+  }
   return {
     symbols: ['AAPL', 'TSLA', 'SPY', 'QQQ', 'MSFT'],
     tickCount: 847,
@@ -38,8 +49,27 @@ export function runMarketFeed(): MarketFeedOutput {
 export function runAnalysisSkill(
   feed: MarketFeedOutput,
   skillId: string = 'kalshi-spread-analyzer',
+  liveSnapshot?: NormalizedMarketSnapshot,
 ): SkillExecutionOutput {
   const isSpread = skillId === 'kalshi-spread-analyzer';
+  if (liveSnapshot) {
+    const spreadVal = liveSnapshot.spread ?? 0.03;
+    const lastP = liveSnapshot.lastPrice ?? liveSnapshot.bestYesAsk ?? 0.5;
+    const frictionPct = ((spreadVal / Math.max(0.01, lastP)) * 100).toFixed(1);
+    return {
+      skillId,
+      skillName: isSpread ? 'Kalshi Spread Analyzer' : 'Momentum Trend Tracker',
+      indicator: isSpread ? 'Spread-to-Price Ratio' : 'EMA Momentum',
+      value: isSpread
+        ? `${frictionPct}% (${spreadVal <= 0.05 ? 'tight spread' : 'wide spread friction'})`
+        : '+0.74 (bullish)',
+      summary: isSpread
+        ? `Analyzed real-time orderbook depth for ${feed.topSymbol}: bid $${liveSnapshot.bestYesBid ?? '0.00'} / ask $${liveSnapshot.bestYesAsk ?? '0.00'}, spread evaluated at ${frictionPct}% friction.`
+        : `Analyzed exponential momentum for ${feed.topSymbol}: directional strength score +0.74.`,
+      timestamp: Date.now(),
+    };
+  }
+
   return {
     skillId,
     skillName: isSpread ? 'Kalshi Spread Analyzer' : 'Momentum Trend Tracker',
@@ -57,15 +87,24 @@ export function runAnalysisSkill(
 export function runMarketAnalyst(
   feed: MarketFeedOutput,
   skill?: SkillExecutionOutput,
+  liveSnapshot?: NormalizedMarketSnapshot,
 ): AnalystOutput {
+  const topSymbol = feed.topSymbol;
+  let direction: 'long' | 'short' | 'neutral' = 'long';
+  let strength = 0.74;
+
+  if (liveSnapshot) {
+    const spread = liveSnapshot.spread ?? 0.05;
+    strength = Math.max(0.2, Math.min(0.95, Math.round((1 - spread * 2) * 100) / 100));
+    direction = (liveSnapshot.lastPrice ?? 0.5) >= 0.5 ? 'long' : 'short';
+  }
+
   const signals: Signal[] = [
-    { symbol: 'AAPL', direction: 'long',    strength: 0.74, indicator: skill?.indicator ?? 'Momentum' },
+    { symbol: topSymbol, direction, strength, indicator: skill?.indicator ?? 'Spread & Orderbook' },
     { symbol: 'SPY',  direction: 'short',   strength: 0.41, indicator: 'RSI(14)' },
     { symbol: 'QQQ',  direction: 'neutral', strength: 0.18, indicator: 'MACD' },
   ];
-  // topSymbol from feed determines which signal is considered top
-  const topSignal = signals.find((s) => s.symbol === feed.topSymbol) ?? signals[0];
-  return { signals, topSignal };
+  return { signals, topSignal: signals[0] };
 }
 
 // ── Stage 3: Strategy Agent ───────────────────────────────────────────────────

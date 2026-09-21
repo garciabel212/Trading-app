@@ -3,7 +3,7 @@
 // hierarchical node morphologies, smooth camera tweening, progressive cluster disclosure,
 // dynamic energy flow edges, sleek bottom command strip, and glassmorphic inspector.
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -98,8 +98,11 @@ export default function App() {
     runRecord,
     cursorIndex,
     isPlaying,
+    isLiveAutonomous,
     runScenario,
     runTrainingCycle,
+    runLiveCycle,
+    toggleLiveAutonomous,
     togglePlayPause,
     stepNext,
     stepPrev,
@@ -108,6 +111,26 @@ export default function App() {
     loadRecord,
     reset,
   } = useReplayRunner();
+
+  // Autonomous live agent monitoring loop: continuously samples live bets & market data
+  useEffect(() => {
+    if (!isLiveAutonomous || activeWorkspace !== 'agent-lab') return;
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const executeCycle = () => {
+      if (paperState.snapshot) {
+        runLiveCycle(paperState.snapshot, activeAgent);
+      }
+      timer = setTimeout(executeCycle, 5000);
+    };
+
+    executeCycle();
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [isLiveAutonomous, activeWorkspace, paperState.snapshot, activeAgent, runLiveCycle]);
 
   // ── Derived State from Shared Replay Cursor ─────────────────────────────────
   const activeEvents = useMemo(() => {
@@ -266,6 +289,9 @@ export default function App() {
         activeAgent={activeAgent}
         onOpenAgentStudio={() => setIsAgentStudioOpen(true)}
         onRunTrainingCycle={handleRunTrainingCycle}
+        isLiveAutonomous={isLiveAutonomous}
+        onToggleLiveAutonomous={toggleLiveAutonomous}
+        liveTicker={paperState.selectedTicker}
       />
 
       {activeWorkspace === 'paper-trading' ? (
@@ -325,6 +351,8 @@ export default function App() {
             onRestart={restartPlayback}
             onSeek={seekTo}
             activityEvents={activity}
+            isLiveAutonomous={isLiveAutonomous}
+            onToggleLiveAutonomous={toggleLiveAutonomous}
           />
         </>
       )}

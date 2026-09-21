@@ -3,25 +3,32 @@ import { defineConfig, type Plugin } from 'vite';
 
 /**
  * Minimal local proxy with 3s in-memory caching to access Kalshi's public
- * market data safely and protect against HTTP 429 rate-limiting.
+ * prediction market data and Coinbase live crypto market data safely without CORS.
  */
-function kalshiProxyPlugin(): Plugin {
+function marketDataProxyPlugin(): Plugin {
   const cache = new Map<
     string,
     { body: string; status: number; time: number }
   >();
-  const CACHE_TTL_MS = 3000;
+  const CACHE_TTL_MS = 2500;
 
   return {
-    name: 'kalshi-proxy',
+    name: 'market-data-proxy',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        if (!req.url?.startsWith('/api/kalshi')) {
-          return next();
+        let targetUrl: string | null = null;
+
+        if (req.url?.startsWith('/api/kalshi')) {
+          const subpath = req.url.replace(/^\/api\/kalshi/, '');
+          targetUrl = `https://api.elections.kalshi.com/trade-api/v2${subpath}`;
+        } else if (req.url?.startsWith('/api/coinbase')) {
+          const subpath = req.url.replace(/^\/api\/coinbase/, '');
+          targetUrl = `https://api.exchange.coinbase.com${subpath}`;
         }
 
-        const subpath = req.url.replace(/^\/api\/kalshi/, '');
-        const targetUrl = `https://api.elections.kalshi.com/trade-api/v2${subpath}`;
+        if (!targetUrl) {
+          return next();
+        }
 
         const now = Date.now();
         const cached = cache.get(targetUrl);
@@ -72,5 +79,5 @@ function kalshiProxyPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), kalshiProxyPlugin()],
+  plugins: [react(), marketDataProxyPlugin()],
 });

@@ -16,6 +16,7 @@ import { executionAdapter } from '../workflow/adapter';
 import { SCENARIOS } from '../workflow/scenarios';
 
 import type { TradingAgentProfile } from '../agents/types';
+import type { NormalizedMarketSnapshot } from '../paper/types';
 
 export const PLAYBACK_STEP_MS = 900;
 
@@ -25,8 +26,11 @@ export interface UseReplayRunnerResult {
   isPlaying: boolean;
   isRunComplete: boolean;
   isPlaybackComplete: boolean;
+  isLiveAutonomous: boolean;
   runScenario: (key: ScenarioKey, activeAgent?: TradingAgentProfile) => void;
   runTrainingCycle: (agent: TradingAgentProfile) => void;
+  runLiveCycle: (snapshot: NormalizedMarketSnapshot, agent: TradingAgentProfile) => RunRecord;
+  toggleLiveAutonomous: () => void;
   togglePlayPause: () => void;
   stepNext: () => void;
   stepPrev: () => void;
@@ -40,6 +44,7 @@ export function useReplayRunner(): UseReplayRunnerResult {
   const [runRecord, setRunRecord] = useState<RunRecord | null>(null);
   const [cursorIndex, setCursorIndex] = useState<number>(-1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isLiveAutonomous, setIsLiveAutonomous] = useState<boolean>(false);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -129,6 +134,36 @@ export function useReplayRunner(): UseReplayRunnerResult {
     [clearTimer],
   );
 
+  /** Execute a live cycle against a real-time market/bet snapshot */
+  const runLiveCycle = useCallback(
+    (snapshot: NormalizedMarketSnapshot, agent: TradingAgentProfile) => {
+      clearTimer();
+      setIsPlaying(false);
+
+      executionAdapter.reset();
+
+      const input = {
+        scenarioKey: 'allowed' as ScenarioKey,
+        description: `Live Market Cycle — ${snapshot.ticker} (${snapshot.marketTitle.slice(0, 36)})`,
+        symbol: snapshot.ticker,
+        proposedQty: agent.parameters.targetOrderSize,
+        liveSnapshot: snapshot,
+      };
+
+      const record = runWorkflow(input, executionAdapter, undefined, agent);
+
+      setRunRecord(record);
+      setCursorIndex(0);
+      setIsPlaying(true);
+      return record;
+    },
+    [clearTimer],
+  );
+
+  const toggleLiveAutonomous = useCallback(() => {
+    setIsLiveAutonomous((prev) => !prev);
+  }, []);
+
   /** Toggle play / pause */
   const togglePlayPause = useCallback(() => {
     if (!runRecord) return;
@@ -212,8 +247,11 @@ export function useReplayRunner(): UseReplayRunnerResult {
     isPlaying,
     isRunComplete,
     isPlaybackComplete,
+    isLiveAutonomous,
     runScenario,
     runTrainingCycle,
+    runLiveCycle,
+    toggleLiveAutonomous,
     togglePlayPause,
     stepNext,
     stepPrev,

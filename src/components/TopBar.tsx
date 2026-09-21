@@ -21,6 +21,9 @@ interface TopBarProps {
   activeAgent?: TradingAgentProfile;
   onOpenAgentStudio?: () => void;
   onRunTrainingCycle?: () => void;
+  isLiveAutonomous?: boolean;
+  onToggleLiveAutonomous?: () => void;
+  liveTicker?: string;
 }
 
 const SCENARIO_LABELS: Record<ScenarioKey, string> = {
@@ -42,6 +45,9 @@ const TopBar = memo(function TopBar({
   activeAgent,
   onOpenAgentStudio,
   onRunTrainingCycle,
+  isLiveAutonomous,
+  onToggleLiveAutonomous,
+  liveTicker,
 }: TopBarProps) {
   return (
     <header className="topbar" role="banner">
@@ -93,6 +99,18 @@ const TopBar = memo(function TopBar({
             </button>
           )}
 
+          {/* Live Autonomous Monitor Action */}
+          {onToggleLiveAutonomous && (
+            <button
+              id="btn-live-monitor"
+              className={`topbar-action-btn ${isLiveAutonomous ? 'topbar-action-btn--live-active' : 'topbar-action-btn--train'} font-mono`}
+              onClick={onToggleLiveAutonomous}
+              title={isLiveAutonomous ? 'Autonomous live agent monitoring is running (click to pause)' : 'Start continuous autonomous live monitoring on real prediction bets'}
+            >
+              {isLiveAutonomous ? '● LIVE MONITOR (5s)' : '⚡ LIVE MONITOR'}
+            </button>
+          )}
+
           {/* Training Cycle Action */}
           {onRunTrainingCycle && (
             <button
@@ -100,7 +118,7 @@ const TopBar = memo(function TopBar({
               className="topbar-action-btn topbar-action-btn--train font-mono"
               onClick={onRunTrainingCycle}
               title="Run end-to-end learning cycle with episodic reflection"
-              disabled={isRunning}
+              disabled={isRunning || isLiveAutonomous}
             >
               ⚡ RUN CYCLE
             </button>
@@ -112,7 +130,7 @@ const TopBar = memo(function TopBar({
             className="topbar-action-btn topbar-action-btn--run font-mono"
             onClick={onRunScenario}
             title="Execute selected scenario"
-            disabled={isRunning}
+            disabled={isRunning || isLiveAutonomous}
           >
             {isRunning ? '▶ RUNNING...' : '▶ EXECUTE'}
           </button>
@@ -123,6 +141,7 @@ const TopBar = memo(function TopBar({
             className="topbar-action-btn topbar-action-btn--reset font-mono"
             onClick={onReset}
             title="Clear run and return to idle"
+            disabled={isLiveAutonomous}
           >
             ↺
           </button>
@@ -133,7 +152,9 @@ const TopBar = memo(function TopBar({
       <div className="topbar__telemetry">
         <span className="topbar__mode-badge font-mono">
           {activeWorkspace === 'paper-trading'
-            ? 'KALSHI LIVE · SIMULATED EXEC'
+            ? 'KALSHI BETS · COINBASE CRYPTO · SIMULATED EXEC'
+            : isLiveAutonomous
+            ? `LIVE MONITORING · ${liveTicker ?? 'KXOAIANTH-40-ANTH'}`
             : hasRunRecord
             ? `RECORDED · ${totalEvents} EVENTS`
             : 'GRAPH WORKSPACE · READY'}

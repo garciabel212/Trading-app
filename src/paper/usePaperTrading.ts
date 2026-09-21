@@ -9,12 +9,18 @@ import type {
   PaperAccount,
   PaperOrder,
   PriceObservation,
+  MarketOption,
 } from './types';
 import {
   CURATED_MARKETS,
   KALSHI_POLL_INTERVAL_MS,
   fetchMarketSnapshot,
 } from './kalshi';
+import {
+  CRYPTO_MARKETS,
+  isCryptoTicker,
+  fetchCryptoSnapshot,
+} from './crypto';
 import {
   INITIAL_PAPER_ACCOUNT,
   executePaperTrade,
@@ -27,6 +33,11 @@ import {
 } from './account';
 import { buildPaperTradeRunRecord } from './paperTraceBridge';
 import type { RunRecord } from '../workflow/types';
+
+export const ALL_MARKETS: MarketOption[] = [
+  ...CURATED_MARKETS,
+  ...CRYPTO_MARKETS,
+];
 
 export function usePaperTrading() {
   const [selectedTicker, setSelectedTicker] = useState<string>(
@@ -41,14 +52,17 @@ export function usePaperTrading() {
   const [orders, setOrders] = useState<PaperOrder[]>(loadPersistedOrders);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastPollTime, setLastPollTime] = useState<number | null>(null);
+  const [isLiveRunning, setIsLiveRunning] = useState<boolean>(true);
 
   const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isMountedRef = useRef(true);
 
-  // Poll function
+  // Poll function (routes to either Kalshi or Coinbase based on ticker)
   const poll = useCallback(async (ticker: string) => {
     setConnectionStatus('polling');
-    const result = await fetchMarketSnapshot(ticker);
+    const result = isCryptoTicker(ticker)
+      ? await fetchCryptoSnapshot(ticker)
+      : await fetchMarketSnapshot(ticker);
 
     if (!isMountedRef.current) return;
 
@@ -87,7 +101,7 @@ export function usePaperTrading() {
     }
   }, []);
 
-  // Polling lifecycle
+  // Polling lifecycle with live running controls
   useEffect(() => {
     isMountedRef.current = true;
     setObservations([]); // Reset chart observations on ticker change
@@ -96,17 +110,21 @@ export function usePaperTrading() {
     // Initial fetch
     poll(selectedTicker);
 
-    // Recurring poll
+    // Recurring poll if live running is enabled
     const scheduleNext = () => {
+      if (!isLiveRunning) return;
       pollTimerRef.current = setTimeout(async () => {
+        if (!isMountedRef.current) return;
         await poll(selectedTicker);
-        if (isMountedRef.current) {
+        if (isMountedRef.current && isLiveRunning) {
           scheduleNext();
         }
       }, KALSHI_POLL_INTERVAL_MS);
     };
 
-    scheduleNext();
+    if (isLiveRunning) {
+      scheduleNext();
+    }
 
     return () => {
       isMountedRef.current = false;
@@ -114,7 +132,11 @@ export function usePaperTrading() {
         clearTimeout(pollTimerRef.current);
       }
     };
-  }, [selectedTicker, poll]);
+  }, [selectedTicker, poll, isLiveRunning]);
+
+  const toggleLiveRunning = useCallback(() => {
+    setIsLiveRunning((prev) => !prev);
+  }, []);
 
   // Immediate manual refresh
   const refreshNow = useCallback(() => {
@@ -193,6 +215,9 @@ export function usePaperTrading() {
     orders,
     isSubmitting,
     lastPollTime,
+    isLiveRunning,
+    toggleLiveRunning,
+    allMarkets: ALL_MARKETS,
     changeMarket,
     refreshNow,
     submitOrder,

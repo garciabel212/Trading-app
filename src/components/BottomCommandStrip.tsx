@@ -16,6 +16,8 @@ interface BottomCommandStripProps {
   onRestart: () => void;
   onSeek: (index: number) => void;
   activityEvents: ActivityEvent[];
+  isLiveAutonomous?: boolean;
+  onToggleLiveAutonomous?: () => void;
 }
 
 const BottomCommandStrip = memo(function BottomCommandStrip({
@@ -28,6 +30,8 @@ const BottomCommandStrip = memo(function BottomCommandStrip({
   onRestart,
   onSeek,
   activityEvents,
+  isLiveAutonomous,
+  onToggleLiveAutonomous,
 }: BottomCommandStripProps) {
   const hasRun = runRecord !== null;
   const totalEvents = hasRun ? runRecord.events.length : 0;
@@ -79,16 +83,26 @@ const BottomCommandStrip = memo(function BottomCommandStrip({
 
           <span className="command-strip__sep">·</span>
 
-          <span className={`command-strip__status-dot ${isPlaying ? 'command-strip__status-dot--live' : ''}`} />
+          <span className={`command-strip__status-dot ${(isPlaying || isLiveAutonomous) ? 'command-strip__status-dot--live' : ''}`} />
           <span className="command-strip__status-text">
-            {!hasRun ? 'NO RECORD' : isPlaying ? 'LIVE PLAYBACK' : isAtEnd ? 'RUN COMPLETE' : `STEP ${currentStep}/${totalEvents}`}
+            {isLiveAutonomous
+              ? 'LIVE AUTONOMOUS'
+              : !hasRun
+              ? 'NO RECORD'
+              : isPlaying
+              ? 'LIVE PLAYBACK'
+              : isAtEnd
+              ? 'RUN COMPLETE'
+              : `STEP ${currentStep}/${totalEvents}`}
           </span>
 
           <span className="command-strip__sep">·</span>
 
           <span className="command-strip__metric font-mono">08 NODES</span>
           <span className="command-strip__metric font-mono">{totalEvents} EVENTS</span>
-          <span className="command-strip__badge font-mono">DETERMINISTIC</span>
+          <span className="command-strip__badge font-mono">
+            {isLiveAutonomous ? 'CONTINUOUS LIVE' : 'DETERMINISTIC'}
+          </span>
         </div>
 
         {/* Center: Live Activity One-Liner */}
@@ -100,12 +114,23 @@ const BottomCommandStrip = memo(function BottomCommandStrip({
               <span className="command-strip__activity-msg">{latestActivity.message}</span>
             </>
           ) : (
-            <span className="command-strip__activity-empty">Awaiting workflow execution or playback start…</span>
+            <span className="command-strip__activity-empty">Awaiting workflow execution or live cycle…</span>
           )}
         </div>
 
-        {/* Right: Sleek Playback Controls */}
+        {/* Right: Sleek Playback & Live Controls */}
         <div className="command-strip__controls">
+          {onToggleLiveAutonomous && (
+            <button
+              id="btn-strip-live-monitor"
+              className={`ctrl-btn ${isLiveAutonomous ? 'ctrl-btn--playing' : ''}`}
+              onClick={onToggleLiveAutonomous}
+              title={isLiveAutonomous ? 'Autonomous live agent monitoring is active (click to pause)' : 'Start continuous autonomous live monitoring on real prediction bets'}
+            >
+              {isLiveAutonomous ? '● LIVE (5s)' : '⚡ LIVE'}
+            </button>
+          )}
+
           <button
             className="ctrl-btn"
             onClick={onRestart}

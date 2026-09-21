@@ -1346,6 +1346,49 @@ body {
   gap: 8px;
 }
 
+.live-stream-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+}
+
+.live-stream-btn--running {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: var(--status-success);
+}
+.live-stream-btn--running:hover {
+  background: rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 10px var(--glow-emerald);
+}
+
+.live-stream-btn--paused {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--status-warning);
+}
+.live-stream-btn--paused:hover {
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.live-stream-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.live-stream-dot--active {
+  box-shadow: 0 0 6px currentColor;
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+
 .connection-pill {
   display: flex;
   align-items: center;

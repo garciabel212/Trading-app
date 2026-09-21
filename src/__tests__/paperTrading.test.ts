@@ -15,6 +15,7 @@ import {
   normalizeKalshiOrderbook,
   roundCents,
   fetchMarketSnapshot,
+  CURATED_MARKETS,
 } from '../paper/kalshi';
 import {
   INITIAL_PAPER_ACCOUNT,
@@ -401,6 +402,34 @@ describe('7. Live Kalshi API Data Fetch Demonstration', () => {
       // If network or rate limit occurred, verify real error was honestly reported
       expect(result.error).toBeTruthy();
       console.log(`[Notice: Live Kalshi fetch returned: ${result.error}]`);
+    }
+  });
+
+  it('verifies high-volume active prediction bets are available in CURATED_MARKETS', () => {
+    const tickers = CURATED_MARKETS.map((m) => m.ticker);
+    expect(tickers).toContain('KXOAIANTH-40-ANTH');
+    expect(tickers).toContain('KXOAIANTH-40-OAI');
+    expect(tickers).toContain('KXELONMARS-99');
+  });
+
+  it('correctly identifies and normalizes live crypto spot markets', async () => {
+    const { isCryptoTicker, fetchCryptoSnapshot, CRYPTO_MARKETS } = await import('../paper/crypto');
+
+    expect(isCryptoTicker('BTC-USD')).toBe(true);
+    expect(isCryptoTicker('ETH-USD')).toBe(true);
+    expect(isCryptoTicker('KXELONMARS-99')).toBe(false);
+
+    expect(CRYPTO_MARKETS.length).toBeGreaterThanOrEqual(3);
+
+    const result = await fetchCryptoSnapshot('BTC-USD');
+    if (result.snapshot) {
+      expect(result.snapshot.ticker).toBe('BTC-USD');
+      expect(result.snapshot.bestYesBid).toBeGreaterThan(0);
+      expect(result.snapshot.bestYesAsk).toBeGreaterThan(0);
+      expect(result.snapshot.lastPrice).toBeGreaterThan(0);
+      console.log(`✓ Live Coinbase BTC-USD Quote: $${result.snapshot.lastPrice} (Bid: $${result.snapshot.bestYesBid} / Ask: $${result.snapshot.bestYesAsk})`);
+    } else {
+      expect(result.error).toBeTruthy();
     }
   });
 });

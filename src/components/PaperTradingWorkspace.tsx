@@ -3,7 +3,8 @@
 // Strictly labeled: "Real market data · Simulated execution".
 
 import { memo, useMemo, useState } from 'react';
-import { CURATED_MARKETS, isSnapshotStale } from '../paper/kalshi';
+import { isSnapshotStale } from '../paper/kalshi';
+import { isCryptoTicker } from '../paper/crypto';
 import {
   MAX_ORDER_SIZE_LIMIT,
   validatePaperOrder,
@@ -31,6 +32,9 @@ const PaperTradingWorkspace = memo(function PaperTradingWorkspace({
     orders,
     isSubmitting,
     lastPollTime,
+    isLiveRunning,
+    toggleLiveRunning,
+    allMarkets,
     changeMarket,
     refreshNow,
     submitOrder,
@@ -106,22 +110,37 @@ const PaperTradingWorkspace = memo(function PaperTradingWorkspace({
     return `${s}s ago`;
   };
 
+  const isCurrentCrypto = isCryptoTicker(selectedTicker);
+
   return (
     <main className="paper-workspace" role="main" aria-label="Paper Trading Workspace">
       {/* ── 1. Workspace Header & Market Selector ──────────────────────────── */}
       <header className="paper-header">
         <div className="paper-header__top-row">
           <div className="paper-header__label-group">
-            <h1 className="paper-header__title">Kalshi Paper Trading</h1>
+            <h1 className="paper-header__title">
+              {isCurrentCrypto ? 'Crypto Live Paper Trading' : 'Kalshi Bets & Prediction Paper Trading'}
+            </h1>
             <span className="paper-header__badge-banner" role="status">
               Real market data · Simulated execution
             </span>
           </div>
 
           <div className="paper-header__status-group">
+            {/* Live Streaming Toggle Button */}
+            <button
+              id="btn-toggle-live-stream"
+              className={`live-stream-btn ${isLiveRunning ? 'live-stream-btn--running' : 'live-stream-btn--paused'} font-mono`}
+              onClick={toggleLiveRunning}
+              title={isLiveRunning ? 'Click to pause live feed' : 'Click to start live streaming feed'}
+            >
+              <span className={`live-stream-dot ${isLiveRunning ? 'live-stream-dot--active' : ''}`} />
+              {isLiveRunning ? '● LIVE RUNNING (3.5s)' : '⏸ PAUSED (CLICK TO RUN)'}
+            </button>
+
             <span className={`connection-pill connection-pill--${connectionStatus}`}>
               <span className="connection-pill__dot" aria-hidden="true" />
-              {connectionStatus === 'connected' && 'Live Kalshi Feed (6s poll)'}
+              {connectionStatus === 'connected' && (isCurrentCrypto ? 'Live Coinbase Feed' : 'Live Kalshi Feed')}
               {connectionStatus === 'polling' && 'Updating quotes…'}
               {connectionStatus === 'rate-limited' && 'Rate Limited (HTTP 429)'}
               {connectionStatus === 'stale' && 'Quote Stale'}
@@ -150,13 +169,22 @@ const PaperTradingWorkspace = memo(function PaperTradingWorkspace({
               className="market-dropdown"
               value={showCustomInput ? 'custom' : selectedTicker}
               onChange={handleMarketSelect}
-              aria-label="Select Kalshi binary market"
+              aria-label="Select market or prediction bet"
             >
-              {CURATED_MARKETS.map((m) => (
-                <option key={m.ticker} value={m.ticker}>
-                  {m.ticker} — {m.title.slice(0, 50)}…
-                </option>
-              ))}
+              <optgroup label="🎯 HIGH-VOLUME PREDICTION BETS (Kalshi CFTC)">
+                {allMarkets.filter((m) => !isCryptoTicker(m.ticker)).map((m) => (
+                  <option key={m.ticker} value={m.ticker}>
+                    {m.ticker} — {m.title.slice(0, 52)}…
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="📈 LIVE SPOT CRYPTO (Coinbase Exchange)">
+                {allMarkets.filter((m) => isCryptoTicker(m.ticker)).map((m) => (
+                  <option key={m.ticker} value={m.ticker}>
+                    {m.ticker} — {m.title}
+                  </option>
+                ))}
+              </optgroup>
               <option value="custom">Enter Custom Ticker…</option>
             </select>
           </div>
