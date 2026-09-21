@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>trading app — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>trading app — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 269 nodes, 599 edges, 12 communities. Commit: unknown</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#build-graph">Graph Build</a>
+    <a href="#tests-fixtures">Tests &amp; Fixtures</a>
+    <a href="#ref-vitest-config">ref_vitest_config</a>
+    <a href="#demosequence-ts">demoSequence.ts</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>177 nodes</small>")
+    class BUILD_GRAPH_321CBB04 module;
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>89 nodes</small>")
+    class TESTS_FIXTURES_B84B1DCC module;
+    REF_VITEST_CONFIG_3EB429E8("ref_vitest_config<br/><small>2 nodes</small>")
+    class REF_VITEST_CONFIG_3EB429E8 module;
+    DEMOSEQUENCE_TS_83BF3375("demoSequence.ts<br/><small>1 nodes</small>")
+    class DEMOSEQUENCE_TS_83BF3375 module;
+    TESTS_FIXTURES_B84B1DCC -->|imports x41| BUILD_GRAPH_321CBB04
+    BUILD_GRAPH_321CBB04 -->|imports x38| TESTS_FIXTURES_B84B1DCC
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Graph Build</td><td>177</td><td><code>1, 2, 4, 5, 6, 7, 8, 9</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>89</td><td><code>0, 3</code></td></tr><tr><td>ref_vitest_config</td><td>2</td><td><code>10</code></td></tr><tr><td>demoSequence.ts</td><td>1</td><td><code>11</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">ref_vitest_config -&gt; Graph Build -&gt; Tests &amp; Fixtures -&gt; demoSequence.ts</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h4>Graph Report Highlights</h4>
+    <ul>
+      <li>269 nodes · 599 edges · 12 communities (9 shown, 3 thin omitted)</li>
+      <li>Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.83)</li>
+      <li>Token cost: 0 input · 0 output</li>
+      <li>1. `compilerOptions` - 18 edges</li>
+      <li>2. `RunRecord` - 17 edges</li>
+      <li>3. `runWorkflow()` - 17 edges</li>
+    </ul>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Graph Build ====== -->
+<h2 id="build-graph">2. Graph Build</h2>
+<p>Graph Build groups implementation around packagejson, components, workflow, tsconfigappjson, mostly in package.json, tsconfig.app.json, tsconfig.node.json. This section covers 177 nodes and 285 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Graph Build (177 nodes, 285 edges)
+    subgraph build_graph_src_workflow_replay_ts_401b5499["src/workflow/replay.ts"]
+        src_workflow_replay_1f0e4f26("replay.ts")
+        src_workflow_replay_derivenodeinspectortrace_c6c646df("deriveNodeInspectorTrace()<br/><small>src/workflow/replay.ts</small>")
+        src_workflow_replay_derivenodestates_6e00eea9("deriveNodeStates()<br/><small>src/workflow/replay.ts</small>")
+        src_workflow_replay_deriveedgestates_7bcd7e9e("deriveEdgeStates()<br/><small>src/workflow/replay.ts</small>")
+        src_workflow_replay_deriveactivityevents_f4b8576f("deriveActivityEvents()<br/><small>src/workflow/replay.ts</small>")
+        src_workflow_replay_traceeventtonodestatus_6530bc15("traceEventToNodeStatus()<br/><small>src/workflow/replay.ts</small>")
+    end
+    subgraph build_graph_src_hooks_useDemoRunner_ts_6f05dfb6["src/hooks/useDemoRunner.ts"]
+        src_hooks_usedemorunner_1ad66c8e("useDemoRunner.ts")
+        src_hooks_usedemorunner_usedemorunner_dec6b5f6("useDemoRunner()<br/><small>src/hooks/useDemoRunner.ts</small>")
+        src_hooks_usedemorunner_traceeventtonodestatus_686b24fb("traceEventToNodeStatus()<br/><small>src/hooks/useDemoRunner.ts</small>")
+        src_hooks_usedemorunner_resetnodes_d69e73ab("resetNodes()<br/><small>src/hooks/useDemoRunner.ts</small>")
+    end
+    subgraph build_graph_src_App_tsx_5c96481a["src/App.tsx"]
+        src_app_46efd68e("App.tsx")
+        src_app_app_f316b20d("App()<br/><small>src/App.tsx</small>")
+    end
+    subgraph build_graph_src_components_NodeInspector_tsx_ee097266["src/components/NodeInspector.tsx"]
+        src_components_nodeinspector_9d9a8f55("NodeInspector.tsx")
+        src_components_nodeinspector_tracesection_a4b5535c("TraceSection()<br/><small>src/components/NodeInspector.tsx</small>")
+    end
+    package_582681c2("package.json")
+    src_components_agentnode_024c16a3("AgentNode.tsx")
+    src_hooks_usereplayrunner_usereplayrunner_ddaacee2("useReplayRunner()<br/><small>src/hooks/useReplayRunner.ts</small>")
+    src_paper_papertracebridge_loadpapertrace_42da0e62("loadPaperTrace()<br/><small>src/paper/paperTraceBridge.ts</small>")
+    src_components_nodeinspector_tracesection_a4b5535c -->|calls| src_workflow_replay_derivenodeinspectortrace_c6c646df
+    src_app_app_f316b20d -->|calls| src_paper_papertracebridge_loadpapertrace_42da0e62
+    src_app_app_f316b20d -->|calls| src_hooks_usereplayrunner_usereplayrunner_ddaacee2
+    src_app_app_f316b20d -->|calls| src_workflow_replay_derivenodestates_6e00eea9
+    src_app_app_f316b20d -->|calls| src_workflow_replay_deriveedgestates_7bcd7e9e
+    src_app_app_f316b20d -->|calls| src_workflow_replay_deriveactivityevents_f4b8576f
+    src_workflow_replay_deriveactivityevents_f4b8576f -->|calls| src_workflow_replay_traceeventtonodestatus_6530bc15
+    src_workflow_replay_derivenodestates_6e00eea9 -->|calls| src_workflow_replay_traceeventtonodestatus_6530bc15
+    src_hooks_usedemorunner_usedemorunner_dec6b5f6 -->|calls| src_hooks_usedemorunner_traceeventtonodestatus_686b24fb
+    src_hooks_usedemorunner_usedemorunner_dec6b5f6 -->|calls| src_hooks_usedemorunner_resetnodes_d69e73ab
+    src_components_nodeinspector_9d9a8f55 -->|imports| src_workflow_replay_derivenodeinspectortrace_c6c646df
+    src_components_nodeinspector_9d9a8f55 -->|imports| src_workflow_replay_1f0e4f26
+    src_app_46efd68e -->|imports| src_hooks_usereplayrunner_usereplayrunner_ddaacee2
+    src_app_46efd68e -->|imports| src_paper_papertracebridge_loadpapertrace_42da0e62
+    src_app_46efd68e -->|imports| src_workflow_replay_deriveactivityevents_f4b8576f
+    src_app_46efd68e -->|imports| src_workflow_replay_deriveedgestates_7bcd7e9e
+    src_app_46efd68e -->|imports| src_workflow_replay_derivenodestates_6e00eea9
+    src_app_46efd68e -->|imports| src_workflow_replay_1f0e4f26
+    src_app_46efd68e -->|imports| src_components_agentnode_024c16a3
+    src_app_46efd68e -->|imports| src_components_nodeinspector_9d9a8f55
+    %% Omitted for readability: 159 nodes, 0 edges
+    class src_workflow_replay_1f0e4f26 module;
+    class src_workflow_replay_derivenodeinspectortrace_c6c646df function;
+    class src_workflow_replay_derivenodestates_6e00eea9 function;
+    class src_workflow_replay_deriveedgestates_7bcd7e9e function;
+    class src_workflow_replay_deriveactivityevents_f4b8576f function;
+    class src_workflow_replay_traceeventtonodestatus_6530bc15 function;
+    class src_hooks_usedemorunner_1ad66c8e ui;
+    class src_hooks_usedemorunner_usedemorunner_dec6b5f6 ui;
+    class src_hooks_usedemorunner_traceeventtonodestatus_686b24fb function;
+    class src_hooks_usedemorunner_resetnodes_d69e73ab function;
+    class src_app_46efd68e ui;
+    class src_app_app_f316b20d ui;
+    class src_components_nodeinspector_9d9a8f55 test;
+    class src_components_nodeinspector_tracesection_a4b5535c test;
+    class package_582681c2 function;
+    class src_components_agentnode_024c16a3 ui;
+    class src_hooks_usereplayrunner_usereplayrunner_ddaacee2 ui;
+    class src_paper_papertracebridge_loadpapertrace_42da0e62 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>kalshiProxyPlugin()</code><br><small style="color:var(--muted)">vite.config.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>kalshiProxyPlugin() node in vite.config.ts.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>package.json</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>@types/node</code><br><small style="color:var(--muted)">package.json</small><br><code>@types/react</code><br><small style="color:var(--muted)">package.json</small><br><code>@types/react-dom</code><br><small style="color:var(--muted)">package.json</small><br>+8 more</td>
+  <td>package.json node in package.json.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>dependencies</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dependencies node in package.json.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>react</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>react node in package.json.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>react-dom</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>react-dom node in package.json.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>@xyflow/react</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@xyflow/react node in package.json.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>devDependencies</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>devDependencies node in package.json.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>oxlint</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>oxlint node in package.json.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>@types/node</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@types/node node in package.json.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>@types/react</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@types/react node in package.json.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>@types/react-dom</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@types/react-dom node in package.json.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>typescript</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>typescript node in package.json.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>vite</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>vite node in package.json.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>@vitejs/plugin-react</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@vitejs/plugin-react node in package.json.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>vitest</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>name</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>name node in package.json.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>private</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>private node in package.json.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>scripts</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>scripts node in package.json.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>build</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>build node in package.json.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>dev</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dev node in package.json.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>lint</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lint node in package.json.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>preview</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>preview node in package.json.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>test</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>test:watch</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>type</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>type node in package.json.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>version</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>version node in package.json.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>vitest</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>environment</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>environment node in package.json.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>include</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>include node in package.json.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>vite.config.ts</code><br><small style="color:var(--muted)">vite.config.ts</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>@vitejs/plugin-react</code><br><small style="color:var(--muted)">package.json</small><br><code>vite</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td>Module file in vite.config.ts.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>package.json</code></td><td>38 nodes</td></tr>
+<tr><td><code>tsconfig.app.json</code></td><td>20 nodes</td></tr>
+<tr><td><code>tsconfig.node.json</code></td><td>17 nodes</td></tr>
+<tr><td><code>src/workflow/types.ts</code></td><td>13 nodes</td></tr>
+<tr><td><code>src/components/NodeInspector.tsx</code></td><td>11 nodes</td></tr>
+<tr><td><code>src/workflow/replay.ts</code></td><td>11 nodes</td></tr>
+<tr><td><code>src/hooks/useDemoRunner.ts</code></td><td>8 nodes</td></tr>
+<tr><td><code>.oxlintrc.json</code></td><td>6 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x142, imports x63, imports x48, references x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">3. Tests &amp; Fixtures</h2>
+<p>Tests &amp; Fixtures groups implementation around paper, workflow, typests, accountts, mostly in src/paper/account.ts, src/paper/types.ts, src/paper/kalshi.ts. This section covers 89 nodes and 234 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Tests &amp; Fixtures (89 nodes, 234 edges)
+    subgraph tests_fixtures_src_workflow_adapter_ts_3e0bb1f1["src/workflow/adapter.ts"]
+        src_workflow_adapter_mockexecutionadapter_5594d7a9("MockExecutionAdapter<br/><small>src/workflow/adapter.ts</small>")
+        src_workflow_adapter_mockexecutionadapter_callco_a05e8e0f("callCount()<br/><small>src/workflow/adapter.ts</small>")
+        src_workflow_adapter_mockexecutionadapter_orders_6df02410("orders()<br/><small>src/workflow/adapter.ts</small>")
+        src_workflow_adapter_mockexecutionadapter_submit_5974d1ac("submitOrder()<br/><small>src/workflow/adapter.ts</small>")
+        src_workflow_adapter_mockexecutionadapter_reset_fc05ef51("reset()<br/><small>src/workflow/adapter.ts</small>")
+    end
+    subgraph tests_fixtures_src_paper_account_ts_c0d96ef4["src/paper/account.ts"]
+        src_paper_account_executepapertrade_0ffe8a0a("executePaperTrade()<br/><small>src/paper/account.ts</small>")
+        src_paper_account_validatepaperorder_486dbb85("validatePaperOrder()<br/><small>src/paper/account.ts</small>")
+        src_paper_account_loadpersistedaccount_2ddc159c("loadPersistedAccount()<br/><small>src/paper/account.ts</small>")
+        src_paper_account_valueposition_f9dda961("valuePosition()<br/><small>src/paper/account.ts</small>")
+    end
+    subgraph tests_fixtures_src_paper_kalshi_ts_09479046["src/paper/kalshi.ts"]
+        src_paper_kalshi_roundcents_d1405f91("roundCents()<br/><small>src/paper/kalshi.ts</small>")
+        src_paper_kalshi_issnapshotstale_1beb44ef("isSnapshotStale()<br/><small>src/paper/kalshi.ts</small>")
+        src_paper_kalshi_calculatekalshitakerfee_953f6805("calculateKalshiTakerFee()<br/><small>src/paper/kalshi.ts</small>")
+    end
+    src_tests_papertrading_test_76c50a1e("paperTrading.test.ts")
+    src_tests_replay_test_b8dac025("replay.test.ts")
+    src_tests_workflow_test_93d3a1cc("workflow.test.ts")
+    src_components_papertradingworkspace_8e6c3e24("PaperTradingWorkspace.tsx")
+    src_paper_usepapertrading_5815feb9("usePaperTrading.ts")
+    src_workflow_runner_4b2eb836("runner.ts")
+    src_workflow_adapter_mockexecutionadapter_5594d7a9 -->|method| src_workflow_adapter_mockexecutionadapter_callco_a05e8e0f
+    src_workflow_adapter_mockexecutionadapter_5594d7a9 -->|method| src_workflow_adapter_mockexecutionadapter_orders_6df02410
+    src_workflow_adapter_mockexecutionadapter_5594d7a9 -->|method| src_workflow_adapter_mockexecutionadapter_submit_5974d1ac
+    src_workflow_adapter_mockexecutionadapter_5594d7a9 -->|method| src_workflow_adapter_mockexecutionadapter_reset_fc05ef51
+    src_paper_account_executepapertrade_0ffe8a0a -->|calls| src_paper_account_validatepaperorder_486dbb85
+    src_paper_account_executepapertrade_0ffe8a0a -->|calls| src_paper_kalshi_roundcents_d1405f91
+    src_paper_account_loadpersistedaccount_2ddc159c -->|calls| src_paper_kalshi_roundcents_d1405f91
+    src_paper_account_validatepaperorder_486dbb85 -->|calls| src_paper_kalshi_issnapshotstale_1beb44ef
+    src_paper_account_validatepaperorder_486dbb85 -->|calls| src_paper_kalshi_roundcents_d1405f91
+    src_paper_account_validatepaperorder_486dbb85 -->|calls| src_paper_kalshi_calculatekalshitakerfee_953f6805
+    src_paper_account_valueposition_f9dda961 -->|calls| src_paper_kalshi_roundcents_d1405f91
+    src_paper_account_valueposition_f9dda961 -->|calls| src_paper_kalshi_issnapshotstale_1beb44ef
+    src_paper_account_valueposition_f9dda961 -->|calls| src_paper_kalshi_calculatekalshitakerfee_953f6805
+    src_components_papertradingworkspace_8e6c3e24 -->|imports| src_paper_kalshi_issnapshotstale_1beb44ef
+    src_components_papertradingworkspace_8e6c3e24 -->|imports| src_paper_account_validatepaperorder_486dbb85
+    src_components_papertradingworkspace_8e6c3e24 -->|imports| src_paper_account_valueposition_f9dda961
+    src_components_papertradingworkspace_8e6c3e24 -->|imports| src_paper_usepapertrading_5815feb9
+    src_paper_usepapertrading_5815feb9 -->|imports| src_paper_account_executepapertrade_0ffe8a0a
+    src_paper_usepapertrading_5815feb9 -->|imports| src_paper_account_loadpersistedaccount_2ddc159c
+    src_paper_usepapertrading_5815feb9 -->|imports| src_paper_account_validatepaperorder_486dbb85
+    src_tests_papertrading_test_76c50a1e -->|imports| src_paper_kalshi_calculatekalshitakerfee_953f6805
+    src_tests_papertrading_test_76c50a1e -->|imports| src_paper_kalshi_roundcents_d1405f91
+    src_tests_papertrading_test_76c50a1e -->|imports| src_paper_account_executepapertrade_0ffe8a0a
+    src_tests_papertrading_test_76c50a1e -->|imports| src_paper_account_validatepaperorder_486dbb85
+    %% Omitted for readability: 71 nodes, 6 edges
+    class src_workflow_adapter_mockexecutionadapter_5594d7a9 klass;
+    class src_workflow_adapter_mockexecutionadapter_callco_a05e8e0f function;
+    class src_workflow_adapter_mockexecutionadapter_orders_6df02410 function;
+    class src_workflow_adapter_mockexecutionadapter_submit_5974d1ac function;
+    class src_workflow_adapter_mockexecutionadapter_reset_fc05ef51 function;
+    class src_paper_account_executepapertrade_0ffe8a0a function;
+    class src_paper_account_validatepaperorder_486dbb85 function;
+    class src_paper_account_loadpersistedaccount_2ddc159c function;
+    class src_paper_account_valueposition_f9dda961 function;
+    class src_paper_kalshi_roundcents_d1405f91 function;
+    class src_paper_kalshi_issnapshotstale_1beb44ef function;
+    class src_paper_kalshi_calculatekalshitakerfee_953f6805 function;
+    class src_tests_papertrading_test_76c50a1e test;
+    class src_tests_replay_test_b8dac025 test;
+    class src_tests_workflow_test_93d3a1cc test;
+    class src_components_papertradingworkspace_8e6c3e24 ui;
+    class src_paper_usepapertrading_5815feb9 ui;
+    class src_workflow_runner_4b2eb836 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>PaperTradingWorkspaceProps</code><br><small style="color:var(--muted)">src/components/PaperTradingWorkspace.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PaperTradingWorkspaceProps node in src/components/PaperTradingWorkspace.tsx.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>PriceChartProps</code><br><small style="color:var(--muted)">src/components/PriceChart.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PriceChartProps node in src/components/PriceChart.tsx.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>OrderValidationResult</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>paperTraceBridge.ts</code><br><small style="color:var(--muted)">src/paper/paperTraceBridge.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>OrderValidationResult node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>PositionValuation</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PositionValuation node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>ConnectionStatus</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>PriceChart.tsx</code><br><small style="color:var(--muted)">src/components/PriceChart.tsx</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>ConnectionStatus node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>KalshiMarketRaw</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>kalshi.ts</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>paperTrading.test.ts</code><br><small style="color:var(--muted)">src/__tests__/paperTrading.test.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>KalshiMarketRaw node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>KalshiMarketStatus</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>kalshi.ts</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>KalshiMarketStatus node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>KalshiOrderbookRaw</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>kalshi.ts</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>paperTrading.test.ts</code><br><small style="color:var(--muted)">src/__tests__/paperTrading.test.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>KalshiOrderbookRaw node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>MarketOption</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>kalshi.ts</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>MarketOption node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>NormalizedMarketSnapshot</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>account.ts</code><br><small style="color:var(--muted)">src/paper/account.ts</small><br><code>kalshi.ts</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>paperTraceBridge.ts</code><br><small style="color:var(--muted)">src/paper/paperTraceBridge.ts</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>NormalizedMarketSnapshot node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>OrderOrigin</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>OrderOrigin node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>OrderSide</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>OrderSide node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>OrderStatus</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>OrderStatus node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>PaperAccount</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>account.ts</code><br><small style="color:var(--muted)">src/paper/account.ts</small><br><code>paperTraceBridge.ts</code><br><small style="color:var(--muted)">src/paper/paperTraceBridge.ts</small><br><code>paperTrading.test.ts</code><br><small style="color:var(--muted)">src/__tests__/paperTrading.test.ts</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>PaperAccount node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>PaperOrder</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>account.ts</code><br><small style="color:var(--muted)">src/paper/account.ts</small><br><code>paperTraceBridge.ts</code><br><small style="color:var(--muted)">src/paper/paperTraceBridge.ts</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>PaperOrder node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>PaperPosition</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>account.ts</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>PaperPosition node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>PriceObservation</code><br><small style="color:var(--muted)">src/paper/types.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>PriceChart.tsx</code><br><small style="color:var(--muted)">src/components/PriceChart.tsx</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>PriceObservation node in src/paper/types.ts.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>executePaperTrade()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>paperTrading.test.ts</code><br><small style="color:var(--muted)">src/__tests__/paperTrading.test.ts</small><br><code>usePaperTrading()</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td><code>roundCents()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>validatePaperOrder()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td>executePaperTrade() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>loadPersistedAccount()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>usePaperTrading()</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td><code>roundCents()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td>loadPersistedAccount() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>loadPersistedOrders()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>usePaperTrading()</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>loadPersistedOrders() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>loadPersistedSnapshot()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>loadPersistedSnapshot() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>savePersistedAccount()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>usePaperTrading()</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>savePersistedAccount() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>savePersistedOrders()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>usePaperTrading()</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>savePersistedOrders() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>savePersistedSnapshot()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>usePaperTrading()</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>savePersistedSnapshot() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>validatePaperOrder()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>executePaperTrade()</code><br><small style="color:var(--muted)">src/paper/account.ts</small><br><code>paperTrading.test.ts</code><br><small style="color:var(--muted)">src/__tests__/paperTrading.test.ts</small><br><code>PaperTradingWorkspace</code><br><small style="color:var(--muted)">src/components/PaperTradingWorkspace.tsx</small><br>+3 more</td>
+  <td><code>calculateKalshiTakerFee()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>isSnapshotStale()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>roundCents()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td>validatePaperOrder() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>valuePosition()</code><br><small style="color:var(--muted)">src/paper/account.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>paperTrading.test.ts</code><br><small style="color:var(--muted)">src/__tests__/paperTrading.test.ts</small><br><code>PaperTradingWorkspace</code><br><small style="color:var(--muted)">src/components/PaperTradingWorkspace.tsx</small><br><code>PaperTradingWorkspace.tsx</code><br><small style="color:var(--muted)">src/components/PaperTradingWorkspace.tsx</small></td>
+  <td><code>calculateKalshiTakerFee()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>isSnapshotStale()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>roundCents()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td>valuePosition() node in src/paper/account.ts.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>calculateKalshiTakerFee()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>account.ts</code><br><small style="color:var(--muted)">src/paper/account.ts</small><br><code>paperTrading.test.ts</code><br><small style="color:var(--muted)">src/__tests__/paperTrading.test.ts</small><br><code>validatePaperOrder()</code><br><small style="color:var(--muted)">src/paper/account.ts</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>calculateKalshiTakerFee() node in src/paper/kalshi.ts.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>fetchMarketSnapshot()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>paperTrading.test.ts</code><br><small style="color:var(--muted)">src/__tests__/paperTrading.test.ts</small><br><code>usePaperTrading()</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small><br><code>usePaperTrading.ts</code><br><small style="color:var(--muted)">src/paper/usePaperTrading.ts</small></td>
+  <td><code>getApiBaseUrl()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small><br><code>normalizeKalshiOrderbook()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td>fetchMarketSnapshot() node in src/paper/kalshi.ts.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>getApiBaseUrl()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td><code>fetchMarketSnapshot()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>getApiBaseUrl() node in src/paper/kalshi.ts.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>isSnapshotStale()</code><br><small style="color:var(--muted)">src/paper/kalshi.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>account.ts</code><br><small style="color:var(--muted)">src/paper/account.ts</small><br><code>PaperTradingWorkspace</code><br><small style="color:var(--muted)">src/components/PaperTradingWorkspace.tsx</small><br><code>PaperTradingWorkspace.tsx</code><br><small style="color:var(--muted)">src/components/PaperTradingWorkspace.tsx</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>isSnapshotStale() node in src/paper/kalshi.ts.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/paper/account.ts</code></td><td>15 nodes</td></tr>
+<tr><td><code>src/paper/types.ts</code></td><td>14 nodes</td></tr>
+<tr><td><code>src/paper/kalshi.ts</code></td><td>11 nodes</td></tr>
+<tr><td><code>src/workflow/adapter.ts</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/workflow/runner.ts</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/workflow/stages.ts</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/__tests__/paperTrading.test.ts</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/workflow/types.ts</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x82, contains x64, calls x40, imports x33. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. ref_vitest_config ====== -->
+<h2 id="ref-vitest-config">4. ref_vitest_config</h2>
+<p>ref_vitest_config groups implementation around vitestconfigts, ref, vitest, config, mostly in vitest.config.ts. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: ref_vitest_config (2 nodes, 1 edges)
+    ref_vitest_config_b9e8e4a5("ref_vitest_config")
+    vitest_config_27695d99("vitest.config.ts")
+    vitest_config_27695d99 -->|imports| ref_vitest_config_b9e8e4a5
+    class ref_vitest_config_b9e8e4a5 function;
+    class vitest_config_27695d99 test;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>vitest.config.ts</code><br><small style="color:var(--muted)">vitest.config.ts</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>ref_vitest_config</code></td>
+  <td>Module file in vitest.config.ts.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>ref_vitest_config</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>vitest.config.ts</code><br><small style="color:var(--muted)">vitest.config.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>vitest.config.ts</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. demoSequence.ts ====== -->
+<h2 id="demosequence-ts">5. demoSequence.ts</h2>
+<p>demoSequence.ts groups implementation around demosequencets, data, mostly in src/data/demoSequence.ts. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: demoSequence.ts (1 nodes, 0 edges)
+    src_data_demosequence_ff6d858c("demoSequence.ts")
+    class src_data_demosequence_ff6d858c module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>demoSequence.ts</code><br><small style="color:var(--muted)">src/data/demoSequence.ts</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/data/demoSequence.ts.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/data/demoSequence.ts</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>269</td></tr>
+      <tr><td>Edges</td><td>599</td></tr>
+      <tr><td>Hyperedges</td><td>0</td></tr>
+      <tr><td>Communities</td><td>12</td></tr>
+      <tr><td>Documented Sections</td><td>4</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>596</td></tr>
+      <tr><td>INFERRED</td><td>3</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>trading app — Architecture Documentation</p>
+  <p>Generated: 2026-09-21 18:17 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>

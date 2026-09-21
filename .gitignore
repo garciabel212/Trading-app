@@ -21,8 +21,10 @@ uv.lock
 .pytest_cache/
 .coverage
 
-# Graphify outputs (generated — do not commit)
-graphify-out/
+# Graphify internal cache and backups (allow graph.json, GRAPH_REPORT.md, graph.html)
+graphify-out/cache/
+graphify-out/.graphify_*
+graphify-out/202*/
 
 # IDE & Editor
 .vscode/*
