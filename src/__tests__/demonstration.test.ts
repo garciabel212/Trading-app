@@ -269,6 +269,10 @@ describe('End-to-End Demonstration: Trader Alpha on Kalshi KXELONMARS-99', () =>
       sourceTimestamp: now,
       localReceiptTimestamp: now,
       isStale: false,
+      depth: {
+        yesBids: [{ price: 0.14, size: 50 }],
+        noBids: [{ price: 0.84, size: 40 }],
+      },
     };
 
     const exitBidPrice = 0.14;

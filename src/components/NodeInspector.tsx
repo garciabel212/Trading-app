@@ -639,6 +639,122 @@ function CompetitorInspectorSection({ node }: { node: AgentNodeData }) {
   return null;
 }
 
+// ── Communication & Grounded Evidence Section ────────────────────────────────
+
+function CommunicationSection({
+  nodeId,
+  runRecord,
+  cursorIndex,
+}: {
+  nodeId: string;
+  runRecord: RunRecord | null;
+  cursorIndex: number;
+}) {
+  if (!runRecord || !runRecord.messages || runRecord.messages.length === 0) {
+    return null;
+  }
+
+  // Point-in-time isolation: filter messages up to active event count at cursorIndex
+  const maxSeq = cursorIndex >= 0 ? cursorIndex + 1 : runRecord.events.length;
+  const activeMessages = runRecord.messages.filter((m) => m.sequence <= maxSeq);
+
+  // Filter messages relevant to this node (as sender or recipient)
+  const nodeMessages = activeMessages.filter(
+    (m) => m.sender === nodeId || m.recipient === nodeId
+  );
+
+  return (
+    <section className="inspector__communication-section" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12, marginTop: 12 }}>
+      <div className="inspector__section-label">💬 Communication & Grounded Evidence</div>
+
+      {nodeMessages.length === 0 ? (
+        <div className="inspector__trace-value inspector__trace-value--none" style={{ marginTop: 6 }}>
+          No messages exchanged by this agent at the current step.
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
+          {nodeMessages.map((msg) => (
+            <div
+              key={msg.messageId}
+              style={{
+                background: 'rgba(15, 23, 42, 0.65)',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                borderRadius: 6,
+                padding: '8px 10px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <span
+                  style={{
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    padding: '1.5px 6px',
+                    borderRadius: 3,
+                    background: 'rgba(56, 189, 248, 0.15)',
+                    color: '#38bdf8',
+                    border: '1px solid rgba(56, 189, 248, 0.3)',
+                    fontFamily: 'var(--font-mono)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {msg.messageType}
+                </span>
+                <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                  {msg.sender} → {msg.recipient} (seq #{msg.sequence})
+                </span>
+              </div>
+
+              <div style={{ fontSize: '11px', color: '#e2e8f0', lineHeight: 1.35, marginBottom: 6 }}>
+                {msg.conciseSummary}
+              </div>
+
+              {/* Strategy Version & Profile Info */}
+              <div style={{ fontSize: '9.5px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>
+                Profile: <span style={{ color: '#38bdf8' }}>{msg.profileKey}</span> · Strategy: <span style={{ color: '#e2e8f0' }}>{msg.strategyVersion}</span>
+              </div>
+
+              {/* Grounded Evidence References */}
+              {msg.evidenceReferences && msg.evidenceReferences.length > 0 && (
+                <div style={{ background: 'rgba(0, 0, 0, 0.35)', borderRadius: 4, padding: '6px 8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                  <div style={{ fontSize: '9px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4, letterSpacing: '0.05em' }}>
+                    Grounded Observations & Thresholds
+                  </div>
+                  {msg.evidenceReferences.map((ev, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontSize: '10px',
+                        padding: '2px 0',
+                        borderBottom: idx < msg.evidenceReferences.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none',
+                      }}
+                    >
+                      <span style={{ color: 'var(--text-secondary)' }}>{ev.indicatorOrRule}</span>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontFamily: 'var(--font-mono)' }}>
+                        <span style={{ color: '#e2e8f0' }}>{String(ev.measuredValue)}</span>
+                        {ev.threshold !== undefined && (
+                          <span style={{ color: 'var(--text-muted)' }}>({String(ev.threshold)})</span>
+                        )}
+                        {ev.verdictPassed !== undefined && (
+                          <span style={{ color: ev.verdictPassed ? '#10b981' : '#f59e0b', fontSize: '10px' }}>
+                            {ev.verdictPassed ? '✓' : '✗'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 // ── Main Inspector Component ──────────────────────────────────────────────────
 
 interface NodeInspectorProps {
@@ -730,6 +846,13 @@ const NodeInspector = memo(function NodeInspector({
 
             {/* Competitor / Manager / Coach Live Metrics */}
             <CompetitorInspectorSection node={node} />
+
+            {/* Agent Communication & Grounded Evidence */}
+            <CommunicationSection
+              nodeId={node.id}
+              runRecord={runRecord}
+              cursorIndex={cursorIndex}
+            />
 
             {/* Execution Replay Trace */}
             <TraceSection

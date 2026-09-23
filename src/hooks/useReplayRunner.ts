@@ -20,6 +20,8 @@ import type { NormalizedMarketSnapshot } from '../paper/types';
 import { runIndependentPhase, type DecisionBundle } from '../competition/competitionEngine';
 import { reviewProposals } from '../competition/portfolioManager';
 import type { ManagerDecision } from '../competition/types';
+import { runProposalOnlyRound, type ProposalRoundResult } from '../competition/proposalRoundEngine';
+import type { ProfileKey } from '../competition/researchProfiles';
 
 export const PLAYBACK_STEP_MS = 900;
 
@@ -38,6 +40,7 @@ export interface UseReplayRunnerResult {
     decision: ManagerDecision;
     record: RunRecord;
   };
+  runProposalRound: (profileKey?: ProfileKey, customSnapshot?: NormalizedMarketSnapshot) => ProposalRoundResult;
   toggleLiveAutonomous: () => void;
   togglePlayPause: () => void;
   stepNext: () => void;
@@ -193,6 +196,63 @@ export function useReplayRunner(): UseReplayRunnerResult {
     [clearTimer],
   );
 
+  /** Runs an explicit proposal-only round across Alpha, Beta, Gamma, Manager, Risk, and Coach */
+  const runProposalRound = useCallback(
+    (profileKey: ProfileKey = 'daily-weather', customSnapshot?: NormalizedMarketSnapshot) => {
+      clearTimer();
+      setIsPlaying(false);
+
+      const snapshot: NormalizedMarketSnapshot = customSnapshot ?? (
+        profileKey === 'nasdaq-oneq'
+          ? {
+              snapshotId: `snap-oneq-${Date.now()}`,
+              ticker: 'ONEQ',
+              marketTitle: 'Fidelity Nasdaq Composite Tracking Stock ETF',
+              status: 'active',
+              bestYesBid: 180.25,
+              bestYesBidSize: 200,
+              bestYesAsk: 180.50,
+              bestYesAskSize: 150,
+              spread: 0.25,
+              lastPrice: 180.40,
+              sourceTimestamp: Date.now(),
+              localReceiptTimestamp: Date.now(),
+              isStale: false,
+              depth: {
+                yesBids: [{ price: 180.25, size: 200 }],
+                noBids: [{ price: 180.50, size: 150 }],
+              },
+            }
+          : {
+              snapshotId: `snap-weather-${Date.now()}`,
+              ticker: 'KXWARMING-50',
+              marketTitle: 'Will Global Temperature Anomaly exceed +1.5C in 2026?',
+              status: 'active',
+              bestYesBid: 0.48,
+              bestYesBidSize: 50,
+              bestYesAsk: 0.51,
+              bestYesAskSize: 45,
+              spread: 0.03,
+              lastPrice: 0.50,
+              sourceTimestamp: Date.now(),
+              localReceiptTimestamp: Date.now(),
+              isStale: false,
+              depth: {
+                yesBids: [{ price: 0.48, size: 50 }],
+                noBids: [{ price: 0.49, size: 45 }],
+              },
+            }
+      );
+
+      const result = runProposalOnlyRound(snapshot, profileKey, 200.0);
+      setRunRecord(result.runRecord);
+      setCursorIndex(0);
+      setIsPlaying(true);
+      return result;
+    },
+    [clearTimer],
+  );
+
   const toggleLiveAutonomous = useCallback(() => {
     setIsLiveAutonomous((prev) => !prev);
   }, []);
@@ -285,6 +345,7 @@ export function useReplayRunner(): UseReplayRunnerResult {
     runTrainingCycle,
     runLiveCycle,
     runCompetitiveCycle,
+    runProposalRound,
     toggleLiveAutonomous,
     togglePlayPause,
     stepNext,

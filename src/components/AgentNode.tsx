@@ -6,6 +6,7 @@
 import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import type { AgentNodeData, NodeKind, NodeStatus } from '../types';
+import MessageBubble from './MessageBubble';
 
 // ── Kind Taxonomy Definitions ────────────────────────────────────────────────
 const KIND_ICONS: Record<NodeKind, string> = {
@@ -142,6 +143,14 @@ const AgentNode = memo(function AgentNode({ data, selected }: NodeProps) {
           </button>
         )}
       </div>
+
+      {/* Inspectable Thought Communication Bubble */}
+      {nodeData.showMessageBubbles !== false && nodeData.latestMessage && (
+        <MessageBubble
+          message={nodeData.latestMessage}
+          onClick={nodeData.onBubbleClick}
+        />
+      )}
 
       {/* Hover activity beacon: only appears on hover or active step, NOT taking permanent card space */}
       {latestActivity && (

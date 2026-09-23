@@ -127,6 +127,8 @@ export type TraceEventType =
  * Immutable record of what happened at one pipeline stage.
  * This is the source of truth for both the graph UI and the inspector.
  */
+import type { AgentMessage } from '../competition/messageTypes';
+
 export interface TraceEvent {
   runId: string;
   eventId: string;
@@ -144,6 +146,8 @@ export interface TraceEvent {
   ruleVerdict?: RuleVerdict;
   /** Present when eventType is 'node-skipped' or 'node-error' */
   skipReason?: string;
+  /** Optional linked AgentMessage */
+  messageId?: string;
 }
 
 // ── Run record ────────────────────────────────────────────────────────────────
@@ -152,7 +156,8 @@ export interface TraceEvent {
 export interface RunRecord {
   runId: string;
   scenarioKey: ScenarioKey;
-  description: string;
+  description?: string;
+  scenarioDescription?: string;
   events: TraceEvent[];
   approval: Approval | null;
   paperOrders: MockOrder[];
@@ -163,5 +168,7 @@ export interface RunRecord {
   traderId?: string;
   seasonId?: string;
   episodicMemory?: unknown;
+  messages?: AgentMessage[];
 }
+
 

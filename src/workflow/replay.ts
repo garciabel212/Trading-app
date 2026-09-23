@@ -78,24 +78,73 @@ export function deriveNodeStates(
   });
 }
 
+import type { AgentMessage } from '../competition/messageTypes';
+
+export const COMMUNICATION_EDGES: Record<string, string> = {
+  'trader-alpha->portfolio-manager': 'e-alpha-mgr',
+  'trader-beta->portfolio-manager': 'e-beta-mgr',
+  'trader-gamma->portfolio-manager': 'e-gamma-mgr',
+  'portfolio-manager->risk-engine': 'e-mgr-risk',
+  'risk-engine->portfolio-manager': 'e-mgr-risk',
+  'risk-engine->paper-execution': 'e-risk-broker',
+  'paper-execution->portfolio-manager': 'e-mgr-risk',
+  'coach-evaluator->portfolio-manager': 'e-coach-mgr',
+  'market-feed->trader-alpha': 'e-feed-alpha',
+  'market-feed->trader-beta': 'e-feed-beta',
+  'market-feed->trader-gamma': 'e-feed-gamma',
+};
+
 /**
- * Derives animated edge status from the most recent event.
+ * Derives active messages up to the current replay cursor.
+ * Seeking backward hides future messages.
+ */
+export function deriveActiveMessages(
+  record: RunRecord | null,
+  cursorIndex: number
+): Record<string, AgentMessage> {
+  if (!record || !record.messages || record.messages.length === 0 || cursorIndex < 0) {
+    return {};
+  }
+
+  // Active event count up to cursorIndex
+  const activeEventCount = Math.min(record.events.length, cursorIndex + 1);
+  const activeMessages = record.messages.filter((m) => m.sequence <= activeEventCount);
+
+  const bySender: Record<string, AgentMessage> = {};
+  for (const msg of activeMessages) {
+    bySender[msg.sender] = msg;
+  }
+  return bySender;
+}
+
+/**
+ * Derives animated edge status from the most recent event or active communication.
  * If the current event is a 'node-start', the incoming edge to that node is animated.
+ * If an active message was emitted at the current step, the communication edge is animated.
  */
 export function deriveEdgeStates(
   baseEdges: Edge[],
   activeEvents: TraceEvent[],
+  activeMessage?: AgentMessage
 ): Edge[] {
-  if (activeEvents.length === 0) {
+  if (activeEvents.length === 0 && !activeMessage) {
     return baseEdges.map((e) => ({
       ...e,
       data: { ...(e.data as Record<string, unknown>), animated: false },
     }));
   }
 
-  const latest = activeEvents[activeEvents.length - 1];
-  const activeEdgeId =
-    latest.eventType === 'node-start' ? EDGE_FOR_NODE[latest.nodeId] : undefined;
+  let activeEdgeId: string | undefined;
+
+  if (activeMessage) {
+    const key = `${activeMessage.sender}->${activeMessage.recipient}`;
+    activeEdgeId = COMMUNICATION_EDGES[key];
+  }
+
+  if (!activeEdgeId && activeEvents.length > 0) {
+    const latest = activeEvents[activeEvents.length - 1];
+    activeEdgeId = latest.eventType === 'node-start' ? EDGE_FOR_NODE[latest.nodeId] : undefined;
+  }
 
   return baseEdges.map((e) => ({
     ...e,

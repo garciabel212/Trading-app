@@ -402,6 +402,14 @@ export const INITIAL_EDGES: Edge[] = [
     data: { kind: 'dependency' },
     label: 'evaluates',
   },
+  {
+    id: 'e-coach-mgr',
+    source: 'coach-evaluator',
+    target: 'portfolio-manager',
+    type: 'animatedEdge',
+    data: { kind: 'dependency' },
+    label: 'audits',
+  },
 
   // ── Market Feed Broadcast Edges ─────────────────────────────────────────────
   {

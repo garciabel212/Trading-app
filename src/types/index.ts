@@ -47,6 +47,9 @@ export interface AgentNodeData extends Record<string, unknown> {
   lastDecision?: string;
   activePositionsCount?: number;
   compositeScore?: number;
+  latestMessage?: import('../competition/messageTypes').AgentMessage;
+  showMessageBubbles?: boolean;
+  onBubbleClick?: (message: import('../competition/messageTypes').AgentMessage) => void;
 }
 
 export interface ActivityEvent {

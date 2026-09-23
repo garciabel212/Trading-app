@@ -24,7 +24,9 @@ import {
   deriveNodeStates,
   deriveEdgeStates,
   deriveActivityEvents,
+  deriveActiveMessages,
 } from './workflow/replay';
+import type { ProfileKey } from './competition/researchProfiles';
 
 import type { WorkspaceId } from './components/Navigation';
 import AgentNode from './components/AgentNode';
@@ -91,6 +93,9 @@ export default function App() {
   const [isAgentStudioOpen, setIsAgentStudioOpen] = useState(false);
   const [, setAgentVersion] = useState(0);
 
+  const [activeProfileKey, setActiveProfileKey] = useState<ProfileKey>('daily-weather');
+  const [showMessageBubbles, setShowMessageBubbles] = useState<boolean>(true);
+
   // Paper Trading Hook (Live Kalshi market data & paper execution)
   const paperState = usePaperTrading();
 
@@ -103,6 +108,7 @@ export default function App() {
     runScenario,
     runTrainingCycle,
     runCompetitiveCycle,
+    runProposalRound,
     toggleLiveAutonomous,
     togglePlayPause,
     stepNext,
@@ -139,15 +145,37 @@ export default function App() {
     return runRecord.events.slice(0, cursorIndex + 1);
   }, [runRecord, cursorIndex]);
 
+  // Active messages up to cursorIndex (temporal isolation)
+  const activeMessages = useMemo(() => {
+    return deriveActiveMessages(runRecord, cursorIndex);
+  }, [runRecord, cursorIndex]);
+
+  // Current active message at current step for edge animation
+  const currentStepMessage = useMemo(() => {
+    if (!runRecord || !runRecord.messages || cursorIndex < 0) return undefined;
+    return runRecord.messages.find((m) => m.sequence === cursorIndex + 1);
+  }, [runRecord, cursorIndex]);
+
   // Derived graph nodes
   const rawNodes = useMemo(() => {
-    return deriveNodeStates(INITIAL_NODES, activeEvents);
-  }, [activeEvents]);
+    const nodesWithStates = deriveNodeStates(INITIAL_NODES, activeEvents);
+    return nodesWithStates.map((node) => ({
+      ...node,
+      data: {
+        ...node.data,
+        latestMessage: activeMessages[node.id],
+        showMessageBubbles,
+        onBubbleClick: (msg: import('./competition/messageTypes').AgentMessage) => {
+          setSelectedNodeId(msg.sender);
+        },
+      },
+    }));
+  }, [activeEvents, activeMessages, showMessageBubbles]);
 
   // Derived graph edges
   const rawEdges = useMemo(() => {
-    return deriveEdgeStates(INITIAL_EDGES, activeEvents);
-  }, [activeEvents]);
+    return deriveEdgeStates(INITIAL_EDGES, activeEvents, currentStepMessage);
+  }, [activeEvents, currentStepMessage]);
 
   // Derived activity ticker events
   const activity = useMemo(() => {
@@ -273,6 +301,11 @@ export default function App() {
     [loadRecord, rfInstance],
   );
 
+  const handleRunProposalRound = useCallback(() => {
+    setSelectedNodeId(null);
+    runProposalRound(activeProfileKey);
+  }, [runProposalRound, activeProfileKey]);
+
   return (
     <div className="app-shell">
       {/* Sleek Technical Command Bar */}
@@ -293,6 +326,11 @@ export default function App() {
         isLiveAutonomous={isLiveAutonomous}
         onToggleLiveAutonomous={toggleLiveAutonomous}
         liveTicker={paperState.selectedTicker}
+        activeProfileKey={activeProfileKey}
+        onProfileChange={setActiveProfileKey}
+        onRunProposalRound={handleRunProposalRound}
+        showMessageBubbles={showMessageBubbles}
+        onToggleMessageBubbles={() => setShowMessageBubbles((b) => !b)}
       />
 
       {activeWorkspace === 'competition' ? (

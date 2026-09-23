@@ -24,6 +24,11 @@ interface TopBarProps {
   isLiveAutonomous?: boolean;
   onToggleLiveAutonomous?: () => void;
   liveTicker?: string;
+  activeProfileKey?: 'daily-weather' | 'nasdaq-oneq';
+  onProfileChange?: (key: 'daily-weather' | 'nasdaq-oneq') => void;
+  onRunProposalRound?: () => void;
+  showMessageBubbles?: boolean;
+  onToggleMessageBubbles?: () => void;
 }
 
 const SCENARIO_LABELS: Record<ScenarioKey, string> = {
@@ -48,6 +53,11 @@ const TopBar = memo(function TopBar({
   isLiveAutonomous,
   onToggleLiveAutonomous,
   liveTicker,
+  activeProfileKey,
+  onProfileChange,
+  onRunProposalRound,
+  showMessageBubbles,
+  onToggleMessageBubbles,
 }: TopBarProps) {
   return (
     <header className="topbar" role="banner">
@@ -70,7 +80,66 @@ const TopBar = memo(function TopBar({
 
       {/* Lab Actions & Triggers */}
       {activeWorkspace === 'agent-lab' && (
-        <div className="topbar__lab-controls" role="group" aria-label="Lab scenario and training controls">
+        <div className="topbar__lab-controls" role="group" aria-label="Lab scenario, research profile, and communication controls">
+          {/* Research Profile Selector */}
+          {activeProfileKey && onProfileChange && (
+            <div className="topbar__scenario-group">
+              <button
+                type="button"
+                id="btn-profile-weather"
+                className={`scenario-btn ${activeProfileKey === 'daily-weather' ? 'scenario-btn--active' : ''} font-mono`}
+                onClick={() => onProfileChange('daily-weather')}
+                title="Daily Weather Profile: Kalshi binary weather contracts ($200 model)"
+                aria-pressed={activeProfileKey === 'daily-weather'}
+              >
+                🌦 WEATHER
+              </button>
+              <button
+                type="button"
+                id="btn-profile-oneq"
+                className={`scenario-btn ${activeProfileKey === 'nasdaq-oneq' ? 'scenario-btn--active' : ''} font-mono`}
+                onClick={() => onProfileChange('nasdaq-oneq')}
+                title="Nasdaq Composite Research Profile: ONEQ equity ETF whole-share research ($200 model)"
+                aria-pressed={activeProfileKey === 'nasdaq-oneq'}
+              >
+                📈 ONEQ (ETF)
+              </button>
+            </div>
+          )}
+
+          {/* Proposal-Only Decision Round Trigger */}
+          {onRunProposalRound && (
+            <button
+              id="btn-proposal-round"
+              className="topbar-action-btn topbar-action-btn--train font-mono"
+              style={{
+                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2))',
+                borderColor: 'rgba(56, 189, 248, 0.45)',
+                color: '#38bdf8',
+                fontWeight: 600,
+              }}
+              onClick={onRunProposalRound}
+              title="Run explicit proposal-only round: Alpha/Beta/Gamma freeze submissions independently, Manager reviews, Risk validates, Execution disabled, Coach records"
+              disabled={isRunning || isLiveAutonomous}
+            >
+              ⚡ PROPOSAL ROUND
+            </button>
+          )}
+
+          {/* Inspectable Message Bubbles Toggle */}
+          {onToggleMessageBubbles && (
+            <button
+              id="btn-toggle-bubbles"
+              className={`topbar-action-btn font-mono ${showMessageBubbles ? 'scenario-btn--active' : ''}`}
+              style={{ fontSize: '11px', padding: '4px 8px' }}
+              onClick={onToggleMessageBubbles}
+              title={showMessageBubbles ? 'Hide agent thought bubbles' : 'Show agent thought bubbles'}
+              aria-pressed={showMessageBubbles}
+            >
+              💬 {showMessageBubbles ? 'BUBBLES ON' : 'BUBBLES OFF'}
+            </button>
+          )}
+
           {/* Scenario Selector */}
           <div className="topbar__scenario-group">
             {(Object.keys(SCENARIO_LABELS) as ScenarioKey[]).map((key) => (
