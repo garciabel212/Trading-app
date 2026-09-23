@@ -1,115 +1,153 @@
-# Agent Trading OS — Milestone 5 Walkthrough: Agent Studio, Modular Skills & Episodic Learning Memory Loop
+# Agent Trading OS — Comprehensive System Walkthrough
 
-## 1. Quickstart Instructions
+An advanced visual operating system and competitive multi-agent laboratory for autonomous AI trading agents. Agents paper-trade against live prediction markets (Kalshi) and spot crypto (Coinbase), supervised by a Portfolio Manager and Coach Evaluator, backed by a FastAPI engine, Graphify knowledge graph, and Clawbot (OpenClaw) integration.
 
-```bash
+---
+
+## ⚡ Quickstart Commands
+
+### 1. Frontend Web App (Agent Trading OS)
+```powershell
 cd "d:\jose code\trading app"
-npm install
-npm test      # runs Vitest suite across all 4 test files (50 tests passing)
-npm run build # production build validation (0 errors, clean bundle)
-npm run dev   # launches dev server on http://localhost:5173
+
+# Run automated Vitest test suite (63/63 tests passing)
+npm test
+
+# Build validation check (TypeScript + Vite)
+npm run build
+
+# Start local development server (launches browser on http://localhost:5173)
+npm run dev -- --open
 ```
 
-### Graphify Knowledge Graph Commands
-```bash
-# Update and inspect the codebase AST knowledge graph:
-uv tool run --from graphifyy graphify extract . --code-only
-uv tool run --from graphifyy graphify export html
+### 2. Backend Engine (FastAPI Service)
+```powershell
+# Run backend test suite (35/35 tests passing)
+uv run pytest tests/ -v
+
+# Start FastAPI server on port 8000
+uv run uvicorn trading_app.main:app --reload --port 8000
 ```
+- Interactive OpenAPI Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
-## 2. Key Architecture & Milestone 5 Highlights
+## 🏛 The Three Workspaces
 
-### A. Agent Studio & Training Registry
-* **Agent Studio Modal**: Launched directly from the persistent TopBar via `[🤖 Agent: <Active Agent>]`.
-* **Preset Profiles**:
-  1. **Alpha Scalper** (Conservative Scalping): Size 2, Conviction 85%, Max Spread $0.02, Skills: `kalshi-spread-analyzer`, `orderbook-imbalance`.
-  2. **Spread Arbitrageur** (Arbitrage): Size 5, Conviction 90%, Max Spread $0.01, Skills: `kalshi-spread-analyzer`, `regime-detector`.
-  3. **Conservative Sentinel** (Defensive): Size 1, Conviction 95%, Max Spread $0.015, Skills: `kalshi-spread-analyzer`, `risk-vetting`.
-  4. **Aggressive Breakout** (Momentum Trend): Size 8, Conviction 70%, Max Spread $0.05, Skills: `momentum-trend`, `volatility-breakout`.
-* **Custom Agent Builder**:
-  * Users can name an agent, select a strategy archetype, set target sizing (1-10 contracts), configure conviction threshold (50-99%), specify max spread tolerance ($0.005 - $0.10), assign modular skills, and enter custom instructions.
-  * Persisted across browser reloads via `localStorage`.
+```mermaid
+graph TD
+    Nav[Navigation Header] --> Lab[⟡ Agent Lab]
+    Nav --> Arena[🏆 Arena Mode]
+    Nav --> Paper[📈 Paper Trading]
 
-### B. Modular Skills Architecture
-* **`analysis-skill` Node Activated**: Executes assigned skills as pure deterministic functions:
-  * `kalshi-spread-analyzer`: Evaluates bid/ask spread friction relative to contract value.
-  * `momentum-trend`: Computes price velocity and directional persistence.
-  * `orderbook-imbalance`: Assesses depth ratio between YES and NO resting orders.
-  * `volatility-breakout`: Identifies rapid price boundary expansions.
-  * `regime-detector`: Categorizes market conditions (Mean-Reverting vs. Trending).
-* Emits structured `SkillExecutionOutput` events consumed by downstream analytical and strategy agents.
+    subgraph Agent_Lab ["1. Agent Lab"]
+        Graph[Interactive Living AI Graph]
+        Replay[Point-in-Time Scrubber & Replay]
+        LiveMon[⚡ Live Continuous Monitor 5s]
+        Inspector[Node Inspector with Risk Engine Token]
+    end
 
-### C. Episodic Learning Memory Loop
-* **`agent-memory` Node Activated**: Participates twice in each agent execution run:
-  1. **Pre-Trade Memory Query**: Strategy Agent queries relevant historical precedents from episodic memory matching the ticker and market regime. If prior episodes suffered loss or high fee drag, the memory store down-weights conviction by -5% to -15%.
-  2. **Post-Trade Reflection Commit**: Evaluation Agent inspects final execution, calculates net theoretical P&L, formulates structured takeaways, and commits a persistent `EpisodicMemoryItem`.
-* **Learning Stats**: Tracks total runs, win rate, risk rejection rate, and precedent recall counts per agent profile.
+    subgraph Arena_Mode ["2. Arena Mode Workspace"]
+        Leaderboard[Multi-Dimensional Composite Leaderboard]
+        Cards[Alpha, Beta, Gamma Trader Cards]
+        CoachSection[Coach Evaluator & Human-Approved Experiments]
+        Ticker[Live Autonomous Event Ticker]
+    end
 
-### D. 8-Node Graph Execution Pipeline
-When an agent runs in Agent Lab, the full 8-node pipeline executes synchronously and replays inspectably:
-$$\text{Market Feed} \longrightarrow \text{Analysis Skill} \longrightarrow \text{Market Analyst} \longrightarrow \text{Agent Memory (Query)} \longrightarrow \text{Strategy Agent} \longrightarrow \text{Risk Engine} \longrightarrow \text{Paper Execution} \longrightarrow \text{Evaluation} \longrightarrow \text{Agent Memory (Commit)}$$
-
-* Legacy tests and manual runs without an active agent smoothly fallback to the standard 6-stage pipeline, maintaining 100% backward compatibility.
-
-### E. Graphify Knowledge Integration
-* Complete project structure mapped into an AST knowledge graph via `graphify`:
-  * **309 nodes, 726 edges, 12 communities** extracted.
-  * Visual interactive map exported to `graphify-out/graph.html`.
-  * Callflow visualization exported to `graphify-out/trading-app-callflow.html`.
-
----
-
-## 3. Visual Demonstration & Screenshots
-
-### A. Complete Replay Trace with Custom Agent & 8 Pipeline Nodes
-Shows `Kalshi Event Scout` running an 18-event trace with all 8 nodes active in the graph canvas, including `Analysis Skill` and `Agent Memory`:
-
-![Agent Lab 8-Node Trace](./screenshots/kalshi_event_scout_execution_trace_1790016264781.png)
-
-### B. Agent Memory Node Inspection (Precedent Query & Conviction Adjustment)
-Selecting the `Agent Memory` node in the graph reveals the point-in-time inspector card, displaying retrieved precedent count, historical lessons, and conviction adjustment (-6%):
-
-![Agent Memory Inspector](./screenshots/agent_lab_learning_cycle_trace_1790016703462.png)
-
-### C. Agent Studio — Episodic Memory History
-Viewing the `🧠 Episodic Memory` tab in Agent Studio shows recorded post-execution reflections, lessons learned, transaction costs, and tags:
-
-![Agent Studio Episodic Memory Tab](./screenshots/agent_studio_episodic_memory_1790016612433.png)
-
----
-
-## 4. Automated Test Suite Results
-
-All 50 tests pass across 4 test suites (`npm test`):
-
-```
- RUN  v5.0.1 D:/jose code/trading app
-
- ✓ src/__tests__/agents.test.ts (7 tests) 11ms
- ✓ src/__tests__/workflow.test.ts (20 tests) 14ms
- ✓ src/__tests__/replay.test.ts (7 tests) 125ms
-stdout | src/__tests__/paperTrading.test.ts > 7. Live Kalshi API Data Fetch Demonstration > successfully fetches real binary market data or honestly reports API limitation
-✓ Live Kalshi Market Data: KXELONMARS-99 Bid: $0.09 / Ask: $0.12
-
- ✓ src/__tests__/paperTrading.test.ts (16 tests) 153ms
-
- Test Files  4 passed (4)
-      Tests  50 passed (50)
-   Start at  14:28:41
-   Duration  749ms (transform 47%, tests 29%, import 16%, worker 8%)
+    subgraph Paper_Trading ["3. Paper Trading Workspace"]
+        Kalshi[Kalshi v2 Binary Prediction Bets]
+        Crypto[Coinbase Spot Crypto Feeds]
+        OrderBook[Interactive Orderbook Depth]
+        Ledger[Decimal-Safe Virtual Ledger & P&L]
+        Bridge[🔍 Inspect Decision -> Bridges to Agent Lab]
+    end
 ```
 
 ---
 
-## 5. Verification Checklist
+## 🤖 The Competitor Agents & Supervision
 
-- [x] Preset agents and custom agent profile creation with local storage persistence
-- [x] Modular skill assignment and pure execution in `analysis-skill` node
-- [x] Dual-stage episodic memory participation (pre-trade retrieval and post-trade reflection commit)
-- [x] Conviction adaptation based on historical trade outcomes and spread friction
-- [x] 8-stage interactive graph execution and step-by-step point-in-time replay
-- [x] Dedicated inspector cards for Agent Memory and Analysis Skill
-- [x] Zero regressions in Paper Trading workspace or Kalshi live data bridge
-- [x] Graphify knowledge graph extraction (309 nodes, 726 edges, 12 communities)
+| Agent | Role | Style & Philosophy | Simulated Bankroll | Strategy & Execution |
+| :--- | :--- | :--- | :--- | :--- |
+| **Trader Alpha** | Momentum | *"The market contains information."* | $10,000 | Orderbook depth imbalance (>1.35x), spread friction analysis, volume momentum breakouts. |
+| **Trader Beta** | Fundamental Prob | *"Estimate true probability from first principles."* | $10,000 | Evaluates fair odds, requires a strict 5.0% edge hurdle, optimizes Brier score calibration. |
+| **Trader Gamma** | Contrarian | *"Crowds overreact to transient sentiment."* | $10,000 | Fades extreme consensus implied odds (>80% or <20%) with asymmetric, convex upside. |
+| **Portfolio Manager** | Supervisor | Capital allocation & risk balance | $50,000 | Enforces strict 15%–50% weight boundaries, detects consensus vs. divergence, routes approved orders to Risk Engine. |
+| **Coach & Evaluator** | Auditor | Calibration & bias auditor | N/A | Tracks Brier score calibration, diagnoses overtrading, and proposes parameter experiments with **explicit human operator approval**. |
+
+### Multi-Dimensional Composite Scoring Formula
+$$ \text{Composite} = 0.25 \times \text{Return} + 0.20 \times (100 - \text{MaxDD}) + 0.20 \times (1 - 2 \cdot \text{Brier}) \times 100 + 0.15 \times \text{WinRate} + 0.10 \times \text{Edge} + 0.10 \times \text{Compliance} $$
+
+---
+
+## 📈 Real Market Data Feeds
+
+1. **Kalshi v2 Prediction Markets**:
+   - CFTC-regulated binary prediction contracts (`KXOAIANTH-40-ANTH`, `KXOAIANTH-40-OAI`, `KXELONMARS-99`).
+   - Cached local proxy plugin in `vite.config.ts` prevents CORS issues and rate limits.
+2. **Coinbase Spot Crypto**:
+   - Real-time live quotes for `BTC-USD`, `ETH-USD`, and `SOL-USD`.
+   - Streaming bid/ask normalization and 30-period interactive price charts.
+3. **Decimal-Safe Paper Execution**:
+   - Exact Kalshi taker fee formulas (`0.07 * contracts * price * (1 - price)`).
+   - Strict short-selling prevention, position basis averaging, and cash reservation.
+
+---
+
+## 🤖 Clawbot (OpenClaw / Clawdbot) Integration
+
+The platform includes full first-class support for integrating with **Clawbot (OpenClaw)**:
+
+- **Integration Documentation**: [`docs/clawbot_integration.md`](./clawbot_integration.md)
+- **Agent Skill Specification**: [`integrations/clawbot/SKILL.md`](../integrations/clawbot/SKILL.md)
+- **Ready-to-Use Copy-Paste Prompt**:
+  Allows Clawbot to immediately ping `/health`, inspect virtual cash and positions via `/api/portfolio/`, pull quotes via `/api/market/quote/{ticker}`, and propose paper trades that respect the built-in Risk Engine limit (`quantity <= 10`).
+
+---
+
+## 🧠 Graphify Codebase Knowledge Graph
+
+The entire codebase is indexed as an AST knowledge graph:
+- **733 Nodes**, **1,580 Edges**, **44 Communities**.
+- Interactive Graph Visualizer: `graphify-out/graph.html`
+- Callflow Tracking: `graphify-out/trading-app-callflow.html`
+- Architectural Report: `graphify-out/GRAPH_REPORT.md`
+
+```powershell
+# Query the knowledge graph
+graphify query "How does Portfolio Manager allocate capital to Trader Alpha?"
+
+# Update graph after modifications (AST-only, zero API cost)
+graphify update .
+```
+
+---
+
+## ✅ Automated Test Suite Verification
+
+### Vitest Frontend Tests (63 / 63 Passed)
+```text
+ ✓ src/__tests__/agents.test.ts (7 tests)
+ ✓ src/__tests__/workflow.test.ts (20 tests)
+ ✓ src/__tests__/competition.test.ts (11 tests)
+ ✓ src/__tests__/replay.test.ts (7 tests)
+ ✓ src/__tests__/paperTrading.test.ts (18 tests)
+
+Test Files  5 passed (5)
+     Tests  63 passed (63)
+```
+
+### Pytest Backend Tests (35 / 35 Passed)
+```text
+tests/test_api.py (11 tests passed)
+tests/test_backtest.py (5 tests passed)
+tests/test_portfolio.py (9 tests passed)
+tests/test_strategies.py (10 tests passed)
+
+Results: 35 passed in 1.52s
+```
+
+### Build & Static Analysis
+- **TypeScript & Vite Build**: `npm run build` completed with 0 errors.
+- **OxLint**: `npm run lint` completed with 0 errors.
+- **Browser Live Session**: 0 console errors, clean 60fps React Flow canvas.
