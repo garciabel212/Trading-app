@@ -403,7 +403,7 @@ describe('7. Live Kalshi API Data Fetch Demonstration', () => {
       expect(result.error).toBeTruthy();
       console.log(`[Notice: Live Kalshi fetch returned: ${result.error}]`);
     }
-  });
+  }, 15000);
 
   it('verifies high-volume active prediction bets are available in CURATED_MARKETS', () => {
     const tickers = CURATED_MARKETS.map((m) => m.ticker);

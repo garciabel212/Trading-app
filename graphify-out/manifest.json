@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "src/__tests__/paperTrading.test.ts": {
-    "mtime": 1790024796.9418008,
-    "seen": 1790025215.6340516,
-    "ast_hash": "0afd9e03a2407ac6c7242656092bead6",
+    "mtime": 1790189589.549757,
+    "seen": 1790190670.1511004,
+    "ast_hash": "f858a31b555001b70d8f398378a80217",
     "semantic_hash": ""
   },
   "src/__tests__/replay.test.ts": {
@@ -480,9 +480,9 @@
     "semantic_hash": ""
   },
   "docs/walkthrough.md": {
-    "mtime": 1790022527.9222167,
-    "seen": 1790024042.3297868,
-    "ast_hash": "ac18c50a67afc2f99d707464effe97e2",
+    "mtime": 1790189143.7068372,
+    "seen": 1790190670.1512504,
+    "ast_hash": "7cfe5cc3ca34e49d31d988518b627566",
     "semantic_hash": ""
   },
   "index.html": {
@@ -747,6 +747,12 @@
     "mtime": 1790188893.8075886,
     "seen": 1790188926.904331,
     "ast_hash": "f955d2fe23fc77a446ac72d1595ca88d",
+    "semantic_hash": ""
+  },
+  "src/__tests__/demonstration.test.ts": {
+    "mtime": 1790189651.0185094,
+    "seen": 1790190670.1510975,
+    "ast_hash": "561ff1c7b0d3feea1b3d435ad00239f6",
     "semantic_hash": ""
   }
 }
