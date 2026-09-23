@@ -474,9 +474,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790020696.2024808,
-    "seen": 1790024042.3297856,
-    "ast_hash": "00aa657286db2b592470fc481fba458f",
+    "mtime": 1790188910.2913947,
+    "seen": 1790188926.9043226,
+    "ast_hash": "28efaba608a73abf0ae6c8de76751975",
     "semantic_hash": ""
   },
   "docs/walkthrough.md": {
@@ -735,6 +735,18 @@
     "mtime": 1790027326.0816195,
     "seen": 1790027351.2315114,
     "ast_hash": "f4a930730414e270482b3866ca9913ec",
+    "semantic_hash": ""
+  },
+  "docs/clawbot_integration.md": {
+    "mtime": 1790188901.5851405,
+    "seen": 1790188926.9043257,
+    "ast_hash": "fa24f6bee543c5fa5100c67397e829be",
+    "semantic_hash": ""
+  },
+  "integrations/clawbot/SKILL.md": {
+    "mtime": 1790188893.8075886,
+    "seen": 1790188926.904331,
+    "ast_hash": "f955d2fe23fc77a446ac72d1595ca88d",
     "semantic_hash": ""
   }
 }

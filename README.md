@@ -144,6 +144,15 @@ Open `graphify-out/graph.html` in any browser to navigate the interactive graph 
 
 ---
 
+## 🤖 Clawbot (OpenClaw) Integration
+
+Agent Trading OS can be integrated with **Clawbot / OpenClaw** to allow autonomous external agent execution, live portfolio monitoring, and risk-checked paper trading:
+
+- **Integration Guide**: [`docs/clawbot_integration.md`](docs/clawbot_integration.md) — Architecture, endpoints, and ready-to-use copy-paste prompt.
+- **Agent Skill**: [`integrations/clawbot/SKILL.md`](integrations/clawbot/SKILL.md) — Pre-configured AgentSkills specification file.
+
+---
+
 ## 🔒 Safety & Simulation Notice
 
 All trading in this system is strictly **simulated paper trading**. No real capital is ever risked, and no live broker order placement APIs are connected. All orders and portfolio balances exist exclusively in local simulation memory and browser storage.
