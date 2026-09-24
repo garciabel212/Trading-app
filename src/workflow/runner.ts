@@ -22,6 +22,7 @@ import {
   runEvaluation,
 } from './stages';
 import { MAX_ORDER_QTY } from './scenarios';
+import { deepClone, deepFreeze } from './replay';
 import type {
   TradingAgentProfile,
   SkillExecutionOutput,
@@ -129,13 +130,15 @@ export function runWorkflow(
   onEvent?: (event: TraceEvent) => void,
   activeAgent?: TradingAgentProfile,
 ): RunRecord {
+  const frozenInput = deepClone(input);
+  const effectiveLimit = frozenInput.maxOrderQty ?? MAX_ORDER_QTY;
   const runId = newRunId();
   let seq = 0;
 
   const record: RunRecord = {
     runId,
-    scenarioKey: input.scenarioKey,
-    description: input.description,
+    scenarioKey: frozenInput.scenarioKey,
+    description: frozenInput.description,
     events: [],
     approval: null,
     paperOrders: [],
@@ -143,8 +146,12 @@ export function runWorkflow(
     completedAt: null,
     agentId: activeAgent?.id,
     agentName: activeAgent?.name,
-    traderId: input.traderId,
-    seasonId: input.seasonId,
+    traderId: frozenInput.traderId,
+    seasonId: frozenInput.seasonId,
+    policySnapshot: {
+      maxOrderQty: effectiveLimit,
+      proposedQty: frozenInput.proposedQty,
+    },
   };
 
   const emit = (event: TraceEvent) => {
@@ -153,9 +160,9 @@ export function runWorkflow(
   };
 
   // ── Stage 1: Market Feed ────────────────────────────────────────────────────
-  const feedInput = input.liveSnapshot ? { ticker: input.liveSnapshot.ticker, live: true } : {};
+  const feedInput = frozenInput.liveSnapshot ? { ticker: frozenInput.liveSnapshot.ticker, live: true } : {};
   emit(startEvent(runId, seq++, 'market-feed', feedInput));
-  const feedOutput = runMarketFeed(input.liveSnapshot);
+  const feedOutput = runMarketFeed(frozenInput.liveSnapshot);
   emit(completeEvent(
     runId, seq++, 'market-feed',
     feedInput,
@@ -171,7 +178,7 @@ export function runWorkflow(
     const skillId = activeAgent.skills[0] ?? 'kalshi-spread-analyzer';
     const skillInput = { topSymbol: feedOutput.topSymbol, skillId };
     emit(startEvent(runId, seq++, 'analysis-skill', skillInput));
-    skillOutput = runAnalysisSkill(feedOutput, skillId, input.liveSnapshot);
+    skillOutput = runAnalysisSkill(feedOutput, skillId, frozenInput.liveSnapshot);
     emit(completeEvent(
       runId, seq++, 'analysis-skill',
       skillInput,
@@ -183,7 +190,7 @@ export function runWorkflow(
   // ── Stage 2: Market Analyst ─────────────────────────────────────────────────
   const analystInput = feedOutput as unknown as Record<string, unknown>;
   emit(startEvent(runId, seq++, 'market-analyst', analystInput));
-  const analystOutput = runMarketAnalyst(feedOutput, skillOutput, input.liveSnapshot);
+  const analystOutput = runMarketAnalyst(feedOutput, skillOutput, frozenInput.liveSnapshot);
   emit(completeEvent(
     runId, seq++, 'market-analyst',
     analystInput,
@@ -194,10 +201,10 @@ export function runWorkflow(
   // ── Stage 2b: Memory Query (if active agent) ────────────────────────────────
   let memoryQuery: MemoryQueryOutput | undefined;
   if (activeAgent) {
-    const observedSpread = input.liveSnapshot?.spread ?? 0.03;
-    const memoryQueryInput = { agentId: activeAgent.id, symbol: input.symbol, spread: observedSpread };
+    const observedSpread = frozenInput.liveSnapshot?.spread ?? 0.03;
+    const memoryQueryInput = { agentId: activeAgent.id, symbol: frozenInput.symbol, spread: observedSpread };
     emit(startEvent(runId, seq++, 'agent-memory', memoryQueryInput));
-    memoryQuery = queryRelevantMemories(activeAgent, input.symbol, observedSpread);
+    memoryQuery = queryRelevantMemories(activeAgent, frozenInput.symbol, observedSpread);
     emit(completeEvent(
       runId, seq++, 'agent-memory',
       memoryQueryInput,
@@ -209,16 +216,16 @@ export function runWorkflow(
   // ── Stage 3: Strategy Agent ─────────────────────────────────────────────────
   const strategyInput: Record<string, unknown> = {
     topSignal: analystOutput.topSignal,
-    proposedQty: input.proposedQty,
-    symbol: input.symbol,
+    proposedQty: frozenInput.proposedQty,
+    symbol: frozenInput.symbol,
     agentId: activeAgent?.id,
     agentName: activeAgent?.name,
   };
   emit(startEvent(runId, seq++, 'strategy-agent', strategyInput));
   const strategyOutput = runStrategyAgent(
     analystOutput,
-    input.proposedQty,
-    input.symbol,
+    frozenInput.proposedQty,
+    frozenInput.symbol,
     activeAgent,
     memoryQuery,
   );
@@ -232,10 +239,10 @@ export function runWorkflow(
   // ── Stage 4: Risk Engine ────────────────────────────────────────────────────
   const riskInput: Record<string, unknown> = {
     ...strategyOutput as unknown as Record<string, unknown>,
-    maxQty: MAX_ORDER_QTY,
+    maxQty: effectiveLimit,
   };
   emit(startEvent(runId, seq++, 'risk-engine', riskInput));
-  const riskOutput = runRiskEngine(strategyOutput, runId);
+  const riskOutput = runRiskEngine(strategyOutput, runId, effectiveLimit);
   record.approval = riskOutput.approval;
   emit(completeEvent(
     runId, seq++, 'risk-engine',
@@ -274,7 +281,7 @@ export function runWorkflow(
   const evalInput: Record<string, unknown> = {
     eventCount: record.events.length,
     paperOrderCount: record.paperOrders.length,
-    scenarioKey: input.scenarioKey,
+    scenarioKey: frozenInput.scenarioKey,
   };
   emit(startEvent(runId, seq++, 'evaluation', evalInput));
   const evalOutput = runEvaluation(record);
@@ -292,7 +299,7 @@ export function runWorkflow(
     const reflection = buildEpisodicReflection(
       activeAgent,
       runId,
-      input.symbol,
+      frozenInput.symbol,
       0.09,
       0.12,
       0.03,
@@ -319,5 +326,5 @@ export function runWorkflow(
   }
 
   record.completedAt = Date.now();
-  return record;
+  return deepFreeze(record);
 }

@@ -1,0 +1,427 @@
+{
+  "report_id": "rep-oneq-20260924174044",
+  "symbol": "ONEQ",
+  "holding_period_minutes": 30,
+  "selected_settings": {
+    "alpha": 1.0,
+    "entry_buffer_bps": 0.0,
+    "stay_in_cash": true,
+    "median_val_net_return_pct": 0.0,
+    "total_val_trades": 0,
+    "feature_names": [
+      "ret_5m",
+      "ret_15m",
+      "ret_60m",
+      "recent_volatility",
+      "vwap_distance",
+      "relative_volume",
+      "time_of_day"
+    ],
+    "selection_rule": "highest median validation-fold net return, tie-break fewer trades"
+  },
+  "verifications": {
+    "causal_invariance_passed": true,
+    "cash_reconciled": true,
+    "whole_shares_enforced": true,
+    "single_open_position_enforced": true
+  },
+  "performance_summary": {
+    "initial_cash": 200.0,
+    "final_cash": 200.0,
+    "net_pnl": 0.0,
+    "net_return_pct": 0.0,
+    "total_trades": 0,
+    "winning_trades": 0,
+    "losing_trades": 0,
+    "win_rate": 0.0,
+    "profit_factor": 1.0,
+    "total_costs_paid": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe_ratio": 0.0,
+    "cash_reconciled": true,
+    "trades_count": 0
+  },
+  "execution_cost_scenarios": {
+    "1_bps_per_side": {
+      "cost_bps_per_side": 1.0,
+      "round_trip_cost_bps": 2.0,
+      "net_return_pct": 0.0,
+      "total_trades": 0,
+      "total_costs_paid": 0.0,
+      "win_rate": 0.0,
+      "profit_factor": 1.0
+    },
+    "5_bps_per_side": {
+      "cost_bps_per_side": 5.0,
+      "round_trip_cost_bps": 10.0,
+      "net_return_pct": 0.0,
+      "total_trades": 0,
+      "total_costs_paid": 0.0,
+      "win_rate": 0.0,
+      "profit_factor": 1.0
+    },
+    "10_bps_per_side": {
+      "cost_bps_per_side": 10.0,
+      "round_trip_cost_bps": 20.0,
+      "net_return_pct": 0.0,
+      "total_trades": 0,
+      "total_costs_paid": 0.0,
+      "win_rate": 0.0,
+      "profit_factor": 1.0
+    }
+  },
+  "active_ridge_scenarios": {
+    "1_bps_per_side": {
+      "cost_bps_per_side": 1.0,
+      "round_trip_cost_bps": 2.0,
+      "net_return_pct": 0.4653,
+      "total_trades": 10,
+      "total_costs_paid": 0.21,
+      "win_rate": 60.0,
+      "profit_factor": 6.81
+    },
+    "5_bps_per_side": {
+      "cost_bps_per_side": 5.0,
+      "round_trip_cost_bps": 10.0,
+      "net_return_pct": 0.0,
+      "total_trades": 0,
+      "total_costs_paid": 0.0,
+      "win_rate": 0.0,
+      "profit_factor": 1.0
+    },
+    "10_bps_per_side": {
+      "cost_bps_per_side": 10.0,
+      "round_trip_cost_bps": 20.0,
+      "net_return_pct": 0.0,
+      "total_trades": 0,
+      "total_costs_paid": 0.0,
+      "win_rate": 0.0,
+      "profit_factor": 1.0
+    }
+  },
+  "benchmarks": {
+    "cash_benchmark": {
+      "strategy": "100% Cash Balance",
+      "net_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_trades": 0
+    },
+    "buy_and_hold_oneq": {
+      "strategy": "Buy & Hold ONEQ ETF",
+      "start_price": 104.28,
+      "end_price": 105.25,
+      "net_return_pct": 0.92
+    },
+    "learned_ridge_strategy": {
+      "strategy": "Learned Ridge (30-min horizon)",
+      "net_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_trades": 0,
+      "win_rate_pct": 0.0,
+      "profit_factor": 1.0,
+      "total_costs_paid": 0.0
+    }
+  },
+  "resampling_uncertainty_95_ci": {
+    "iterations": 1000,
+    "mean_net_return_pct": 0.0,
+    "ci_95_lower": 0.0,
+    "ci_95_upper": 0.0,
+    "probability_positive_return_pct": 0.0
+  },
+  "monthly_breakdown": [],
+  "conclusion": {
+    "status": "CASH_PRESERVED",
+    "summary": "During development selection, the optimal policy was to stay in cash (0 trades). Model edge was insufficient to reliably overcome 10 bps round-trip friction. Capital was 100% preserved. Forward paper trading should remain in monitoring mode."
+  },
+  "sample_agent_events": [
+    {
+      "prediction": {
+        "run_id": "prop-oneq-1790271644408",
+        "snapshot_id": "snap-oneq-eval",
+        "model_version": "oneq-ridge-v1.0",
+        "trained_through": "2026-09-04",
+        "as_of": "2026-09-08T16:15:00+0000",
+        "feature_values": {
+          "ret_5m": -0.00081,
+          "ret_15m": -0.00072,
+          "ret_60m": -0.00062,
+          "recent_volatility": 0.00052,
+          "vwap_distance": 0.00072,
+          "relative_volume": 0.63059,
+          "time_of_day": 160.0
+        },
+        "predicted_gross_bps": 0.0,
+        "estimated_cost_bps": 10.0,
+        "estimated_net_bps": -10.0,
+        "entry_buffer_bps": 0.0,
+        "action": "WAIT",
+        "reason_code": "STAY_IN_CASH"
+      },
+      "bubbles": [
+        {
+          "sender": "trader-alpha",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Alpha \u2192 Manager: WAIT: estimated net return (-10.0 bps) is below the selected entry buffer (+0.0 bps).",
+          "evidence": [
+            {
+              "rule": "predicted_gross_bps",
+              "value": "+0.0 bps"
+            },
+            {
+              "rule": "estimated_net_bps",
+              "value": "-10.0 bps"
+            },
+            {
+              "rule": "entry_buffer_bps",
+              "value": "+0.0 bps"
+            }
+          ]
+        },
+        {
+          "sender": "trader-beta",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Beta \u2192 Manager: Skipping: candidate research model is unavailable until independently implemented.",
+          "evidence": [
+            {
+              "rule": "model_availability",
+              "value": "unavailable",
+              "threshold": "implemented"
+            }
+          ]
+        },
+        {
+          "sender": "trader-gamma",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Gamma \u2192 Manager: Skipping: candidate research model is unavailable until independently implemented.",
+          "evidence": [
+            {
+              "rule": "model_availability",
+              "value": "unavailable",
+              "threshold": "implemented"
+            }
+          ]
+        },
+        {
+          "sender": "portfolio-manager",
+          "recipient": "risk-engine",
+          "messageType": "no_trade",
+          "summary": "Manager \u2192 Risk: NO TRADE recorded: all competitor agents submitted WAIT for this evaluation round."
+        },
+        {
+          "sender": "risk-engine",
+          "recipient": "portfolio-manager",
+          "messageType": "risk_verdict",
+          "summary": "Risk \u2192 Manager: No active trade exposure evaluated; portfolio capital boundaries remain intact."
+        },
+        {
+          "sender": "paper-execution",
+          "recipient": "portfolio-manager",
+          "messageType": "execution_notice",
+          "summary": "Execution \u2192 Manager: Research simulation assumption: fills modeled at next-open ($180.40) + slippage. Real-money submission disabled."
+        },
+        {
+          "sender": "coach-evaluator",
+          "recipient": "portfolio-manager",
+          "messageType": "coach_record",
+          "summary": "Coach \u2192 Manager: Matured outcome recorded: actual 30-min return = -1.8 bps. Forecasting error = +1.8 bps. Decision (WAIT) audited for execution/opportunity cost."
+        }
+      ]
+    },
+    {
+      "prediction": {
+        "run_id": "prop-oneq-1790271644409",
+        "snapshot_id": "snap-oneq-eval",
+        "model_version": "oneq-ridge-v1.0",
+        "trained_through": "2026-09-04",
+        "as_of": "2026-09-09T15:05:00+0000",
+        "feature_values": {
+          "ret_5m": -0.00158,
+          "ret_15m": -0.00156,
+          "ret_60m": -0.00212,
+          "recent_volatility": 0.00093,
+          "vwap_distance": -0.00166,
+          "relative_volume": 2.27622,
+          "time_of_day": 90.0
+        },
+        "predicted_gross_bps": 0.0,
+        "estimated_cost_bps": 10.0,
+        "estimated_net_bps": -10.0,
+        "entry_buffer_bps": 0.0,
+        "action": "WAIT",
+        "reason_code": "STAY_IN_CASH"
+      },
+      "bubbles": [
+        {
+          "sender": "trader-alpha",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Alpha \u2192 Manager: WAIT: estimated net return (-10.0 bps) is below the selected entry buffer (+0.0 bps).",
+          "evidence": [
+            {
+              "rule": "predicted_gross_bps",
+              "value": "+0.0 bps"
+            },
+            {
+              "rule": "estimated_net_bps",
+              "value": "-10.0 bps"
+            },
+            {
+              "rule": "entry_buffer_bps",
+              "value": "+0.0 bps"
+            }
+          ]
+        },
+        {
+          "sender": "trader-beta",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Beta \u2192 Manager: Skipping: candidate research model is unavailable until independently implemented.",
+          "evidence": [
+            {
+              "rule": "model_availability",
+              "value": "unavailable",
+              "threshold": "implemented"
+            }
+          ]
+        },
+        {
+          "sender": "trader-gamma",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Gamma \u2192 Manager: Skipping: candidate research model is unavailable until independently implemented.",
+          "evidence": [
+            {
+              "rule": "model_availability",
+              "value": "unavailable",
+              "threshold": "implemented"
+            }
+          ]
+        },
+        {
+          "sender": "portfolio-manager",
+          "recipient": "risk-engine",
+          "messageType": "no_trade",
+          "summary": "Manager \u2192 Risk: NO TRADE recorded: all competitor agents submitted WAIT for this evaluation round."
+        },
+        {
+          "sender": "risk-engine",
+          "recipient": "portfolio-manager",
+          "messageType": "risk_verdict",
+          "summary": "Risk \u2192 Manager: No active trade exposure evaluated; portfolio capital boundaries remain intact."
+        },
+        {
+          "sender": "paper-execution",
+          "recipient": "portfolio-manager",
+          "messageType": "execution_notice",
+          "summary": "Execution \u2192 Manager: Research simulation assumption: fills modeled at next-open ($180.40) + slippage. Real-money submission disabled."
+        },
+        {
+          "sender": "coach-evaluator",
+          "recipient": "portfolio-manager",
+          "messageType": "coach_record",
+          "summary": "Coach \u2192 Manager: Matured outcome recorded: actual 30-min return = -14.2 bps. Forecasting error = +14.2 bps. Decision (WAIT) audited for execution/opportunity cost."
+        }
+      ]
+    },
+    {
+      "prediction": {
+        "run_id": "prop-oneq-1790271644409",
+        "snapshot_id": "snap-oneq-eval",
+        "model_version": "oneq-ridge-v1.0",
+        "trained_through": "2026-09-04",
+        "as_of": "2026-09-09T15:10:00+0000",
+        "feature_values": {
+          "ret_5m": -0.00129,
+          "ret_15m": -0.00226,
+          "ret_60m": -0.00437,
+          "recent_volatility": 0.00091,
+          "vwap_distance": -0.00263,
+          "relative_volume": 3.96629,
+          "time_of_day": 95.0
+        },
+        "predicted_gross_bps": 0.0,
+        "estimated_cost_bps": 10.0,
+        "estimated_net_bps": -10.0,
+        "entry_buffer_bps": 0.0,
+        "action": "WAIT",
+        "reason_code": "STAY_IN_CASH"
+      },
+      "bubbles": [
+        {
+          "sender": "trader-alpha",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Alpha \u2192 Manager: WAIT: estimated net return (-10.0 bps) is below the selected entry buffer (+0.0 bps).",
+          "evidence": [
+            {
+              "rule": "predicted_gross_bps",
+              "value": "+0.0 bps"
+            },
+            {
+              "rule": "estimated_net_bps",
+              "value": "-10.0 bps"
+            },
+            {
+              "rule": "entry_buffer_bps",
+              "value": "+0.0 bps"
+            }
+          ]
+        },
+        {
+          "sender": "trader-beta",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Beta \u2192 Manager: Skipping: candidate research model is unavailable until independently implemented.",
+          "evidence": [
+            {
+              "rule": "model_availability",
+              "value": "unavailable",
+              "threshold": "implemented"
+            }
+          ]
+        },
+        {
+          "sender": "trader-gamma",
+          "recipient": "portfolio-manager",
+          "messageType": "skip",
+          "summary": "Gamma \u2192 Manager: Skipping: candidate research model is unavailable until independently implemented.",
+          "evidence": [
+            {
+              "rule": "model_availability",
+              "value": "unavailable",
+              "threshold": "implemented"
+            }
+          ]
+        },
+        {
+          "sender": "portfolio-manager",
+          "recipient": "risk-engine",
+          "messageType": "no_trade",
+          "summary": "Manager \u2192 Risk: NO TRADE recorded: all competitor agents submitted WAIT for this evaluation round."
+        },
+        {
+          "sender": "risk-engine",
+          "recipient": "portfolio-manager",
+          "messageType": "risk_verdict",
+          "summary": "Risk \u2192 Manager: No active trade exposure evaluated; portfolio capital boundaries remain intact."
+        },
+        {
+          "sender": "paper-execution",
+          "recipient": "portfolio-manager",
+          "messageType": "execution_notice",
+          "summary": "Execution \u2192 Manager: Research simulation assumption: fills modeled at next-open ($180.40) + slippage. Real-money submission disabled."
+        },
+        {
+          "sender": "coach-evaluator",
+          "recipient": "portfolio-manager",
+          "messageType": "coach_record",
+          "summary": "Coach \u2192 Manager: Matured outcome recorded: actual 30-min return = +19.4 bps. Forecasting error = -19.4 bps. Decision (WAIT) audited for execution/opportunity cost."
+        }
+      ]
+    }
+  ]
+}

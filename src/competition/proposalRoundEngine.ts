@@ -9,9 +9,12 @@
 // 4. Emits explicit, inspectable AgentMessage objects linked to grounded evidence.
 
 import type { NormalizedMarketSnapshot } from '../paper/types';
-import type { AgentMessage, EvidenceReference } from './messageTypes';
+import type { AgentMessage, EvidenceReference, StructuredPrediction } from './messageTypes';
 import { RESEARCH_PROFILES, checkWholeShareAffordability, type ProfileKey } from './researchProfiles';
 import type { RunRecord, TraceEvent } from '../workflow/types';
+import { deepClone, deepFreeze } from '../workflow/replay';
+
+let _propRoundCounter = 0;
 
 export interface ProposalRoundResult {
   runId: string;
@@ -23,26 +26,29 @@ export interface ProposalRoundResult {
   executionStatus: string;
   coachStatus: string;
   runRecord: RunRecord;
+  prediction?: StructuredPrediction;
 }
 
 export function runProposalOnlyRound(
   snapshot: NormalizedMarketSnapshot,
   profileKey: ProfileKey = 'daily-weather',
   availableCash: number = 200.0,
-  staleOverride?: boolean
+  staleOverride?: boolean,
+  oneqPrediction?: StructuredPrediction
 ): ProposalRoundResult {
   const profile = RESEARCH_PROFILES[profileKey];
   const now = Date.now();
-  const runId = `prop-round-${profileKey}-${now}`;
-  const snapshotId = snapshot.snapshotId;
+  const runId = `prop-round-${profileKey}-${now}-${++_propRoundCounter}`;
+  const clonedSnapshot = deepClone(snapshot);
+  const snapshotId = clonedSnapshot.snapshotId;
 
   const messages: AgentMessage[] = [];
   const events: TraceEvent[] = [];
   let seq = 1;
   let msgCounter = 1;
 
-  const isStale = staleOverride ?? (snapshot.isStale || (now - snapshot.localReceiptTimestamp > 30000));
-  const isMissingData = !snapshot.lastPrice || (snapshot.bestYesAsk === null && snapshot.bestYesBid === null);
+  const isStale = staleOverride ?? (clonedSnapshot.isStale || (now - clonedSnapshot.localReceiptTimestamp > 30000));
+  const isMissingData = !clonedSnapshot.lastPrice || (clonedSnapshot.bestYesAsk === null && clonedSnapshot.bestYesBid === null);
 
   // ── 1. Snapshot Event ───────────────────────────────────────────────────────
   events.push({
@@ -52,14 +58,14 @@ export function runProposalOnlyRound(
     nodeId: 'market-feed',
     timestamp: now,
     eventType: 'node-complete',
-    input: { ticker: snapshot.ticker, profileKey },
+    input: { ticker: clonedSnapshot.ticker, profileKey },
     output: {
       snapshotId,
-      price: snapshot.lastPrice,
+      price: clonedSnapshot.lastPrice,
       isStale,
       instrumentType: profile.instrumentType,
     },
-    decision: `Captured timestamped market snapshot for ${snapshot.ticker} (${profile.name}). Data status: ${profile.dataStatus}.`,
+    decision: `Captured timestamped market snapshot for ${clonedSnapshot.ticker} (${profile.name}). Data status: ${profile.dataStatus}.`,
   });
 
   // ── 2. Independent Competitor Submissions (Frozen independently) ────────────
@@ -76,8 +82,8 @@ export function runProposalOnlyRound(
   const submissions: CompetitorSubmission[] = [];
 
   if (profileKey === 'daily-weather') {
-    const ask = snapshot.bestYesAsk ?? snapshot.lastPrice ?? 0.50;
-    const bid = snapshot.bestYesBid ?? 0.40;
+    const ask = clonedSnapshot.bestYesAsk ?? clonedSnapshot.lastPrice ?? 0.50;
+    const bid = clonedSnapshot.bestYesBid ?? 0.40;
     const spread = Number((ask - bid).toFixed(2));
 
     // Alpha: Forecast anomaly dynamics
@@ -135,44 +141,76 @@ export function runProposalOnlyRound(
     });
   } else {
     // profileKey === 'nasdaq-oneq'
-    const price = snapshot.lastPrice ?? 180.40;
+    const price = clonedSnapshot.lastPrice ?? 180.40;
 
-    // Alpha: Opening-Range Breakout (ORB) - Candidate research method (Not implemented)
-    submissions.push({
-      traderId: 'trader-alpha',
-      action: 'skip',
-      side: 'buy',
-      quantity: 0,
-      price,
-      summary: 'Alpha → Manager: Skipping: candidate research method (Opening-Range Breakout) is Not implemented.',
-      evidence: [
-        { indicatorOrRule: 'research_status', measuredValue: 'Not implemented', threshold: 'implemented', verdictPassed: false },
-      ],
-    });
+    if (oneqPrediction) {
+      if (oneqPrediction.action === 'BUY') {
+        submissions.push({
+          traderId: 'trader-alpha',
+          action: 'proposal',
+          side: 'buy',
+          quantity: 1,
+          price,
+          summary: `Alpha → Manager: BUY candidate: predicted return (${oneqPrediction.predictedGrossBps >= 0 ? '+' : ''}${oneqPrediction.predictedGrossBps.toFixed(1)} bps) exceeds costs (${oneqPrediction.estimatedCostBps.toFixed(1)} bps) + buffer (${oneqPrediction.entryBufferBps.toFixed(1)} bps). Proposing 1 share @ $${price.toFixed(2)}.`,
+          evidence: [
+            { indicatorOrRule: 'predicted_gross_bps', measuredValue: `${oneqPrediction.predictedGrossBps >= 0 ? '+' : ''}${oneqPrediction.predictedGrossBps.toFixed(1)} bps`, threshold: `> ${(oneqPrediction.estimatedCostBps + oneqPrediction.entryBufferBps).toFixed(1)} bps`, verdictPassed: true },
+            { indicatorOrRule: 'estimated_net_bps', measuredValue: `${oneqPrediction.estimatedNetBps >= 0 ? '+' : ''}${oneqPrediction.estimatedNetBps.toFixed(1)} bps`, threshold: `> ${oneqPrediction.entryBufferBps.toFixed(1)} bps`, verdictPassed: true },
+            { indicatorOrRule: 'selected_entry_buffer_bps', measuredValue: `+${oneqPrediction.entryBufferBps.toFixed(1)} bps`, threshold: 'buffer', verdictPassed: true },
+          ],
+        });
+      } else {
+        submissions.push({
+          traderId: 'trader-alpha',
+          action: 'skip',
+          side: 'buy',
+          quantity: 0,
+          price,
+          summary: `Alpha → Manager: WAIT: estimated net return (${oneqPrediction.estimatedNetBps >= 0 ? '+' : ''}${oneqPrediction.estimatedNetBps.toFixed(1)} bps) is below the selected entry buffer (+${oneqPrediction.entryBufferBps.toFixed(1)} bps).`,
+          evidence: [
+            { indicatorOrRule: 'predicted_gross_bps', measuredValue: `${oneqPrediction.predictedGrossBps >= 0 ? '+' : ''}${oneqPrediction.predictedGrossBps.toFixed(1)} bps`, threshold: `> ${(oneqPrediction.estimatedCostBps + oneqPrediction.entryBufferBps).toFixed(1)} bps`, verdictPassed: false },
+            { indicatorOrRule: 'estimated_net_bps', measuredValue: `${oneqPrediction.estimatedNetBps >= 0 ? '+' : ''}${oneqPrediction.estimatedNetBps.toFixed(1)} bps`, threshold: `> ${oneqPrediction.entryBufferBps.toFixed(1)} bps`, verdictPassed: false },
+            { indicatorOrRule: 'selected_entry_buffer_bps', measuredValue: `+${oneqPrediction.entryBufferBps.toFixed(1)} bps`, threshold: 'buffer', verdictPassed: false },
+          ],
+        });
+      }
+    } else {
+      // Default unconfigured candidate
+      submissions.push({
+        traderId: 'trader-alpha',
+        action: 'skip',
+        side: 'buy',
+        quantity: 0,
+        price,
+        summary: 'Alpha → Manager: Skipping: candidate research method (Opening-Range Breakout) is Not implemented.',
+        evidence: [
+          { indicatorOrRule: 'research_status', measuredValue: 'Not implemented', threshold: 'implemented', verdictPassed: false },
+        ],
+      });
+    }
 
-    // Beta: Pullback within trend (Candidate research method - Not implemented)
+    // Beta: Report that model is unavailable until independently implemented
     submissions.push({
       traderId: 'trader-beta',
       action: 'skip',
       side: 'buy',
       quantity: 0,
       price,
-      summary: 'Beta → Manager: Skipping: candidate research method (Pullback within trend) is Not implemented.',
+      summary: 'Beta → Manager: Skipping: candidate research method (Pullback within trend) is Not implemented (model unavailable until independently implemented).',
       evidence: [
-        { indicatorOrRule: 'research_status', measuredValue: 'Not implemented', threshold: 'implemented', verdictPassed: false },
+        { indicatorOrRule: 'research_status', measuredValue: 'Not implemented (model unavailable)', threshold: 'implemented', verdictPassed: false },
       ],
     });
 
-    // Gamma: Mean reversion toward session VWAP (Candidate research method - Not implemented)
+    // Gamma: Report that model is unavailable until independently implemented
     submissions.push({
       traderId: 'trader-gamma',
       action: 'skip',
       side: 'buy',
       quantity: 0,
       price,
-      summary: 'Gamma → Manager: Skipping: candidate research method (Mean reversion toward session VWAP) is Not implemented.',
+      summary: 'Gamma → Manager: Skipping: candidate research method (Mean reversion toward session VWAP) is Not implemented (model unavailable until independently implemented).',
       evidence: [
-        { indicatorOrRule: 'research_status', measuredValue: 'Not implemented', threshold: 'implemented', verdictPassed: false },
+        { indicatorOrRule: 'research_status', measuredValue: 'Not implemented (model unavailable)', threshold: 'implemented', verdictPassed: false },
       ],
     });
   }
@@ -207,6 +245,7 @@ export function runProposalOnlyRound(
       input: { snapshotId, price: sub.price },
       output: { action: sub.action, quantity: sub.quantity, summary: sub.summary },
       decision: sub.summary,
+      messageId: msg.messageId,
     });
   }
 
@@ -256,6 +295,7 @@ export function runProposalOnlyRound(
     input: { proposalCount: activeProposals.length },
     output: { selected: selectedSubmission?.traderId ?? null },
     decision: managerSummary,
+    messageId: managerMsg.messageId,
   });
 
   // ── 4. Risk Engine Evaluation ───────────────────────────────────────────────
@@ -323,7 +363,7 @@ export function runProposalOnlyRound(
     nodeId: 'risk-engine',
     timestamp: now + seq * 10,
     eventType: 'node-complete',
-    input: { selectedTraderId: selectedSubmission?.traderId ?? null },
+    input: { selectedTraderId: selectedSubmission?.traderId ?? null, maxQty: 10 },
     output: { riskVerdict, reason: riskSummary },
     decision: riskSummary,
     ruleVerdict: {
@@ -332,10 +372,13 @@ export function runProposalOnlyRound(
       observed: selectedSubmission?.quantity ?? 0,
       passed: riskVerdict === 'APPROVED',
     },
+    messageId: riskMsg.messageId,
   });
 
   // ── 5. Execution Notice (Proposal only — execution disabled) ────────────────
-  const executionSummary = 'Execution → Manager: Proposal only—execution disabled. Zero order submitted; account balances and ledgers remain unchanged.';
+  const executionSummary = oneqPrediction
+    ? `Execution → Manager: Research simulation assumption: simulated fill modeled at next-open ($${selectedSubmission ? selectedSubmission.price.toFixed(2) : (clonedSnapshot.lastPrice ?? 180.40).toFixed(2)}) + slippage. Real-money submission disabled.`
+    : 'Execution → Manager: Proposal only—execution disabled. Zero order submitted; account balances and ledgers remain unchanged.';
   const execMsg: AgentMessage = {
     messageId: `msg-${runId}-${msgCounter++}`,
     runId,
@@ -368,10 +411,32 @@ export function runProposalOnlyRound(
     input: { executionMode: 'proposal_only' },
     output: { ordersPlaced: 0 },
     decision: executionSummary,
+    messageId: execMsg.messageId,
   });
 
-  // ── 6. Coach Record (Outcome pending; performance cannot yet be scored) ─────
-  const coachSummary = 'Coach → Manager: Outcome pending; performance cannot yet be scored until an actual simulated trade outcome is observed.';
+  // ── 6. Coach Record (Outcome pending or matured) ───────────────────────────
+  let coachSummary = 'Coach → Manager: Outcome pending; performance cannot yet be scored until an actual simulated trade outcome is observed.';
+  let coachScored = false;
+  if (oneqPrediction && oneqPrediction.maturedActualReturnBps !== undefined) {
+    coachScored = true;
+    const errorBps = oneqPrediction.predictedGrossBps - oneqPrediction.maturedActualReturnBps;
+    coachSummary = `Coach → Manager: Matured outcome recorded: actual 30-min return = ${oneqPrediction.maturedActualReturnBps >= 0 ? '+' : ''}${oneqPrediction.maturedActualReturnBps.toFixed(1)} bps. Forecasting error = ${errorBps >= 0 ? '+' : ''}${errorBps.toFixed(1)} bps. Decision (${oneqPrediction.action}) audited for execution/opportunity cost.`;
+  } else if (oneqPrediction) {
+    coachSummary = `Coach → Manager: Forecast recorded (${oneqPrediction.action}: predicted ${oneqPrediction.predictedGrossBps >= 0 ? '+' : ''}${oneqPrediction.predictedGrossBps.toFixed(1)} bps, buffer ${oneqPrediction.entryBufferBps.toFixed(1)} bps). Opportunity audit pending maturation at t+7.`;
+  }
+
+  const coachEvidence: EvidenceReference[] = oneqPrediction && oneqPrediction.maturedActualReturnBps !== undefined
+    ? [
+        { indicatorOrRule: 'forecast_predicted_bps', measuredValue: `${oneqPrediction.predictedGrossBps >= 0 ? '+' : ''}${oneqPrediction.predictedGrossBps.toFixed(1)} bps` },
+        { indicatorOrRule: 'matured_actual_return_bps', measuredValue: `${oneqPrediction.maturedActualReturnBps >= 0 ? '+' : ''}${oneqPrediction.maturedActualReturnBps.toFixed(1)} bps` },
+        { indicatorOrRule: 'forecast_error_bps', measuredValue: `${(oneqPrediction.predictedGrossBps - oneqPrediction.maturedActualReturnBps) >= 0 ? '+' : ''}${(oneqPrediction.predictedGrossBps - oneqPrediction.maturedActualReturnBps).toFixed(1)} bps` },
+        { indicatorOrRule: 'decision_audited', measuredValue: oneqPrediction.action, threshold: 'BUY or WAIT' },
+      ]
+    : [
+        { indicatorOrRule: 'outcome_status', measuredValue: 'pending', threshold: 'observed' },
+        { indicatorOrRule: 'scoring_status', measuredValue: 'unscored', threshold: 'scored' },
+      ];
+
   const coachMsg: AgentMessage = {
     messageId: `msg-${runId}-${msgCounter++}`,
     runId,
@@ -382,10 +447,7 @@ export function runProposalOnlyRound(
     recipient: 'portfolio-manager',
     messageType: 'coach_record',
     conciseSummary: coachSummary,
-    evidenceReferences: [
-      { indicatorOrRule: 'outcome_status', measuredValue: 'pending', threshold: 'observed' },
-      { indicatorOrRule: 'scoring_status', measuredValue: 'unscored', threshold: 'scored' },
-    ],
+    evidenceReferences: coachEvidence,
     strategyVersion: `${profile.key}-CoachAudit-v1.0`,
     instrumentType: profile.instrumentType,
     profileKey,
@@ -401,8 +463,9 @@ export function runProposalOnlyRound(
     timestamp: now + seq * 10,
     eventType: 'node-complete',
     input: { runId },
-    output: { scored: false, status: 'outcome_pending' },
+    output: { scored: coachScored, status: coachScored ? 'outcome_matured' : 'outcome_pending' },
     decision: coachSummary,
+    messageId: coachMsg.messageId,
   });
 
   const runRecord: RunRecord = {
@@ -417,15 +480,19 @@ export function runProposalOnlyRound(
       runId,
       approvedBy: 'risk-engine',
       amount: selectedSubmission.quantity,
-      symbol: snapshot.ticker,
+      symbol: clonedSnapshot.ticker,
       issuedAt: now,
     } : null,
     messages,
+    policySnapshot: {
+      maxOrderQty: 10,
+      proposedQty: selectedSubmission?.quantity ?? 0,
+    },
   };
 
-  return {
+  const result: ProposalRoundResult = {
     runId,
-    snapshot,
+    snapshot: clonedSnapshot,
     profileKey,
     messages,
     selectedTraderId: selectedSubmission?.traderId ?? null,
@@ -433,5 +500,8 @@ export function runProposalOnlyRound(
     executionStatus: executionSummary,
     coachStatus: coachSummary,
     runRecord,
+    prediction: oneqPrediction,
   };
+
+  return deepFreeze(result);
 }

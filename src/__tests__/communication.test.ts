@@ -315,5 +315,96 @@ describe('Agent Trading OS — Communication & Proposal Round Engine', () => {
       const nonPositive = checkWholeShareAffordability(price, cash, 0);
       expect(nonPositive.affordable).toBe(false);
     });
+
+    it('generates grounded agent communication bubbles when ONEQ trained model proposes BUY', () => {
+      const buyPrediction: import('../competition/messageTypes').StructuredPrediction = {
+        runId: 'prop-oneq-test-buy',
+        snapshotId: ONEQ_SNAPSHOT.snapshotId,
+        modelVersion: 'oneq-ridge-v1.0',
+        trainedThrough: '2026-09-01',
+        asOf: '2026-09-24T12:00:00Z',
+        featureValues: { ret_5m: 0.001, vwap_distance: 0.0004 },
+        predictedGrossBps: 22.5,
+        estimatedCostBps: 10.0,
+        estimatedNetBps: 12.5,
+        entryBufferBps: 2.0,
+        action: 'BUY',
+        reasonCode: 'EDGE_ABOVE_BUFFER',
+        maturedActualReturnBps: 18.0,
+      };
+
+      const result = runProposalOnlyRound(ONEQ_SNAPSHOT, 'nasdaq-oneq', 200.0, false, buyPrediction);
+      expect(result.selectedTraderId).toBe('trader-alpha');
+      expect(result.riskVerdict).toBe('APPROVED');
+
+      // 1. Alpha calls trained model and reports BUY candidate
+      const alphaMsg = result.messages.find((m) => m.sender === 'trader-alpha');
+      expect(alphaMsg?.messageType).toBe('proposal');
+      expect(alphaMsg?.conciseSummary).toContain('BUY candidate');
+      expect(alphaMsg?.conciseSummary).toContain('+22.5 bps');
+
+      // 2. Beta & Gamma report models unavailable until independently implemented
+      const betaMsg = result.messages.find((m) => m.sender === 'trader-beta');
+      const gammaMsg = result.messages.find((m) => m.sender === 'trader-gamma');
+      expect(betaMsg?.messageType).toBe('skip');
+      expect(betaMsg?.conciseSummary).toContain('unavailable until independently implemented');
+      expect(gammaMsg?.conciseSummary).toContain('unavailable until independently implemented');
+
+      // 3. Manager selects proposal and calculates affordable quantity (1 whole share)
+      const mgrMsg = result.messages.find((m) => m.sender === 'portfolio-manager');
+      expect(mgrMsg?.messageType).toBe('selection');
+      expect(mgrMsg?.conciseSummary).toContain('ALPHA');
+      expect(mgrMsg?.conciseSummary).toContain('1 shares of ONEQ');
+
+      // 4. Risk evaluates sizing and capital
+      const riskMsg = result.messages.find((m) => m.sender === 'risk-engine');
+      expect(riskMsg?.messageType).toBe('risk_verdict');
+      expect(riskMsg?.conciseSummary).toContain('APPROVED');
+
+      // 5. Execution reports simulated fills and disabled execution
+      const execMsg = result.messages.find((m) => m.sender === 'paper-execution');
+      expect(execMsg?.conciseSummary).toContain('Research simulation assumption');
+      expect(execMsg?.conciseSummary).toContain('Real-money submission disabled');
+
+      // 6. Coach compares prediction with matured outcome and records forecasting error
+      const coachMsg = result.messages.find((m) => m.sender === 'coach-evaluator');
+      expect(coachMsg?.conciseSummary).toContain('Matured outcome recorded: actual 30-min return = +18.0 bps');
+      expect(coachMsg?.conciseSummary).toContain('Forecasting error = +4.5 bps');
+    });
+
+    it('generates grounded agent communication bubbles when ONEQ trained model outputs WAIT', () => {
+      const waitPrediction: import('../competition/messageTypes').StructuredPrediction = {
+        runId: 'prop-oneq-test-wait',
+        snapshotId: ONEQ_SNAPSHOT.snapshotId,
+        modelVersion: 'oneq-ridge-v1.0',
+        trainedThrough: '2026-09-01',
+        asOf: '2026-09-24T12:00:00Z',
+        featureValues: { ret_5m: -0.0005, vwap_distance: -0.001 },
+        predictedGrossBps: -4.0,
+        estimatedCostBps: 10.0,
+        estimatedNetBps: -14.0,
+        entryBufferBps: 2.0,
+        action: 'WAIT',
+        reasonCode: 'NET_BELOW_BUFFER',
+        maturedActualReturnBps: -12.0,
+      };
+
+      const result = runProposalOnlyRound(ONEQ_SNAPSHOT, 'nasdaq-oneq', 200.0, false, waitPrediction);
+      expect(result.selectedTraderId).toBeNull();
+
+      // Alpha reports WAIT: estimated net return is below selected entry buffer
+      const alphaMsg = result.messages.find((m) => m.sender === 'trader-alpha');
+      expect(alphaMsg?.messageType).toBe('skip');
+      expect(alphaMsg?.conciseSummary).toContain('WAIT: estimated net return (-14.0 bps) is below the selected entry buffer (+2.0 bps)');
+
+      // Manager records NO TRADE
+      const mgrMsg = result.messages.find((m) => m.sender === 'portfolio-manager');
+      expect(mgrMsg?.messageType).toBe('no_trade');
+
+      // Coach audits opportunity cost of WAIT decision
+      const coachMsg = result.messages.find((m) => m.sender === 'coach-evaluator');
+      expect(coachMsg?.conciseSummary).toContain('Forecasting error = +8.0 bps');
+      expect(coachMsg?.conciseSummary).toContain('audited for execution/opportunity cost');
+    });
   });
 });

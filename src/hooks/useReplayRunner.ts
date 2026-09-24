@@ -47,7 +47,7 @@ export interface UseReplayRunnerResult {
   stepPrev: () => void;
   restartPlayback: () => void;
   seekTo: (index: number) => void;
-  loadRecord: (record: RunRecord) => void;
+  loadRecord: (record: RunRecord, initialCursor?: number) => void;
   reset: () => void;
 }
 
@@ -58,6 +58,10 @@ export function useReplayRunner(): UseReplayRunnerResult {
   const [isLiveAutonomous, setIsLiveAutonomous] = useState<boolean>(false);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
+  const runRecordRef = useRef(runRecord);
+  runRecordRef.current = runRecord;
 
   const clearTimer = useCallback(() => {
     if (timerRef.current !== null) {
@@ -79,14 +83,19 @@ export function useReplayRunner(): UseReplayRunnerResult {
     }
 
     if (cursorIndex >= runRecord.events.length - 1) {
-      // Reached the end of the recorded trace — stop playing
-      setIsPlaying(false);
       clearTimer();
       return;
     }
 
+    const currentRunId = runRecord.runId;
     timerRef.current = setTimeout(() => {
+      if (!isPlayingRef.current || runRecordRef.current?.runId !== currentRunId) {
+        return;
+      }
       setCursorIndex((prev) => {
+        if (!isPlayingRef.current || runRecordRef.current?.runId !== currentRunId) {
+          return prev;
+        }
         const next = prev + 1;
         if (next >= runRecord.events.length - 1) {
           setIsPlaying(false);
@@ -286,7 +295,7 @@ export function useReplayRunner(): UseReplayRunnerResult {
     if (!runRecord) return;
     clearTimer();
     setIsPlaying(false);
-    setCursorIndex((prev) => Math.max(prev - 1, 0));
+    setCursorIndex((prev) => Math.max(prev - 1, -1));
   }, [runRecord, clearTimer]);
 
   /** Restart playback at step 0 without executing or creating orders */
@@ -303,7 +312,7 @@ export function useReplayRunner(): UseReplayRunnerResult {
       if (!runRecord) return;
       clearTimer();
       setIsPlaying(false);
-      const clamped = Math.max(0, Math.min(index, runRecord.events.length - 1));
+      const clamped = Math.max(-1, Math.min(index, runRecord.events.length - 1));
       setCursorIndex(clamped);
     },
     [runRecord, clearTimer],
@@ -311,12 +320,13 @@ export function useReplayRunner(): UseReplayRunnerResult {
 
   /** Load an existing RunRecord (e.g. from Paper Trading) into replay state */
   const loadRecord = useCallback(
-    (record: RunRecord) => {
+    (record: RunRecord, initialCursor?: number) => {
       clearTimer();
       setIsPlaying(false);
       setRunRecord(record);
-      // Position cursor at final step so the complete decision is visible
-      setCursorIndex(record.events.length - 1);
+      // Position cursor at initialCursor if provided, else at final step so the complete decision is visible
+      const startCursor = initialCursor !== undefined ? initialCursor : record.events.length - 1;
+      setCursorIndex(startCursor);
     },
     [clearTimer],
   );

@@ -1,0 +1,35 @@
+{
+  "model_version": "oneq-ridge-v1.0",
+  "training_date": "2026-09-24T17:40:44.037658+00:00",
+  "total_sessions": 60,
+  "development_sessions_count": 40,
+  "test_sessions_count": 10,
+  "dev_date_range": [
+    "2026-07-09",
+    "2026-09-04"
+  ],
+  "test_date_range": [
+    "2026-09-08",
+    "2026-09-24"
+  ],
+  "selected_alpha": 1.0,
+  "selected_buffer_bps": 0.0,
+  "selected_stay_in_cash": true,
+  "median_val_net_return_pct": 0.0,
+  "test_simulation_summary": {
+    "initial_cash": 200.0,
+    "final_cash": 200.0,
+    "net_pnl": 0.0,
+    "net_return_pct": 0.0,
+    "total_trades": 0,
+    "winning_trades": 0,
+    "losing_trades": 0,
+    "win_rate": 0.0,
+    "profit_factor": 1.0,
+    "total_costs_paid": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe_ratio": 0.0,
+    "cash_reconciled": true,
+    "trades_count": 0
+  }
+}

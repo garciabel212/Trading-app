@@ -65,7 +65,7 @@ const EventTimeline = memo(function EventTimeline({
   const totalEvents = hasEvents ? runRecord.events.length : 0;
   const currentStep = cursorIndex >= 0 ? cursorIndex + 1 : 0;
   const isAtEnd = hasEvents && cursorIndex >= totalEvents - 1;
-  const isAtStart = cursorIndex <= 0;
+  const isAtStart = cursorIndex <= -1;
 
   return (
     <section
@@ -80,6 +80,7 @@ const EventTimeline = memo(function EventTimeline({
           {hasEvents && (
             <span className="timeline-panel__step-info" aria-live="polite">
               Step <strong>{currentStep}</strong> of <strong>{totalEvents}</strong>
+              {cursorIndex < 0 && ' · (Pre-event state)'}
               {isAtEnd && ' · (End of trace)'}
               {isPlaying && ' · Playing (900ms)'}
               {!isPlaying && hasEvents && ' · Paused'}
@@ -93,7 +94,7 @@ const EventTimeline = memo(function EventTimeline({
             id="btn-replay-restart"
             className="btn btn--timeline"
             onClick={onRestart}
-            disabled={!hasEvents || isAtStart}
+            disabled={!hasEvents || cursorIndex === 0}
             title="Restart playback from step 1 (without re-executing)"
             aria-label="Restart playback"
           >

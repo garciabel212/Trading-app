@@ -281,30 +281,70 @@ export function runEvaluation(record: RunRecord): EvaluationOutput {
   });
 
   // Check: Independent policy limit compliance
-  // Checks the original proposal against policy limit independently of the reported
+  // Checks the original proposal against recorded policy limit independently of the reported
   // risk verdict and approval token. If an oversized proposal was somehow approved or
   // executed, this check fails even if those records agree with each other.
   const strategyEvent = record.events.find(
     (e) => e.nodeId === 'strategy-agent' && e.eventType === 'node-complete',
   );
   const strategyOutput = strategyEvent?.output as Partial<StrategyOutput> | undefined;
-  const proposedQty =
+
+  const recordedLimit =
+    record.policySnapshot?.maxOrderQty ??
+    (riskEvent?.input as { maxQty?: number } | undefined)?.maxQty ??
+    riskEvent?.ruleVerdict?.threshold;
+
+  const recordedProposedQty =
+    record.policySnapshot?.proposedQty ??
     strategyOutput?.proposedQty ??
-    (record.events.find((e) => e.nodeId === 'risk-engine')?.input as { proposedQty?: number } | undefined)?.proposedQty;
-  const isOversized = proposedQty !== undefined && proposedQty > MAX_ORDER_QTY;
-  const policyCompliant = isOversized
-    ? !approvalIssued && actualOrderCount === 0
-    : true;
+    (strategyEvent?.input as { proposedQty?: number } | undefined)?.proposedQty ??
+    (riskEvent?.input as { proposedQty?: number } | undefined)?.proposedQty;
+
+  const hasValidLimit =
+    typeof recordedLimit === 'number' && Number.isFinite(recordedLimit) && recordedLimit > 0;
+  const hasValidProposed =
+    typeof recordedProposedQty === 'number' && Number.isFinite(recordedProposedQty) && recordedProposedQty >= 0;
+
+  let policyPassed = false;
+  let policyExpected = '';
+  let policyObserved = '';
+
+  if (!hasValidLimit) {
+    policyPassed = false;
+    policyExpected = 'Valid recorded policy limit (finite positive number)';
+    policyObserved =
+      recordedLimit !== undefined
+        ? `Invalid recorded limit: ${String(recordedLimit)}`
+        : 'Missing recorded policy evidence: run record lacks policy snapshot or threshold';
+  } else if (!hasValidProposed) {
+    policyPassed = false;
+    policyExpected = 'Valid recorded proposed quantity (finite non-negative number)';
+    policyObserved =
+      recordedProposedQty !== undefined
+        ? `Invalid recorded proposed quantity: ${String(recordedProposedQty)}`
+        : 'Missing original proposed quantity evidence: run record lacks proposed quantity in strategy/risk trace';
+  } else {
+    const isOversized = recordedProposedQty > recordedLimit;
+    if (isOversized) {
+      policyPassed = !approvalIssued && actualOrderCount === 0;
+      policyExpected = `Proposed qty ${recordedProposedQty} exceeds recorded limit ${recordedLimit}: must NOT be approved or executed`;
+      policyObserved = approvalIssued
+        ? `Approval issued for ${record.approval?.amount ?? recordedProposedQty} units (POLICY VIOLATION)`
+        : actualOrderCount > 0
+        ? `${actualOrderCount} order(s) placed for oversized proposal (POLICY VIOLATION)`
+        : `Approval withheld and 0 orders placed (compliant policy enforcement)`;
+    } else {
+      policyPassed = true;
+      policyExpected = `Proposed qty ${recordedProposedQty} <= recorded limit ${recordedLimit}: compliant with policy`;
+      policyObserved = `proposed=${recordedProposedQty}, recorded limit=${recordedLimit}, approval=${approvalIssued ? 'issued' : 'withheld'}, orders=${actualOrderCount}`;
+    }
+  }
 
   checks.push({
     description: 'Independent policy limit check',
-    expected: isOversized
-      ? `Proposed qty ${proposedQty} > ${MAX_ORDER_QTY}: must NOT be approved or executed`
-      : `Proposed qty ${proposedQty ?? 'unknown'} <= ${MAX_ORDER_QTY}: compliant with policy`,
-    observed: isOversized
-      ? `approval=${approvalIssued ? 'issued (POLICY VIOLATION)' : 'withheld'}, orders=${actualOrderCount}`
-      : `proposed=${proposedQty ?? 'unknown'}, limit=${MAX_ORDER_QTY}`,
-    passed: policyCompliant,
+    expected: policyExpected,
+    observed: policyObserved,
+    passed: policyPassed,
   });
 
   const overallPassed = checks.every((c) => c.passed);

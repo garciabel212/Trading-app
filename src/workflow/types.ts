@@ -18,6 +18,8 @@ export interface PipelineInput {
   symbol: string;
   /** Quantity proposed by Strategy Agent (set by scenario) */
   proposedQty: number;
+  /** Optional custom policy limit for this run */
+  maxOrderQty?: number;
   /** Genuine live snapshot if running on real-time market data */
   liveSnapshot?: NormalizedMarketSnapshot;
   /** Competitor trader ID if executed as part of the multi-agent competition */
@@ -169,6 +171,12 @@ export interface RunRecord {
   seasonId?: string;
   episodicMemory?: unknown;
   messages?: AgentMessage[];
+  policySnapshot?: PolicySnapshot;
+}
+
+export interface PolicySnapshot {
+  maxOrderQty: number;
+  proposedQty: number;
 }
 
 

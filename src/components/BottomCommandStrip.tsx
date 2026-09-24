@@ -36,7 +36,7 @@ const BottomCommandStrip = memo(function BottomCommandStrip({
   const hasRun = runRecord !== null;
   const totalEvents = hasRun ? runRecord.events.length : 0;
   const currentStep = cursorIndex >= 0 ? cursorIndex + 1 : 0;
-  const isAtStart = cursorIndex <= 0;
+  const isAtStart = cursorIndex <= -1;
   const isAtEnd = hasRun && cursorIndex >= totalEvents - 1;
 
   // Active event message
@@ -134,7 +134,7 @@ const BottomCommandStrip = memo(function BottomCommandStrip({
           <button
             className="ctrl-btn"
             onClick={onRestart}
-            disabled={!hasRun || isAtStart}
+            disabled={!hasRun || cursorIndex === 0}
             title="Restart playback"
             aria-label="Restart playback"
           >

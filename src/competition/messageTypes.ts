@@ -46,3 +46,20 @@ export interface AgentMessage {
   profileKey: 'daily-weather' | 'nasdaq-oneq';
   status: 'delivered' | 'blocked' | 'pending';
 }
+
+export interface StructuredPrediction {
+  runId: string;
+  snapshotId: string;
+  modelVersion: string;
+  trainedThrough: string;
+  asOf: string;
+  featureValues: Record<string, number>;
+  predictedGrossBps: number;
+  estimatedCostBps: number;
+  estimatedNetBps: number;
+  entryBufferBps: number;
+  action: 'BUY' | 'WAIT';
+  reasonCode: string;
+  maturedActualReturnBps?: number;
+}
+

@@ -95,23 +95,98 @@ export const COMMUNICATION_EDGES: Record<string, string> = {
 };
 
 /**
- * Derives active messages up to the current replay cursor.
- * Seeking backward hides future messages.
+ * Recursively freezes an object and its nested properties at recording time.
+ * Prevents callers or playback controls from modifying recorded evidence.
+ */
+export function deepFreeze<T>(obj: T): T {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  if (Object.isFrozen(obj)) {
+    return obj;
+  }
+  Object.freeze(obj);
+  for (const key of Object.getOwnPropertyNames(obj)) {
+    const val = (obj as Record<string, unknown>)[key];
+    if (val !== null && (typeof val === 'object' || typeof val === 'function')) {
+      deepFreeze(val);
+    }
+  }
+  return obj;
+}
+
+/**
+ * Deep clones data using structuredClone with fallback.
+ */
+export function deepClone<T>(obj: T): T {
+  if (typeof structuredClone === 'function') {
+    return structuredClone(obj);
+  }
+  return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Derives visible messages from events actually included in the active trace prefix.
+ * Strict point-in-time isolation: when activeEvents is empty (cursor < 0), returns [].
+ */
+export function deriveVisibleMessages(
+  record: RunRecord | null,
+  activeEvents: TraceEvent[]
+): AgentMessage[] {
+  if (!record || !record.messages || record.messages.length === 0 || activeEvents.length === 0) {
+    return [];
+  }
+
+  const messageIdsInPrefix = new Set(
+    activeEvents.map((e) => e.messageId).filter((id): id is string => Boolean(id))
+  );
+
+  if (messageIdsInPrefix.size > 0) {
+    return record.messages.filter((m) => messageIdsInPrefix.has(m.messageId));
+  }
+
+  // Fallback when trace events lack explicit messageId links:
+  // Derive based on event sequences actually present in activeEvents prefix
+  const activeSeqs = new Set(activeEvents.map((e) => e.seq));
+  const maxEventSeq = Math.max(...activeEvents.map((e) => e.seq));
+
+  return record.messages.filter(
+    (m) =>
+      activeSeqs.has(m.sequence) ||
+      activeSeqs.has(m.sequence - 1) ||
+      m.sequence <= activeEvents.length ||
+      m.sequence <= maxEventSeq
+  );
+}
+
+/**
+ * Derives active messages up to the current replay cursor or trace prefix.
+ * Seeking backward or negative cursor hides future messages.
  */
 export function deriveActiveMessages(
   record: RunRecord | null,
-  cursorIndex: number
+  cursorOrEvents: number | TraceEvent[]
 ): Record<string, AgentMessage> {
-  if (!record || !record.messages || record.messages.length === 0 || cursorIndex < 0) {
+  if (!record || !record.messages || record.messages.length === 0) {
     return {};
   }
 
-  // Active event count up to cursorIndex
-  const activeEventCount = Math.min(record.events.length, cursorIndex + 1);
-  const activeMessages = record.messages.filter((m) => m.sequence <= activeEventCount);
+  let activeEvents: TraceEvent[];
+  if (Array.isArray(cursorOrEvents)) {
+    activeEvents = cursorOrEvents;
+  } else {
+    if (cursorOrEvents < 0) return {};
+    const clamped = Math.min(cursorOrEvents, record.events.length - 1);
+    activeEvents = record.events.slice(0, clamped + 1);
+  }
 
+  if (activeEvents.length === 0) {
+    return {};
+  }
+
+  const visible = deriveVisibleMessages(record, activeEvents);
   const bySender: Record<string, AgentMessage> = {};
-  for (const msg of activeMessages) {
+  for (const msg of visible) {
     bySender[msg.sender] = msg;
   }
   return bySender;

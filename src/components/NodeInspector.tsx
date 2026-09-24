@@ -9,7 +9,7 @@
 import { memo, useState } from 'react';
 import type { AgentNodeData, NodeKind } from '../types';
 import type { TraceEvent, RunRecord, EvaluationCheck } from '../workflow/types';
-import { deriveNodeInspectorTrace, type RiskDecisionBreakdown } from '../workflow/replay';
+import { deriveNodeInspectorTrace, deriveVisibleMessages, type RiskDecisionBreakdown } from '../workflow/replay';
 import { loadTraderPortfolio } from '../competition/portfolioStore';
 import { evaluateTrader, approveExperiment, loadExperiments } from '../competition/coachEvaluator';
 import { computeTraderMetrics } from '../competition/competitionScorer';
@@ -645,21 +645,22 @@ function CommunicationSection({
   nodeId,
   runRecord,
   cursorIndex,
+  activeEvents,
 }: {
   nodeId: string;
   runRecord: RunRecord | null;
   cursorIndex: number;
+  activeEvents: TraceEvent[];
 }) {
   if (!runRecord || !runRecord.messages || runRecord.messages.length === 0) {
     return null;
   }
 
-  // Point-in-time isolation: filter messages up to active event count at cursorIndex
-  const maxSeq = cursorIndex >= 0 ? cursorIndex + 1 : runRecord.events.length;
-  const activeMessages = runRecord.messages.filter((m) => m.sequence <= maxSeq);
+  // Strictly isolate visible messages using the shared validated trace prefix
+  const visibleMessages = deriveVisibleMessages(runRecord, activeEvents);
 
   // Filter messages relevant to this node (as sender or recipient)
-  const nodeMessages = activeMessages.filter(
+  const nodeMessages = visibleMessages.filter(
     (m) => m.sender === nodeId || m.recipient === nodeId
   );
 
@@ -669,7 +670,9 @@ function CommunicationSection({
 
       {nodeMessages.length === 0 ? (
         <div className="inspector__trace-value inspector__trace-value--none" style={{ marginTop: 6 }}>
-          No messages exchanged by this agent at the current step.
+          {cursorIndex < 0
+            ? 'Not reached at this replay step (pre-execution).'
+            : 'No messages exchanged by this agent at the current step.'}
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
@@ -852,6 +855,7 @@ const NodeInspector = memo(function NodeInspector({
               nodeId={node.id}
               runRecord={runRecord}
               cursorIndex={cursorIndex}
+              activeEvents={activeEvents}
             />
 
             {/* Execution Replay Trace */}

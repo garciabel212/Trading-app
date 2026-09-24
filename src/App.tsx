@@ -142,19 +142,24 @@ export default function App() {
   // ── Derived State from Shared Replay Cursor ─────────────────────────────────
   const activeEvents = useMemo(() => {
     if (!runRecord || cursorIndex < 0) return [];
-    return runRecord.events.slice(0, cursorIndex + 1);
+    const clampedCursor = Math.min(cursorIndex, runRecord.events.length - 1);
+    return runRecord.events.slice(0, clampedCursor + 1);
   }, [runRecord, cursorIndex]);
 
-  // Active messages up to cursorIndex (temporal isolation)
+  // Active messages derived from validated trace prefix (temporal isolation)
   const activeMessages = useMemo(() => {
-    return deriveActiveMessages(runRecord, cursorIndex);
-  }, [runRecord, cursorIndex]);
+    return deriveActiveMessages(runRecord, activeEvents);
+  }, [runRecord, activeEvents]);
 
   // Current active message at current step for edge animation
   const currentStepMessage = useMemo(() => {
-    if (!runRecord || !runRecord.messages || cursorIndex < 0) return undefined;
-    return runRecord.messages.find((m) => m.sequence === cursorIndex + 1);
-  }, [runRecord, cursorIndex]);
+    if (!runRecord || !runRecord.messages || cursorIndex < 0 || activeEvents.length === 0) return undefined;
+    const currentEvent = activeEvents[activeEvents.length - 1];
+    if (currentEvent?.messageId) {
+      return runRecord.messages.find((m) => m.messageId === currentEvent.messageId);
+    }
+    return runRecord.messages.find((m) => m.sequence === currentEvent?.seq || m.sequence === currentEvent?.seq + 1);
+  }, [runRecord, cursorIndex, activeEvents]);
 
   // Derived graph nodes
   const rawNodes = useMemo(() => {

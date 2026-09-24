@@ -1,0 +1,21 @@
+{
+  "feature_names": [
+    "ret_5m",
+    "ret_15m",
+    "ret_60m",
+    "recent_volatility",
+    "vwap_distance",
+    "relative_volume",
+    "time_of_day"
+  ],
+  "coefficients": {
+    "ret_5m": 0.10064223999786849,
+    "ret_15m": 0.35044246486614017,
+    "ret_60m": -2.2401796888815886,
+    "recent_volatility": -0.5036168800687411,
+    "vwap_distance": 1.6740761292061044,
+    "relative_volume": 1.1699901779661894,
+    "time_of_day": -1.3859495675608309
+  },
+  "intercept": 2.016183799421408
+}
