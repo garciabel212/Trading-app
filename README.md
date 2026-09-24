@@ -1,18 +1,20 @@
 # Agent Trading OS — Competitive Multi-Agent Trading Laboratory
 
-An advanced operating system and visual laboratory for autonomous AI trading agents, paper-trading against live prediction markets (Kalshi) and crypto spot markets (Coinbase), supervised by a Portfolio Manager and Coach Evaluator, backed by a high-performance FastAPI engine and a **Graphify** codebase knowledge graph.
+An advanced operating system and visual laboratory for autonomous AI trading agents, paper-trading against live prediction markets (Kalshi) and crypto spot markets (Coinbase), featuring a walk-forward machine learning strategy for the Nasdaq Composite ETF (ONEQ), supervised by a Portfolio Manager and Coach Evaluator, backed by a high-performance FastAPI engine and a **Graphify** codebase knowledge graph.
 
 ---
 
 ## 🌟 Key Highlights
 
 - ⚔ **Competitive Multi-Agent Trading**: Three independent autonomous traders (Alpha, Beta, Gamma) compete with segregated simulated bankrolls ($10,000 each) using orthogonal trading philosophies.
+- 🔬 **Walk-Forward ML Trading Strategy (ONEQ)**: Long-only machine learning pipeline for Fidelity Nasdaq Composite ETF (`ONEQ`) with a mathematically verified **causal invariance guarantee**, strictly purged cross-validation, whole-share $200 cash accounting, and multi-scenario friction modeling (1, 5, 10 bps/side).
+- 💬 **Grounded Agent Dialogue & Proposal Rounds**: Non-mutating proposal-only decision rounds across research profiles (*Daily Weather* vs. *Nasdaq ONEQ*) emitting inspectable `AgentMessage` dialogue bubbles linked to verifiable empirical evidence.
 - ⚖ **Portfolio Manager Supervision**: Oversees trade proposals, detects consensus vs. divergence, dynamically budgets capital within strict 15%–50% boundary rules, and manages a $50,000 ensemble portfolio.
 - 🧠 **Coach & Evaluator with Human Safeguards**: Audits Brier score calibration, diagnoses overtrading or risk sizing biases, and generates controlled parameter experiments requiring **explicit human operator approval**.
 - 🏆 **Arena Mode Workspace**: Multi-dimensional composite leaderboard evaluating not just profit, but simulated return, max drawdown, Brier score calibration, realized edge, win-rate, and risk rule compliance.
-- ⟡ **Living AI Knowledge Graph**: Interactive organic canvas with hierarchical node morphologies, live equity badges, orbital satellite disclosure, and point-in-time replay scrubbing.
+- ⟡ **Living AI Knowledge Graph**: Interactive organic canvas with hierarchical node morphologies, live equity badges, orbital satellite disclosure, Agent Studio custom agent builder, and point-in-time replay scrubbing.
 - 📈 **Real Market & Prediction Bets**: Live market feeds from CFTC-regulated Kalshi v2 binary markets and Coinbase spot crypto, with decimal-safe paper execution and reciprocal binary order-book depth.
-- 🌐 **Graphify Knowledge Graph**: Fully indexed 710-node codebase graph with community detection, god-node callflow tracking, and navigable architectural reports.
+- 🌐 **Graphify Knowledge Graph**: Fully indexed 700+ node codebase graph with community detection, god-node callflow tracking, and navigable architectural reports.
 
 ---
 
@@ -23,6 +25,9 @@ trading-app/
 ├── src/                          # Agent Trading OS (React 19 + TypeScript + Vite)
 │   ├── competition/              # Multi-Agent Competition Subsystem
 │   │   ├── types.ts              # Core contracts (TradeProposal, NoTradeDecision, TraderPortfolio, Season)
+│   │   ├── messageTypes.ts       # Structured agent dialogue, prediction schemas & evidence references
+│   │   ├── researchProfiles.ts   # Market profiles: Daily Weather (binary) & Nasdaq ONEQ (equity ETF)
+│   │   ├── proposalRoundEngine.ts# Deterministic proposal-only rounds (zero execution mutation)
 │   │   ├── traderProfiles.ts     # Canonical profiles & philosophies for Alpha, Beta, Gamma, Manager, Coach
 │   │   ├── proposalEngine.ts     # Deterministic thesis generator & structured pass recorder
 │   │   ├── competitionEngine.ts  # Independent decision phase runner (zero cross-talk)
@@ -34,7 +39,9 @@ trading-app/
 │   │   └── eventBus.ts           # Typed pub/sub event bus driving graph animations
 │   ├── components/               # Living AI System UI
 │   │   ├── AgentNode.tsx         # Morphological node frame with live status aura and equity pills
-│   │   ├── NodeInspector.tsx     # Specialized panels for Competitors, Manager, and Coach
+│   │   ├── MessageBubble.tsx     # Grounded agent speech bubbles with inspectable evidence pills
+│   │   ├── AgentStudioModal.tsx  # Custom agent creator, modular skill binder & episodic memory viewer
+│   │   ├── NodeInspector.tsx     # Specialized panels for Competitors, Manager, and Coach with Risk tokens
 │   │   ├── CompetitionWorkspace  # Arena Mode tournament view with live leaderboard & event stream
 │   │   ├── PaperTradingWorkspace # Real Kalshi/Coinbase charts, orderbook depth & execution ledger
 │   │   ├── Navigation.tsx        # Workspace tab switcher (Agent Lab, Arena Mode, Paper Trading)
@@ -42,12 +49,24 @@ trading-app/
 │   ├── agents/                   # Agent registry, modular skills, and episodic memory store
 │   ├── paper/                    # Decimal-safe virtual account ($1,000 base) & Kalshi/Coinbase client
 │   ├── workflow/                 # Deterministic execution pipeline & replay trace builder
-│   └── __tests__/                # Vitest test suite (63 unit & integration tests passing)
+│   └── __tests__/                # Vitest test suite (93 unit & integration tests passing)
 ├── trading_app/                  # Python FastAPI Backend
-│   ├── api/                      # REST endpoints (quotes, candles, orders, portfolio, backtesting)
+│   ├── api/                      # REST endpoints (quotes, candles, orders, portfolio, backtesting, research)
+│   │   ├── research.py           # ONEQ model status, report, and prediction endpoints
+│   │   ├── backtest.py           # SMA & RSI quantitative strategy backtesting
+│   │   └── ...
+│   ├── research/oneq/            # ONEQ Machine Learning Research Package
+│   │   ├── data.py               # 5-minute bar ingestion, validation, and session normalization
+│   │   ├── features.py           # 7 strictly causal signals (returns, volatility, VWAP distance, vol, time)
+│   │   ├── labels.py             # 30-minute forward target generation with explicit holding bounds
+│   │   ├── train.py              # 80/20 split, 4-fold expanding window CV, purged overlap, Ridge regression
+│   │   ├── simulate.py           # $200 cash account simulation, whole shares, multi-cost friction
+│   │   ├── predict.py            # Real-time inference & grounded agent communication bubbles
+│   │   ├── report.py             # Monthly breakdown, uncertainty estimation, causal invariance test
+│   │   └── run_experiment.py     # Automated experiment execution & artifact generation
 │   ├── services/                 # Execution engine, SMA/RSI quantitative strategies, backtesting
 │   └── models/                   # Pydantic data schemas
-├── tests/                        # Pytest suite for Python backend (35 tests passing)
+├── tests/                        # Pytest suite for Python backend (51 tests passing)
 ├── graphify-out/                 # Graphify knowledge graph outputs (AST extract, callflow, HTML viewer)
 └── vite.config.ts                # Vite dev server with reverse proxy for Kalshi & Coinbase
 ```
@@ -71,6 +90,8 @@ trading-app/
 ### 1. ⟡ Agent Lab
 * **Hierarchical Graph**: Coach at the apex, Portfolio Manager in the center, Alpha, Beta, Gamma in the middle tier, and segregated Portfolios at the base.
 * **Point-in-Time Trace Replay**: Step forward and backward through recorded decision steps with strict temporal isolation.
+* **Agent Studio**: Create custom trading agents, bind modular skills (*Kalshi Spread Analyzer*, *Momentum Trend*, *Volatility Guard*), and review episodic memory.
+* **Proposal-Only Decision Rounds**: Non-mutating decision rounds across research profiles (*Daily Weather* vs. *Nasdaq ONEQ*) showing grounded agent speech bubbles without balance mutation.
 * **Live Autonomous Monitor (`⚡ LIVE MONITOR`)**: Evaluates real prediction bets and crypto quotes every 5 seconds through all three competitor models concurrently.
 
 ### 2. 🏆 Arena Mode (Competition Workspace)
@@ -88,6 +109,17 @@ trading-app/
 
 ---
 
+## 🔬 Quantitative ML Research: ONEQ ETF Strategy
+
+The platform includes a dedicated, fully reproducible machine learning research package for the Nasdaq Composite Tracking ETF (`ONEQ`):
+
+- **Walk-Forward Cross Validation**: 80/20 train/test session split with 4-fold expanding window cross-validation, strictly purging forward return overlaps.
+- **Causal Invariance Guarantee**: Rigorously verified in unit tests—modifying future market prices has zero mathematical effect on earlier features or predictions ([`report.py:L20-48`](trading_app/research/oneq/report.py)).
+- **Realistic Cash Simulation**: Models whole-share trading on a $200 capital constraint across 1, 5, and 10 bps/side friction scenarios with full cash reconciliation (`Final Cash == Initial Cash + Sum(Net PnL)`).
+- **Comprehensive Walkthrough**: Detailed architecture, target formulas, and benchmark comparisons in [`docs/oneq_learned_strategy_walkthrough.md`](docs/oneq_learned_strategy_walkthrough.md).
+
+---
+
 ## ⚡ Quickstart
 
 ### Frontend (Agent Trading OS)
@@ -96,7 +128,7 @@ trading-app/
 # 1. Install dependencies
 npm install
 
-# 2. Run test suite (63/63 tests passing)
+# 2. Run test suite (93/93 tests passing)
 npm test
 
 # 3. Production build check
@@ -114,10 +146,13 @@ Visit **http://localhost:5173** to access the application.
 # 1. Install dependencies using uv
 uv sync
 
-# 2. Run backend test suite (35/35 tests passing)
+# 2. Run backend test suite (51/51 tests passing)
 uv run pytest tests/ -v
 
-# 3. Start FastAPI server
+# 3. Execute the ONEQ ML research experiment
+uv run python -m trading_app.research.oneq.run_experiment
+
+# 4. Start FastAPI server
 uv run uvicorn trading_app.main:app --reload --port 8000
 ```
 
@@ -153,6 +188,15 @@ Agent Trading OS can be integrated with **Clawbot / OpenClaw** to allow autonomo
 
 ---
 
+## 📚 Documentation Directory
+
+- [`docs/walkthrough.md`](docs/walkthrough.md) — Comprehensive visual system walkthrough and feature guide.
+- [`docs/oneq_learned_strategy_walkthrough.md`](docs/oneq_learned_strategy_walkthrough.md) — Deep-dive walkthrough of the ONEQ walk-forward ML research pipeline.
+- [`docs/clawbot_integration.md`](docs/clawbot_integration.md) — Step-by-step Clawbot / OpenClaw connection instructions.
+
+---
+
 ## 🔒 Safety & Simulation Notice
 
 All trading in this system is strictly **simulated paper trading**. No real capital is ever risked, and no live broker order placement APIs are connected. All orders and portfolio balances exist exclusively in local simulation memory and browser storage.
+
